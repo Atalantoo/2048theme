@@ -28,18 +28,18 @@ import org.springframework.core.io.FileSystemResource;
 @EnableAutoConfiguration
 public class BatchConfig {
 
+	// ARGS *********************************************************
+
 	@Value("${src}")
 	String src;
 	@Value("${dest}")
 	String dest;
-	@Value("${id}")
-	String id;
 
 	String DELIMITER = ";";
-	String[] NAMES = new String[] { "name" };
-	String[] NAMES2 = new String[] { "src", "dest" };
+	String[] CSV_COL_NAMES = new String[] { "name" };
+	String[] CSV_COL_NAMES_2 = new String[] { "src", "dest" };
 
-	//
+	// IMPL *********************************************************
 
 	@Autowired
 	JobBuilderFactory jobs;
@@ -58,7 +58,7 @@ public class BatchConfig {
 	@Bean
 	Step prepareStep() {
 		return steps.get("prepare").<Prepare, Prepare> chunk(10) //
-				.reader(fileReader(src, Prepare.class, NAMES)) //
+				.reader(fileReader(src, Prepare.class, CSV_COL_NAMES)) //
 				.processor(prepareProcessor()) //
 				.writer(memoryWriter()).build();
 	}
@@ -68,12 +68,10 @@ public class BatchConfig {
 		return steps.get("picture").<Picture, Picture> chunk(10) //
 				.reader(memoryReader()) //
 				.processor(pictureProcessor()) //
-				.writer(fileWriter(dest + "\\generator-result.csv", Picture.class, NAMES2)).build();
+				.writer(fileWriter("target/generator-result.csv", Picture.class, CSV_COL_NAMES_2)).build();
 	}
 
-	//
-
-	List<Picture> inMemoryList = new ArrayList<>();
+	// CUSTOM *********************************************************
 
 	public PrepareProcessor prepareProcessor() {
 		return new PrepareProcessor( //
@@ -85,8 +83,11 @@ public class BatchConfig {
 		return new PictureProcessor();
 	}
 
-	//
+	// GENERIC *********************************************************
 
+	List<Picture> inMemoryList = new ArrayList<>();
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private ItemReader<Picture> memoryReader() {
 		return new InMemoryReader(inMemoryList);
 	}

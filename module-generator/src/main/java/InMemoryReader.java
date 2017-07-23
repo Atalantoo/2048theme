@@ -15,8 +15,9 @@ public class InMemoryReader<T> implements ItemReader<T> {
 
 	@Override
 	public T read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-		T next = inMemoryList.remove(0);
-		return next;
+		if (inMemoryList.isEmpty())
+			return null;
+		return inMemoryList.remove(0);
 	}
 
 }
