@@ -39,27 +39,21 @@ public class GameManager
 
     public string[][] init(string[][] input)
     {
-        rule_init_game(input);
-        rule_update_game(input);
-        rule_init_matrix_with_0();
-        rule_init_matrix_with_2_random_items();
+        rule_init_phase_start(input);
+        rule_init_phase_board(input);
+        // rule_update_game(input);
         return matrix;
     }
 
     public string[][] turn(string[][] input)
     {
-        rule_update_game(input);
-        rule_update_matrix(input);
-        rule_update_input(input);
+        rule_turn_phase_start(input);
+        // TODO rule_turn_phase_moves()
+        rule_turn_phase_play();
 
-        rule_turn_prepare();
-        // TODO possible actions
-        rule_turn_merge_same_items();
-        rule_turn_move_items_to_horizontal_direction_if_free();
-        // TODO with_1_random_items createRandomItem
         // TODO UpdateScore(0);
         // TODO end game loss
-        // TODO end game win
+        // TODO rule_turn_phase_end
         // TODO res possible moves
         return matrix;
     }
@@ -70,49 +64,64 @@ public class GameManager
 
     // RULES ********************************************************
 
-    private void rule_init_game(string[][] input)
+    private void rule_init_phase_start(string[][] input)
     {
         score = 0;
         state = GameState.Playing;
+        action_update_game(input);
     }
 
-    private void rule_init_matrix_with_0()
+    private void rule_init_phase_board(string[][] input)
+    {
+        rule_init_phase_board_step_zeros();
+        rule_init_phase_board_step_random2();
+    }
+
+    private void rule_init_phase_board_step_zeros()
     {
         matrix = new string[height][];
         for (int y = 0; y < height; y++)
         {
             matrix[y] = new string[width];
             for (int x = 0; x < width; x++)
-                matrix[y][x] = "0";
+                matrix[y][x] = action_createEmpty();
         }
     }
 
-    private void rule_init_matrix_with_2_random_items()
+    private void rule_init_phase_board_step_random2()
     {
-        createRandomItem(matrix);
-        createRandomItem(matrix);
+        action_createRandomItem(matrix);
+        action_createRandomItem(matrix);
     }
 
-    private void rule_update_game(string[][] input)
+    // TURN ********************
+
+    // TURN: PHASE(S)
+
+    private void rule_turn_phase_start(string[][] input)
     {
-        width = Int32.Parse(input[0][0]);
-        height = Int32.Parse(input[0][1]);
+        action_update_game(input);
+        step_update_matrix(input);
+        step_update_input(input);
+        step_direction();
     }
 
-    private void rule_update_matrix(string[][] input)
+    // TURN: STEP(S)
+
+    private void step_update_matrix(string[][] input)
     {
         matrix = new string[height][];
         for (int y = 0; y < height; y++)
             matrix[y] = input[1 + y];
     }
 
-    private void rule_update_input(string[][] input)
+    private void step_update_input(string[][] input)
     {
         action = new string[1][];
         action[0] = input[1 + height];
     }
 
-    private void rule_turn_prepare()
+    private void step_direction()
     {
         string move = action[0][0];
         PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), move));
@@ -122,22 +131,15 @@ public class GameManager
         columnNumbers = (horizontalMovement == HorizontalMovement.L) ? columnNumbers : columnNumbers.Reverse();
     }
 
-    private void rule_turn_move_items_to_horizontal_direction_if_free()
+    private void rule_turn_phase_play()
     {
-        for (int y = 0; y < height; y++)
-            foreach (int x in columnNumbers)
-            {
-                if (emptyItem(y, x))
-                    continue;
-                int next = foundEmptyItem(matrix[y], x, dir);
-                if (next == x)
-                    continue;
-                matrix[y][next] = matrix[y][x];
-                matrix[y][x] = "0";
-            }
+        step_turn_merge_same_items();
+        step_turn_move_items_to_horizontal_direction_if_free();
+        // TODO with_1_random_items createRandomItem
+
     }
 
-    private void rule_turn_merge_same_items()
+    private void step_turn_merge_same_items()
     {
         for (int y = 0; y < height; y++)
             foreach (int x in columnNumbers)
@@ -145,25 +147,38 @@ public class GameManager
                 int next = foundTwinItem(matrix[y], x, dir);
                 if (next == x)
                     continue;
-                int val = Int32.Parse(matrix[y][x]) * 2;
-                matrix[y][x] = val.ToString();
-                matrix[y][next] = "0";
+                action_mergeItems(y, x, next);
             }
     }
 
-    // UTILS ********************************************************
-
-    public int count(string match)
+    private void step_turn_move_items_to_horizontal_direction_if_free()
     {
-        int res = 0;
-        for (int y = 0; y < matrix.Length; y++)
-            for (int x = 0; x < matrix[0].Length; x++)
-                if (match.Equals(matrix[y][x]))
-                    res++;
-        return res;
+        for (int row = 0; row < height; row++)
+            foreach (int actual in columnNumbers)
+            {
+                if (emptyItem(row, actual))
+                    continue;
+                int next = foundEmptyItem(matrix[row], actual, dir);
+                if (next == actual)
+                    continue;
+                action_movIteme(row, actual, next);
+            }
     }
 
-    private void createRandomItem(string[][] matrix)
+    // TURN: ACTION(S)
+
+    private void action_update_game(string[][] input)
+    {
+        width = Int32.Parse(input[0][0]);
+        height = Int32.Parse(input[0][1]);
+    }
+
+    private static string action_createEmpty()
+    {
+        return "0";
+    }
+
+    private void action_createRandomItem(string[][] matrix)
     {
         int freeOnes = count("0");
         Random rnd = new Random();
@@ -177,6 +192,31 @@ public class GameManager
                 if (nextOne == i)
                     matrix[y][x] = "2";
             }
+    }
+
+    private void action_mergeItems(int y, int x, int next)
+    {
+        int val = Int32.Parse(matrix[y][x]) * 2;
+        matrix[y][x] = val.ToString();
+        matrix[y][next] = "0";
+    }
+
+    private void action_movIteme(int y, int x, int next)
+    {
+        matrix[y][next] = matrix[y][x];
+        matrix[y][x] = "0";
+    }
+
+    // UTILS ********************************************************
+
+    public int count(string match)
+    {
+        int res = 0;
+        for (int y = 0; y < matrix.Length; y++)
+            for (int x = 0; x < matrix[0].Length; x++)
+                if (match.Equals(matrix[y][x]))
+                    res++;
+        return res;
     }
 
     private int foundEmptyItem(string[] row, int x, int direction)
