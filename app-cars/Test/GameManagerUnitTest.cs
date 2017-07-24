@@ -41,6 +41,16 @@ public class GameManagerUnitTest
     }
 
     [TestMethod]
+    public void usecase_02_move_twins_left()
+    {
+        string[][] inp = CommonsTest.readFile("../../usecase_02_move_twins_left-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_02_move_twins_left-o.txt");
+        string[][] res = new GameManager().turn(inp);
+        displayResult(res);
+        Assert2.AreEqual(exp, res);
+    }
+
+    [TestMethod]
     public void usecase_02_move_twins_right()
     {
         string[][] inp = CommonsTest.readFile("../../usecase_03_move_twins_right-i.txt");
