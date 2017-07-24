@@ -96,6 +96,6 @@ public class GameManagerUnitTest
     private void displayResult(string[][] res)
     {
         foreach (string[] row in res)
-            Console.WriteLine(Arrays.join(row, " "));
+            Console.WriteLine(Joiner.on(" ").join(row));
     }
 }

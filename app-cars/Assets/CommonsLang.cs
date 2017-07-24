@@ -27,6 +27,7 @@ namespace Commons.Lang
     {
         public static bool isEmpty(string str)
         {
+            throw new NotImplementedException();
             return true;
         }
 
@@ -37,6 +38,7 @@ namespace Commons.Lang
 
         public static bool isBlank(string str)
         {
+            throw new NotImplementedException();
             return true;
         }
 
@@ -57,8 +59,20 @@ namespace Commons.Lang
         {
             return !inBound(array, i);
         }
+    }
 
-        public static string join(string[] array, string separator)
+    public class Joiner
+    {
+        string separator;
+
+        public static Joiner on(string separator)
+        {
+            Joiner j = new Joiner();
+            j.separator = separator;
+            return j;
+        }
+
+        public string join(string[] array)
         {
             string line = "";
             bool first = true;
@@ -71,18 +85,7 @@ namespace Commons.Lang
             }
             return line;
         }
-        public static string join(int[] array, string separator)
-        {
-            string line = "";
-            bool first = true;
-            foreach (int x in array)
-            {
-                if (!first)
-                    line += separator;
-                line += x;
-                first = false;
-            }
-            return line;
-        }
+
+
     }
 }

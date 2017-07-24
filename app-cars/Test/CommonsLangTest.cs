@@ -7,19 +7,39 @@ namespace Commons.Test
     public class CommonsLangUnitTest
     {
         [TestMethod]
-        public void Arrays_join_str()
+        public void Joiner_str()
         {
             string[] arg = new string[] { "a", "b", "c" };
-            string  res = Arrays.join(arg, "-");
+            string  res = Joiner.on("-").join(arg);
             Assert.AreEqual("a-b-c", res);
         }
 
         [TestMethod]
-        public void Arrays_join_int()
+        public void Arrays_outOfBound_before()
         {
-            int[] arg = new int[] { 1, 2, 3 };
-            string res = Arrays.join(arg, ",");
-            Assert.AreEqual("1,2,3", res);
+            string[] arg1 = new string[5];
+            int arg2 = -1;
+            bool res = Arrays.outOfBound(arg1, arg2);
+            Assert.IsTrue(res);
         }
+
+        [TestMethod]
+        public void Arrays_outOfBound_after()
+        {
+            string[] arg1 = new string[5];
+            int arg2 = 5;
+            bool res = Arrays.outOfBound(arg1, arg2);
+            Assert.IsTrue(res);
+        }
+
+        [TestMethod]
+        public void Arrays_outOfBound_ok()
+        {
+            string[] arg1 = new string[5];
+            int arg2 = 2;
+            bool res = Arrays.outOfBound(arg1, arg2);
+            Assert.IsFalse(res);
+        }
+
     }
 }
