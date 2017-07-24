@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public enum InputDirection
 {
-    Left, Right, Top, Bottom
+    L, R, T, B
 }
 public enum GameState
 {
@@ -18,12 +18,12 @@ public enum GameState
 
 public enum HorizontalMovement
 {
-    Left, Right
+    L, R
 }
 
 public enum VerticalMovement
 {
-    Top, Bottom
+    T, B
 }
 
 public interface IGameEngine
@@ -39,7 +39,7 @@ public class GameManager : IGameEngine
     string[][] matrix;
     GameState state;
     int score;
-    string move;
+    string[][] action;
 
     public string[][] init(string[][] input)
     {
@@ -57,11 +57,13 @@ public class GameManager : IGameEngine
         rule_update_input(input);
 
         rule_turn_prepare();
-        // TODO is can move
+        // TODO possible actions
         rule_turn_merge_same_items();
         rule_turn_move_items_to_horizontal_direction_if_free();
         // TODO with_1_random_items createRandomItem
         // TODO UpdateScore(0);
+        // TODO end game loss
+        // TODO end game win
         return matrix;
     }
 
@@ -84,9 +86,7 @@ public class GameManager : IGameEngine
         {
             matrix[y] = new string[width];
             for (int x = 0; x < width; x++)
-            {
                 matrix[y][x] = "0";
-            }
         }
     }
 
@@ -106,21 +106,23 @@ public class GameManager : IGameEngine
     {
         matrix = new string[height][];
         for (int y = 0; y < height; y++)
-        {
             matrix[y] = input[1 + y];
-        }
     }
 
     private void rule_update_input(string[][] input)
     {
-        move = input[1 + height][0];
+        action = new string[1][];
+        action[0] = input[1 + height];
     }
+
     private void rule_turn_prepare()
     {
-        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
+        string move = action[0][0];
+        PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), move));
+        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.R : HorizontalMovement.L;
         columnNumbers = Enumerable.Range(0, width);
-        dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
-        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
+        dir = (horizontalMovement == HorizontalMovement.L) ? -1 : 1;
+        columnNumbers = (horizontalMovement == HorizontalMovement.L) ? columnNumbers : columnNumbers.Reverse();
     }
 
     private void rule_turn_move_items_to_horizontal_direction_if_free()
@@ -128,7 +130,7 @@ public class GameManager : IGameEngine
         for (int y = 0; y < height; y++)
             foreach (int x in columnNumbers)
             {
-                if ("0".Equals(matrix[y][x]))
+                if (emptyItem(y, x))
                     continue;
                 int next = foundEmptyItem(matrix[y], x, dir);
                 if (next == x)
@@ -140,9 +142,6 @@ public class GameManager : IGameEngine
 
     private void rule_turn_merge_same_items()
     {
-        var columnNumbers = Enumerable.Range(0, width);
-        int dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
-        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
         for (int y = 0; y < height; y++)
             foreach (int x in columnNumbers)
             {
@@ -157,7 +156,7 @@ public class GameManager : IGameEngine
 
     // UTILS ********************************************************
 
-    public int count(string[][] matrix, string match)
+    public int count(string match)
     {
         int res = 0;
         for (int y = 0; y < matrix.Length; y++)
@@ -169,14 +168,14 @@ public class GameManager : IGameEngine
 
     private void createRandomItem(string[][] matrix)
     {
-        int freeOnes = count(matrix, "0");
+        int freeOnes = count("0");
         Random rnd = new Random();
         int nextOne = rnd.Next(0, freeOnes);
         int i = 0;
         for (int y = 0; y < matrix.Length; y++)
             for (int x = 0; x < matrix[0].Length; x++)
             {
-                if ("0".Equals(matrix[y][x]))
+                if (emptyItem(y, x))
                     i++;
                 if (nextOne == i)
                     matrix[y][x] = "2";
@@ -186,13 +185,12 @@ public class GameManager : IGameEngine
     private int foundEmptyItem(string[] row, int x, int direction)
     {
         int item = x;
-        bool hasFree = true;
-        while (hasFree)
+        bool emptyItemFound = true;
+        while (emptyItemFound)
         {
             int next = item + direction;
-            bool isNotOutOfBound = (next < row.Length && next > -1);
-            hasFree = isNotOutOfBound && "0".Equals(row[next]);
-            if (hasFree)
+            emptyItemFound = ArrayUtils.inBound(row, next) && emptyItem(row, next);
+            if (emptyItemFound)
                 item = next;
             else
                 return item;
@@ -204,9 +202,67 @@ public class GameManager : IGameEngine
     {
         int item = x;
         int next = item + direction;
-        bool isNotOutOfBound = (next < row.Length && next > -1);
-        if (isNotOutOfBound && row[x].Equals(row[next]))
+        if (ArrayUtils.inBound(row, next) && row[x].Equals(row[next]))
             item = next;
         return item;
+    }
+
+    public bool emptyItem(string[] array, int i)
+    {
+        return "0".Equals(array[i]);
+    }
+
+    public bool emptyItem(int y, int x)
+    {
+        return "0".Equals(matrix[y][x]);
+    }
+}
+
+public class PreConditions
+{
+    public static void checkArgument(bool condition)
+    {
+        checkArgument(condition, null);
+    }
+
+    public static void checkArgument(bool condition, string message)
+    {
+        if (!condition)
+            throw new Exception("Illegal Argument!" + (message == null ? "" : ": " + message));
+    }
+}
+
+public class StringUtils
+{
+    public static bool isEmpty(string str)
+    {
+        return true;
+    }
+
+    public static bool isNotEmpty(string str)
+    {
+        return !isEmpty(str);
+    }
+
+    public static bool isBlank(string str)
+    {
+        return true;
+    }
+
+    public static bool isNotBlank(string str)
+    {
+        return !isBlank(str);
+    }
+}
+
+public class ArrayUtils
+{
+    public static bool inBound(string[] array, int i)
+    {
+        return i < array.Length && i > -1;
+    }
+    public static bool outOfBound(string[] array, int i)
+    {
+        return !inBound(array, i);
     }
 }
