@@ -8,8 +8,10 @@ namespace Test
     public class GameEngineUnitTest
     {
         [TestMethod]
-        public void usecase_01()
+        public void case_01()
         {
+            string[][] res = CommonsTest.readFile("../../test_case-01_init-input.txt");
+
             Assert.IsTrue(true);
         }
 
