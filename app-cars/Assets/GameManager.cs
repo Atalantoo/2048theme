@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+using Commons.Lang;
 
 public enum InputDirection
 {
@@ -40,6 +39,7 @@ public class GameManager : IGameEngine
     GameState state;
     int score;
     string[][] action;
+    // TODO histo
 
     public string[][] init(string[][] input)
     {
@@ -64,6 +64,7 @@ public class GameManager : IGameEngine
         // TODO UpdateScore(0);
         // TODO end game loss
         // TODO end game win
+        // TODO res possible moves
         return matrix;
     }
 
@@ -218,51 +219,3 @@ public class GameManager : IGameEngine
     }
 }
 
-public class PreConditions
-{
-    public static void checkArgument(bool condition)
-    {
-        checkArgument(condition, null);
-    }
-
-    public static void checkArgument(bool condition, string message)
-    {
-        if (!condition)
-            throw new Exception("Illegal Argument!" + (message == null ? "" : ": " + message));
-    }
-}
-
-public class StringUtils
-{
-    public static bool isEmpty(string str)
-    {
-        return true;
-    }
-
-    public static bool isNotEmpty(string str)
-    {
-        return !isEmpty(str);
-    }
-
-    public static bool isBlank(string str)
-    {
-        return true;
-    }
-
-    public static bool isNotBlank(string str)
-    {
-        return !isBlank(str);
-    }
-}
-
-public class ArrayUtils
-{
-    public static bool inBound(string[] array, int i)
-    {
-        return i < array.Length && i > -1;
-    }
-    public static bool outOfBound(string[] array, int i)
-    {
-        return !inBound(array, i);
-    }
-}
