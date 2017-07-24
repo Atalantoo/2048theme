@@ -21,20 +21,30 @@ public class GameManagerUnitTest
     }
 
     [TestMethod]
-    public void usecase_02_turn_right()
+    public void usecase_02_move_left()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_02_turn_right-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_02_turn_right-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_02_move_left-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_02_move_left-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_02_turn_twins_right()
+    public void usecase_02_move_right()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_03_turn_twins_right-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_04_turn_twins_right-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_02_move_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_02_move_right-o.txt");
+        string[][] res = new GameManager().turn(inp);
+        displayResult(res);
+        Assert2.AreEqual(exp, res);
+    }
+
+    [TestMethod]
+    public void usecase_02_move_twins_right()
+    {
+        string[][] inp = CommonsTest.readFile("../../usecase_03_move_twins_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_04_move_twins_right-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
@@ -56,10 +66,10 @@ public class GameManagerUnitTest
 
     private void displayResult(string[][] res)
     {
-        foreach(string[] y in res)
+        foreach (string[] y in res)
         {
             string line = "";
-            foreach(string x in y)
+            foreach (string x in y)
             {
                 line += x + " ";
             }

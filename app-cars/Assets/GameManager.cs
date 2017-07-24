@@ -68,7 +68,7 @@ public class GameManager : IGameEngine
             matrix[y] = input[1 + y];
         }
         move = input[1 + height][0];
-        horizontalMovement = HorizontalMovement.Right;
+        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
         rule_turn_move_items();
         // TODO UpdateScore(0);
         return matrix;
