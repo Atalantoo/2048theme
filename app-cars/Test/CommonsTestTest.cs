@@ -18,7 +18,16 @@ namespace Test
             Assert_AreEqual(new string[] { "R" }, res[4]);
         }
 
-
+        [TestMethod]
+        public void readFile_spaces()
+        {
+            string[][] res = CommonsTest.readFile("../../test_case-00-input_spaces.txt");
+            Assert.IsNotNull(res);
+            Assert.AreEqual(3, res.Length);
+            Assert_AreEqual(new string[] { "4", "3" }, res[0]);
+            Assert_AreEqual(new string[] { "5", "6" }, res[1]);
+            Assert_AreEqual(new string[] { "7", "8" }, res[2]);
+        }
 
         public void Assert_AreEqual(string[] expected, string[] actual)
         {

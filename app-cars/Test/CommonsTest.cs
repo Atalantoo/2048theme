@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Test
 {
@@ -12,7 +13,8 @@ namespace Test
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
-                string[] words = line.Split(' ');
+                var regex = new Regex("  *");
+                string[] words = regex.Split(line);
                 res[i] = new string[words.Length];
                 for (int j = 0; j < words.Length; j++)
                 {
