@@ -37,53 +37,39 @@ public class GameManager : IGameEngine
     int width;
     int height;
     string[][] matrix;
-
     GameState state;
     int score;
-
     string move;
     HorizontalMovement horizontalMovement;
 
     public string[][] init(string[][] input)
     {
-        width = Int32.Parse(input[0][0]);
-        height = Int32.Parse(input[0][1]);
-        //res[0] = new string[] { input[0][0], input[0][1] };
+        rule_init_game(input);
+        rule_update_game(input);
         rule_init_matrix_with_0();
         rule_init_matrix_with_2_random_items();
-        score = 0;
-        state = GameState.Playing;
         return matrix;
     }
 
     public string[][] turn(string[][] input)
     {
-        string[][] res;
-
-        width = Int32.Parse(input[0][0]);
-        height = Int32.Parse(input[0][1]);
-        matrix = new string[height][];
-        for (int y = 0; y < height; y++)
-        {
-            matrix[y] = input[1 + y];
-        }
-        move = input[1 + height][0];
-        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
+        rule_update_game(input);
+        rule_update_matrix(input);
+        rule_update_input(input);
         rule_turn_move_items();
         // TODO UpdateScore(0);
         return matrix;
     }
 
-    private void rule_turn_move_items()
-    {
 
-        // TODO is can move
-        //    rule_turn_merge_same_items();
-        rule_turn_move_items_to_horizontal_direction_if_free();
-
-    }
 
     // RULES ********************************************************
+
+    private void rule_init_game(string[][] input)
+    {
+        score = 0;
+        state = GameState.Playing;
+    }
 
     private void rule_init_matrix_with_0()
     {
@@ -104,9 +90,34 @@ public class GameManager : IGameEngine
         createRandomItem(matrix);
     }
 
-    private void rule_turn_merge_same_items()
+    private void rule_update_game(string[][] input)
     {
-        throw new NotImplementedException();
+        width = Int32.Parse(input[0][0]);
+        height = Int32.Parse(input[0][1]);
+    }
+
+    private void rule_update_matrix(string[][] input)
+    {
+        matrix = new string[height][];
+        for (int y = 0; y < height; y++)
+        {
+            matrix[y] = input[1 + y];
+        }
+    }
+
+    private void rule_update_input(string[][] input)
+    {
+        move = input[1 + height][0];
+        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
+    }
+
+    private void rule_turn_move_items()
+    {
+
+        // TODO is can move
+        rule_turn_merge_same_items();
+        rule_turn_move_items_to_horizontal_direction_if_free();
+        // TODO with_1_random_items createRandomItem
     }
 
     private void rule_turn_move_items_to_horizontal_direction_if_free()
@@ -127,21 +138,10 @@ public class GameManager : IGameEngine
         }
 
     }
-    private int nextFreePosition(string[] row, int x, int direction)
+
+    private void rule_turn_merge_same_items()
     {
-        int free = x;
-        bool hasFree = true;
-        while (hasFree)
-        {
-            int next = free+direction;
-            bool isNotOutOfBound = (next < row.Length && next > -1);
-            hasFree = isNotOutOfBound && "0".Equals(row[next]);
-            if (hasFree)
-                free = next;
-            else
-                return free;
-        }
-        return free;
+        // TODO
     }
 
     // UTILS ********************************************************
@@ -176,5 +176,22 @@ public class GameManager : IGameEngine
                     matrix[y][x] = "2";
             }
         }
+    }
+
+    private int nextFreePosition(string[] row, int x, int direction)
+    {
+        int free = x;
+        bool hasFree = true;
+        while (hasFree)
+        {
+            int next = free + direction;
+            bool isNotOutOfBound = (next < row.Length && next > -1);
+            hasFree = isNotOutOfBound && "0".Equals(row[next]);
+            if (hasFree)
+                free = next;
+            else
+                return free;
+        }
+        return free;
     }
 }
