@@ -7,8 +7,8 @@ namespace Commons.Lang
 {
     public class CommonsLang
     {
-
     }
+
     public class PreConditions
     {
         public static void checkArgument(bool condition)
@@ -23,7 +23,7 @@ namespace Commons.Lang
         }
     }
 
-    public class StringUtils
+    public class Strings
     {
         public static bool isEmpty(string str)
         {
@@ -46,15 +46,43 @@ namespace Commons.Lang
         }
     }
 
-    public class ArrayUtils
+    public class Arrays
     {
         public static bool inBound(string[] array, int i)
         {
             return i < array.Length && i > -1;
         }
+
         public static bool outOfBound(string[] array, int i)
         {
             return !inBound(array, i);
+        }
+
+        public static string join(string[] array, string separator)
+        {
+            string line = "";
+            bool first = true;
+            foreach (string x in array)
+            {
+                if (!first)
+                    line += separator;
+                line += x;
+                first = false;
+            }
+            return line;
+        }
+        public static string join(int[] array, string separator)
+        {
+            string line = "";
+            bool first = true;
+            foreach (int x in array)
+            {
+                if (!first)
+                    line += separator;
+                line += x;
+                first = false;
+            }
+            return line;
         }
     }
 }

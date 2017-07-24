@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Commons.Test
 {
-    class CommonsTest
+    class GameTest
     {
         public static string[][] readFile(string path)
         {
@@ -18,16 +18,14 @@ namespace Commons.Test
                 string[] words = regex.Split(line);
                 res[i] = new string[words.Length];
                 for (int j = 0; j < words.Length; j++)
-                {
                     res[i][j] = words[j];
-                }
             }
             return res;
         }
 
     }
 
-    class Assert2
+    class GameAssert
     {
         public static void AreEqual(string[] expected, string[] actual)
         {
@@ -35,20 +33,17 @@ namespace Commons.Test
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.Length, actual.Length);
             for (int i = 0; i < expected.Length; i++)
-            {
                 if ("?".Equals(expected[i]) == false)
                     Assert.AreEqual(expected[i], actual[i]);
-            }
         }
+
         public static void AreEqual(string[][] expected, string[][] actual)
         {
             Assert.IsNotNull(expected);
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.Length, actual.Length);
             for (int i = 0; i < expected.Length; i++)
-            {
                 AreEqual(expected[i], actual[i]);
-            }
         }
     }
 }

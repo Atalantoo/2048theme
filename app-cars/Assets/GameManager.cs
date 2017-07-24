@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Commons.Lang;
+using Commons.Game;
 
 public enum InputDirection
 {
@@ -25,13 +26,8 @@ public enum VerticalMovement
     T, B
 }
 
-public interface IGameEngine
-{
-    // string[][] turn(string[][] inputs);
-}
-
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
-public class GameManager : IGameEngine
+public class GameManager
 {
     int width;
     int height;
@@ -190,7 +186,7 @@ public class GameManager : IGameEngine
         while (emptyItemFound)
         {
             int next = item + direction;
-            emptyItemFound = ArrayUtils.inBound(row, next) && emptyItem(row, next);
+            emptyItemFound = Arrays.inBound(row, next) && emptyItem(row, next);
             if (emptyItemFound)
                 item = next;
             else
@@ -203,7 +199,7 @@ public class GameManager : IGameEngine
     {
         int item = x;
         int next = item + direction;
-        if (ArrayUtils.inBound(row, next) && row[x].Equals(row[next]))
+        if (Arrays.inBound(row, next) && row[x].Equals(row[next]))
             item = next;
         return item;
     }
