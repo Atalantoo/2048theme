@@ -12,55 +12,155 @@ public enum InputDirection
 public enum GameState
 {
     Playing,
-    Won
+    Won,
+    Loss
 }
+
+public enum HorizontalMovement
+{
+    Left, Right
+}
+
+public enum VerticalMovement
+{
+    Top, Bottom
+}
+
 public interface IGameEngine
 {
-   // string[][] turn(string[][] inputs);
+    // string[][] turn(string[][] inputs);
 }
 
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
 public class GameManager : IGameEngine
 {
-    /**
-     * Initialization input
-     * 
-     * Line 1 : 2 integers W H. The (W, H) couple represents the width and height of the building as a number of windows.
-     * Line 2:linkCount, the number of links between factories.
-     * Next linkCount lines: 3 space-separated integers factory1, factory2 and distance, where distance is the number of turns needed for a troop to travel between factory1 and factory2.
-     */
-    /**
-     * Input for one game turn
-     * 
-     */
+    int width;
+    int height;
+    string[][] matrix;
+
+    GameState state;
+    int score;
+
+    string move;
+    HorizontalMovement horizontalMovement;
 
     public string[][] init(string[][] input)
     {
+        width = Int32.Parse(input[0][0]);
+        height = Int32.Parse(input[0][1]);
+        //res[0] = new string[] { input[0][0], input[0][1] };
+        rule_init_matrix_with_0();
+        rule_init_matrix_with_2_random_items();
+        score = 0;
+        state = GameState.Playing;
+        return matrix;
+    }
+
+    public string[][] turn(string[][] input)
+    {
         string[][] res;
 
-        int w = Int32.Parse(input[0][0]);
-        int h = Int32.Parse(input[0][1]);
-
-        res = new string[h][];
-        //res[0] = new string[] { input[0][0], input[0][1] };
-        for (int y = 0; y < h; y++)
+        width = Int32.Parse(input[0][0]);
+        height = Int32.Parse(input[0][1]);
+        matrix = new string[height][];
+        for (int y = 0; y < height; y++)
         {
-            res[y] = new string[w];
-            for (int x = 0; x < w; x++)
+            matrix[y] = input[1 + y];
+        }
+        move = input[1 + height][0];
+        horizontalMovement = HorizontalMovement.Right;
+        rule_turn_move_items();
+        // TODO UpdateScore(0);
+        return matrix;
+    }
+
+    private void rule_turn_move_items()
+    {
+
+        // TODO is can move
+        //    rule_turn_merge_same_items();
+        rule_turn_move_items_to_horizontal_direction_if_free();
+
+    }
+
+    // RULES ********************************************************
+
+    private void rule_init_matrix_with_0()
+    {
+        matrix = new string[height][];
+        for (int y = 0; y < height; y++)
+        {
+            matrix[y] = new string[width];
+            for (int x = 0; x < width; x++)
             {
-                res[y][x] = "0";
+                matrix[y][x] = "0";
             }
         }
-        // TODO random rule
-        CreateNewItem(res);
-        CreateNewItem(res);
-        /*   score = 0;
-           UpdateScore(0);
-           gameState = GameState.Playing; */
+    }
+
+    private void rule_init_matrix_with_2_random_items()
+    {
+        createRandomItem(matrix);
+        createRandomItem(matrix);
+    }
+
+    private void rule_turn_merge_same_items()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void rule_turn_move_items_to_horizontal_direction_if_free()
+    {
+        var columnNumbers = Enumerable.Range(0, width);
+        int dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
+        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
+        for (int y = 0; y < height; y++)
+        {
+            foreach (int x in columnNumbers)
+            {
+                if ("0".Equals(matrix[y][x]))
+                    continue;
+                int nextColumn = nextFreePosition(matrix[y], x, dir);
+                matrix[y][nextColumn] = matrix[y][x];
+                matrix[y][x] = "0";
+            }
+        }
+
+    }
+    private int nextFreePosition(string[] row, int x, int direction)
+    {
+        int free = x;
+        bool hasFree = true;
+        while (hasFree)
+        {
+            int next = free+direction;
+            bool isNotOutOfBound = (next < row.Length && next > -1);
+            hasFree = isNotOutOfBound && "0".Equals(row[next]);
+            if (hasFree)
+                free = next;
+            else
+                return free;
+        }
+        return free;
+    }
+
+    // UTILS ********************************************************
+
+    public int count(string[][] matrix, string match)
+    {
+        int res = 0;
+        for (int y = 0; y < matrix.Length; y++)
+        {
+            for (int x = 0; x < matrix[0].Length; x++)
+            {
+                if (match.Equals(matrix[y][x]))
+                    res++;
+            }
+        }
         return res;
     }
 
-    private void CreateNewItem(string[][] matrix)
+    private void createRandomItem(string[][] matrix)
     {
         int freeOnes = count(matrix, "0");
         Random rnd = new Random();
@@ -76,45 +176,5 @@ public class GameManager : IGameEngine
                     matrix[y][x] = "2";
             }
         }
-    }
-
-    public static int count(string[][] matrix, string match)
-    {
-        int res = 0;
-        for (int y = 0; y < matrix.Length; y++)
-        {
-            for (int x = 0; x < matrix[0].Length; x++)
-            {
-                if (match.Equals(matrix[y][x]))
-                    res++;
-            }
-        }
-        return res;
-    }
-
-    public static string[][] turn(string[][] input)
-    {
-        string[][] res;
-
-        int w = Int32.Parse(input[0][0]);
-        int h = Int32.Parse(input[0][1]);
-        string[,] matrix = new string[h, w];
-        for (int y = 0; y < h; y++)
-        {
-            for (int x = 0; x < w; x++)
-            {
-                matrix[y, x] = input[1 + y][x];
-            }
-        }
-        string[] action = input[1 + h];
-        string move = action[0];
-
-        // TODO is can move
-        res = new string[h][];
-        if ('R'.Equals(move))
-        {
-            res[0] = new string[h];
-        }
-        return res;
     }
 }

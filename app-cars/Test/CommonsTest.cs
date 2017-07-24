@@ -36,7 +36,8 @@ namespace Commons.Test
             Assert.AreEqual(expected.Length, actual.Length);
             for (int i = 0; i < expected.Length; i++)
             {
-                Assert.AreEqual(expected[i], actual[i]);
+                if ("?".Equals(expected[i]) == false)
+                    Assert.AreEqual(expected[i], actual[i]);
             }
         }
         public static void AreEqual(string[][] expected, string[][] actual)

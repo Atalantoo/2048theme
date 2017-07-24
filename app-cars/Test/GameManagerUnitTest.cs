@@ -14,6 +14,7 @@ public class GameManagerUnitTest
         string[][] res = new GameManager().init(inp);
         Assert.IsNotNull(exp);
         Assert.IsNotNull(res);
+        displayResult(res);
         Assert.AreEqual(exp.Length, res.Length);
         Assert.IsTrue(14 <= count(res, "0"));
         Assert.AreEqual(2, count(res, "2"));
@@ -25,6 +26,7 @@ public class GameManagerUnitTest
         string[][] inp = CommonsTest.readFile("../../usecase_02_turn_right-i.txt");
         string[][] exp = CommonsTest.readFile("../../usecase_02_turn_right-o.txt");
         string[][] res = new GameManager().turn(inp);
+        displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
@@ -34,6 +36,7 @@ public class GameManagerUnitTest
         string[][] inp = CommonsTest.readFile("../../usecase_03_turn_twins_right-i.txt");
         string[][] exp = CommonsTest.readFile("../../usecase_04_turn_twins_right-o.txt");
         string[][] res = new GameManager().turn(inp);
+        displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
@@ -49,5 +52,18 @@ public class GameManagerUnitTest
             }
         }
         return res;
+    }
+
+    private void displayResult(string[][] res)
+    {
+        foreach(string[] y in res)
+        {
+            string line = "";
+            foreach(string x in y)
+            {
+                line += x + " ";
+            }
+            Console.WriteLine(line);
+        }
     }
 }
