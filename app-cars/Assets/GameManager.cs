@@ -40,7 +40,6 @@ public class GameManager : IGameEngine
     GameState state;
     int score;
     string move;
-    HorizontalMovement horizontalMovement;
 
     public string[][] init(string[][] input)
     {
@@ -56,12 +55,19 @@ public class GameManager : IGameEngine
         rule_update_game(input);
         rule_update_matrix(input);
         rule_update_input(input);
-        rule_turn_move_items();
+
+        rule_turn_prepare();
+        // TODO is can move
+        rule_turn_merge_same_items();
+        rule_turn_move_items_to_horizontal_direction_if_free();
+        // TODO with_1_random_items createRandomItem
         // TODO UpdateScore(0);
         return matrix;
     }
 
-
+    HorizontalMovement horizontalMovement;
+    IEnumerable<int> columnNumbers;
+    int dir;
 
     // RULES ********************************************************
 
@@ -108,31 +114,27 @@ public class GameManager : IGameEngine
     private void rule_update_input(string[][] input)
     {
         move = input[1 + height][0];
-        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
     }
-
-    private void rule_turn_move_items()
+    private void rule_turn_prepare()
     {
-
-        // TODO is can move
-        rule_turn_merge_same_items();
-        rule_turn_move_items_to_horizontal_direction_if_free();
-        // TODO with_1_random_items createRandomItem
+        horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.Right : HorizontalMovement.Left;
+        columnNumbers = Enumerable.Range(0, width);
+        dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
+        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
     }
 
     private void rule_turn_move_items_to_horizontal_direction_if_free()
     {
-        var columnNumbers = Enumerable.Range(0, width);
-        int dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
-        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
         for (int y = 0; y < height; y++)
         {
             foreach (int x in columnNumbers)
             {
                 if ("0".Equals(matrix[y][x]))
                     continue;
-                int nextColumn = nextFreePosition(matrix[y], x, dir);
-                matrix[y][nextColumn] = matrix[y][x];
+                int next = foundEmpty(matrix[y], x, dir);
+                if (next == x)
+                    continue;
+                matrix[y][next] = matrix[y][x];
                 matrix[y][x] = "0";
             }
         }
@@ -141,7 +143,37 @@ public class GameManager : IGameEngine
 
     private void rule_turn_merge_same_items()
     {
-        // TODO
+        var columnNumbers = Enumerable.Range(0, width);
+        int dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
+        columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
+        for (int y = 0; y < height; y++)
+        {
+            foreach (int x in columnNumbers)
+            {
+                int next = foundTwin(matrix[y], x, dir);
+                if (next == x)
+                    continue;
+                int val = Int32.Parse(matrix[y][x]) * 2;
+                matrix[y][x] = val.ToString();
+                matrix[y][next] = "0";
+            }
+        }
+    }
+
+    private int foundTwin(string[] row, int x, int direction)
+    {
+        int item = x;
+        int next = item + direction;
+        bool isNotOutOfBound = (next < row.Length && next > -1);
+        if(isNotOutOfBound)
+        {
+            string itemVal = row[x];
+            string nextVal = row[next];
+            bool found = itemVal.Equals(nextVal);
+            if (found)
+                item = next;
+        }
+        return item;
     }
 
     // UTILS ********************************************************
@@ -178,7 +210,7 @@ public class GameManager : IGameEngine
         }
     }
 
-    private int nextFreePosition(string[] row, int x, int direction)
+    private int foundEmpty(string[] row, int x, int direction)
     {
         int free = x;
         bool hasFree = true;

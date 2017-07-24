@@ -21,44 +21,66 @@ public class GameManagerUnitTest
     }
 
     [TestMethod]
-    public void usecase_02_move_left()
+    public void usecase_02_move_mid_to_left()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_02_move_left-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_02_move_left-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_02_move_mid_to_left-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_02_move_mid_to_left-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_02_move_right()
+    public void usecase_02_move_mid_to_right()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_02_move_right-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_02_move_right-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_02_move_mid_to_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_02_move_mid_to_right-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_02_move_twins_left()
+    public void usecase_03_move_twins_left()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_02_move_twins_left-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_02_move_twins_left-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_03_move_twins_left_to_left-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_03_move_twins_left_to_left-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_02_move_twins_right()
+    public void usecase_03_move_twins_mid_to_right()
     {
-        string[][] inp = CommonsTest.readFile("../../usecase_03_move_twins_right-i.txt");
-        string[][] exp = CommonsTest.readFile("../../usecase_04_move_twins_right-o.txt");
+        string[][] inp = CommonsTest.readFile("../../usecase_03_move_twins_mid_to_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_03_move_twins_mid_to_right-o.txt");
         string[][] res = new GameManager().turn(inp);
         displayResult(res);
         Assert2.AreEqual(exp, res);
     }
+
+    [TestMethod]
+    public void usecase_04_move_blocked_twins_mid_to_right()
+    {
+        string[][] inp = CommonsTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-o.txt");
+        string[][] res = new GameManager().turn(inp);
+        displayResult(res);
+        Assert2.AreEqual(exp, res);
+    }
+
+    [TestMethod]
+    public void usecase_04_move_spaced_twins_mid_to_right()
+    {
+        string[][] inp = CommonsTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-i.txt");
+        string[][] exp = CommonsTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-o.txt");
+        string[][] res = new GameManager().turn(inp);
+        displayResult(res);
+        Assert2.AreEqual(exp, res);
+    }
+
+    // IMPL
 
     private int count(string[][] matrix, string match)
     {
