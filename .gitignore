@@ -30,6 +30,10 @@ ExportedObj/
 *.booproj
 *.svd
 *.pdb
+**/packages/
+**/bin/
+**/Debug/
+**/Properties/
 
 # BLENDER
 *.blend1
