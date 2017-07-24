@@ -126,19 +126,16 @@ public class GameManager : IGameEngine
     private void rule_turn_move_items_to_horizontal_direction_if_free()
     {
         for (int y = 0; y < height; y++)
-        {
             foreach (int x in columnNumbers)
             {
                 if ("0".Equals(matrix[y][x]))
                     continue;
-                int next = foundEmpty(matrix[y], x, dir);
+                int next = foundEmptyItem(matrix[y], x, dir);
                 if (next == x)
                     continue;
                 matrix[y][next] = matrix[y][x];
                 matrix[y][x] = "0";
             }
-        }
-
     }
 
     private void rule_turn_merge_same_items()
@@ -147,33 +144,15 @@ public class GameManager : IGameEngine
         int dir = (horizontalMovement == HorizontalMovement.Left) ? -1 : 1;
         columnNumbers = (horizontalMovement == HorizontalMovement.Left) ? columnNumbers : columnNumbers.Reverse();
         for (int y = 0; y < height; y++)
-        {
             foreach (int x in columnNumbers)
             {
-                int next = foundTwin(matrix[y], x, dir);
+                int next = foundTwinItem(matrix[y], x, dir);
                 if (next == x)
                     continue;
                 int val = Int32.Parse(matrix[y][x]) * 2;
                 matrix[y][x] = val.ToString();
                 matrix[y][next] = "0";
             }
-        }
-    }
-
-    private int foundTwin(string[] row, int x, int direction)
-    {
-        int item = x;
-        int next = item + direction;
-        bool isNotOutOfBound = (next < row.Length && next > -1);
-        if(isNotOutOfBound)
-        {
-            string itemVal = row[x];
-            string nextVal = row[next];
-            bool found = itemVal.Equals(nextVal);
-            if (found)
-                item = next;
-        }
-        return item;
     }
 
     // UTILS ********************************************************
@@ -182,13 +161,9 @@ public class GameManager : IGameEngine
     {
         int res = 0;
         for (int y = 0; y < matrix.Length; y++)
-        {
             for (int x = 0; x < matrix[0].Length; x++)
-            {
                 if (match.Equals(matrix[y][x]))
                     res++;
-            }
-        }
         return res;
     }
 
@@ -199,7 +174,6 @@ public class GameManager : IGameEngine
         int nextOne = rnd.Next(0, freeOnes);
         int i = 0;
         for (int y = 0; y < matrix.Length; y++)
-        {
             for (int x = 0; x < matrix[0].Length; x++)
             {
                 if ("0".Equals(matrix[y][x]))
@@ -207,23 +181,32 @@ public class GameManager : IGameEngine
                 if (nextOne == i)
                     matrix[y][x] = "2";
             }
-        }
     }
 
-    private int foundEmpty(string[] row, int x, int direction)
+    private int foundEmptyItem(string[] row, int x, int direction)
     {
-        int free = x;
+        int item = x;
         bool hasFree = true;
         while (hasFree)
         {
-            int next = free + direction;
+            int next = item + direction;
             bool isNotOutOfBound = (next < row.Length && next > -1);
             hasFree = isNotOutOfBound && "0".Equals(row[next]);
             if (hasFree)
-                free = next;
+                item = next;
             else
-                return free;
+                return item;
         }
-        return free;
+        return item;
+    }
+
+    private int foundTwinItem(string[] row, int x, int direction)
+    {
+        int item = x;
+        int next = item + direction;
+        bool isNotOutOfBound = (next < row.Length && next > -1);
+        if (isNotOutOfBound && row[x].Equals(row[next]))
+            item = next;
+        return item;
     }
 }
