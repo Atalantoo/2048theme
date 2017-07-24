@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Commons.Lang
 {
@@ -9,6 +10,7 @@ namespace Commons.Lang
     {
     }
 
+    // https://google.github.io/guava/releases/16.0/api/docs/com/google/common/base/Preconditions.html
     public class PreConditions
     {
         public static void checkArgument(bool condition)
@@ -23,28 +25,22 @@ namespace Commons.Lang
         }
     }
 
+    // https://google.github.io/guava/releases/16.0/api/docs/com/google/common/base/Strings.html)
     public class Strings
     {
-        public static bool isEmpty(string str)
+        public static bool isNullOrEmpty(string str)
         {
-            throw new NotImplementedException();
-            return true;
+            return str == null || str.Length == 0;
         }
 
-        public static bool isNotEmpty(string str)
+        public static bool isNullOrBlank(string str)
         {
-            return !isEmpty(str);
+            return isNullOrEmpty(str==null ? null : replaceAll(str, " ", ""));
         }
 
-        public static bool isBlank(string str)
+        public static string replaceAll(string str, string oldChar, string newChar)
         {
-            throw new NotImplementedException();
-            return true;
-        }
-
-        public static bool isNotBlank(string str)
-        {
-            return !isBlank(str);
+            return Regex.Replace(str, @"\s+", "");
         }
     }
 
@@ -61,6 +57,7 @@ namespace Commons.Lang
         }
     }
 
+    // https://google.github.io/guava/releases/16.0/api/docs/com/google/common/base/Joiner.html
     public class Joiner
     {
         string separator;
