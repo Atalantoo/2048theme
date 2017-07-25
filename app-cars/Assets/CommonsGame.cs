@@ -19,101 +19,101 @@ namespace Commons.Game
         public string[][] output;
     }
 
-    public class Rules
+    public class Rules<G> where G:Game
     {
-        public Rounds[] childs;
+        public Rounds<G> [] childs;
 
-        public static Rules get(string name)
+        public static Rules<G> get(string name)
         {
-            Rules builder = new Rules();
+            Rules<G> builder = new Rules<G>();
             return builder;
         }
 
-        public Rules start(Rounds child)
+        public Rules<G> start(Rounds<G> child)
         {
-            childs = new Rounds[1];
+            childs = new Rounds<G>[1];
             childs[0] = child;
             return this;
         }
 
-        public Rules next(Rounds child)
+        public Rules<G> next(Rounds<G> child)
         {
             childs = Arrays.add(childs, child);
             return this;
         }
 
-        public Rule build()
+        public Rule<G> build()
         {
-            Rule obj = new Rule();
-            obj.childs = new Round[this.childs.Length];
+            Rule<G> obj = new Rule<G>();
+            obj.childs = new Round<G>[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].build();
             return obj;
         }
     }
 
-    public class Rounds
+    public class Rounds<G> where G : Game
     {
-        public Phases[] childs;
+        public Phases<G>[] childs;
 
-        public static Rounds get(string name)
+        public static Rounds<G>  get(string name)
         {
-            Rounds builder = new Rounds();
+            Rounds<G>  builder = new Rounds<G> ();
             return builder;
         }
 
-        public Rounds start(Phases child)
+        public Rounds<G>  start(Phases<G> child)
         {
-            childs = new Phases[1];
+            childs = new Phases<G>[1];
             childs[0] = child;
             return this;
         }
 
-        public Rounds next(Phases child)
+        public Rounds<G>  next(Phases<G> child)
         {
             childs = Arrays.add(childs, child);
             return this;
         }
 
-        public Round build()
+        public Round<G> build()
         {
-            Round obj = new Round();
-            obj.childs = new Phase[this.childs.Length];
+            Round<G> obj = new Round<G>();
+            obj.childs = new Phase<G>[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].build();
             return obj;
         }
     }
 
-    public class Phases
+    public class Phases<G> where G : Game
     {
-        public Func<Game, Game>[] childs;
+        public Func<G, G>[] childs;
 
-        public static Phases get(string name)
+        public static Phases<G> get(string name)
         {
-            Phases builder = new Phases();
+            Phases<G> builder = new Phases<G>();
             /* builder.obj = new Phase();*/
             /* builder.obj.name = name;*/
             return builder;
         }
 
-        public Phases start(Func<Game, Game> child)
+        public Phases<G> start(Func<G, G> child)
         {
-            childs = new Func<Game, Game>[1];
+            childs = new Func<G, G>[1];
             childs[0] = child;
             return this;
         }
 
-        public Phases next(Func<Game, Game> child)
+        public Phases<G> next(Func<G, G> child)
         {
             childs = Arrays.add(childs, child);
             return this;
         }
 
-        public Phase build()
+        public Phase<G> build()
         {
-            Phase obj = new Phase();
-            obj.childs = new Func<Game, Game>[this.childs.Length];
+            Phase<G> obj = new Phase<G>();
+            obj.childs = new Func<G, G>[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i];
             return obj;
@@ -122,7 +122,7 @@ namespace Commons.Game
 
     // IMPL
 
-    public class Rule : GameStructure<Round>
+    public class Rule<G> : GameStructure<Round<G>> where G : Game
     {/*
         public Round getRound(string name)
         {
@@ -133,24 +133,24 @@ namespace Commons.Game
         }*/
     }
 
-    public class Round : GameStructure<Phase>
+    public class Round<G> : GameStructure<Phase<G>> where G: Game
     {
-        public Game execute(Game state)
+        public G execute(G game)
         {
-            foreach (Phase i in childs)
-                state = i.execute(state);
-            return state;
+            foreach (Phase<G> i in childs)
+                game = i.execute(game);
+            return game;
         }
     }
 
-    public class Phase
+    public class Phase<G> where G : Game
     {
         /* public string name; */
-        public Func<Game, Game>[] childs;
+        public Func<G, G>[] childs;
 
-        public Game execute(Game state)
+        public G execute(G state)
         {
-            foreach (Func<Game, Game> i in childs)
+            foreach (Func<G, G> i in childs)
                 state = i.Invoke(state);
             return state;
         }

@@ -42,34 +42,34 @@ public class Game2048 : Game
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
 public class GameManager
 {
-    Rule rules;
-    Game game;
+    Game2048 game;
+    Rule<Game2048> rules;
 
     public GameManager()
     {
-        rules = Rules.get("game")
-            .start(Rounds.get("init")
-                .start(Phases.get("board")
+        rules = Rules<Game2048>.get("game")
+            .start(Rounds<Game2048>.get("init")
+                .start(Phases<Game2048>.get("board")
                     .start(update_size)
                     .next(create_zeros)
                     .next(create_random_item)
                     .next(create_random_item))
-                .next(Phases.get("end")
+                .next(Phases<Game2048>.get("end")
                     .start(update_score)))
             //       .next( available_moves)))
-            .next(Rounds.get("turn")
-                .start(Phases.get("start")
+            .next(Rounds<Game2048>.get("turn")
+                .start(Phases<Game2048>.get("start")
                     .start(update_size)
                     .next(update_board)
                     .next(update_direction))
-                .next(Phases.get("play")
+                .next(Phases<Game2048>.get("play")
                     .start(merge_items)
                     .next(move_items))
                     //.next(create_random_item)
-                .next(Phases.get("end")
+                .next(Phases<Game2048>.get("end")
                     .start(update_score)))
             //       .next( available_moves)))
-            //next(Rounds.get("end")
+            //next(Rounds<Game2048>.get("end")
             //   .start(end)
             //   .next( available_moves)))
             .build();
@@ -80,7 +80,7 @@ public class GameManager
         game = new Game2048();
         game.input = input;
         game = rules.childs[0].execute(game);
-        game.output = ((Game2048)game).matrix;
+        game.output = game.matrix;
         return game.output;
     }
 
@@ -89,99 +89,99 @@ public class GameManager
         game = new Game2048();
         game.input = input;
         game = rules.childs[1].execute(game);
-        game.output = ((Game2048)game).matrix;
+        game.output = game.matrix;
         return game.output;
     }
 
-    private Func<Game, Game> update_score = delegate (Game game)
+    private Func<Game2048, Game2048>update_score = delegate (Game2048 game)
     {
-        ((Game2048)game).score = 0;
-        ((Game2048)game).state = GameState.Playing;
+        game.score = 0;
+        game.state = GameState.Playing;
         return game;
     };
 
-    private Func<Game, Game> update_size = delegate (Game game)
+    private Func<Game2048, Game2048>update_size = delegate (Game2048 game)
     {
-        ((Game2048)game).width = Int32.Parse(game.input[0][0]);
-        ((Game2048)game).height = Int32.Parse(game.input[0][1]);
+        game.width = Int32.Parse(game.input[0][0]);
+        game.height = Int32.Parse(game.input[0][1]);
         return game;
     };
 
-    private Func<Game, Game> create_zeros = delegate (Game game)
+    private Func<Game2048, Game2048>create_zeros = delegate (Game2048 game)
     {
-        ((Game2048)game).matrix = new string[((Game2048)game).height][];
-        for (int y = 0; y < ((Game2048)game).height; y++)
+        game.matrix = new string[game.height][];
+        for (int y = 0; y < game.height; y++)
         {
-            ((Game2048)game).matrix[y] = new string[((Game2048)game).width];
-            for (int x = 0; x < ((Game2048)game).width; x++)
-                ((Game2048)game).matrix[y][x] = "0";
+            game.matrix[y] = new string[game.width];
+            for (int x = 0; x < game.width; x++)
+                game.matrix[y][x] = "0";
         }
         return game;
     };
 
-    private Func<Game, Game> create_random_item = delegate (Game game)
+    private Func<Game2048, Game2048>create_random_item = delegate (Game2048 game)
     {
-        int freeOnes = count(((Game2048)game).matrix, "0");
+        int freeOnes = count(game.matrix, "0");
         Random rnd = new Random();
         int nextOne = rnd.Next(0, freeOnes);
         int i = 0;
-        for (int y = 0; y < ((Game2048)game).matrix.Length; y++)
-            for (int x = 0; x < ((Game2048)game).matrix[0].Length; x++)
+        for (int y = 0; y < game.matrix.Length; y++)
+            for (int x = 0; x < game.matrix[0].Length; x++)
             {
-                if (emptyItem(((Game2048)game).matrix, y, x))
+                if (emptyItem(game.matrix, y, x))
                     i++;
                 if (nextOne == i)
-                    ((Game2048)game).matrix[y][x] = "2";
+                    game.matrix[y][x] = "2";
             }
         return game;
     };
 
-    private Func<Game, Game> update_direction = delegate (Game game)
+    private Func<Game2048, Game2048>update_direction = delegate (Game2048 game)
     {
         string[][] action;
         action = new string[1][];
-        action[0] = ((Game2048)game).input[1 + ((Game2048)game).height];
+        action[0] = game.input[1 + game.height];
         string move = action[0][0];
         PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), move));
-        ((Game2048)game).horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.R : HorizontalMovement.L;
-        ((Game2048)game).columnNumbers = Enumerable.Range(0, ((Game2048)game).width);
-        ((Game2048)game).dir = (((Game2048)game).horizontalMovement == HorizontalMovement.L) ? -1 : 1;
-        ((Game2048)game).columnNumbers = (((Game2048)game).horizontalMovement == HorizontalMovement.L) ? ((Game2048)game).columnNumbers : ((Game2048)game).columnNumbers.Reverse();
+        game.horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.R : HorizontalMovement.L;
+        game.columnNumbers = Enumerable.Range(0, game.width);
+        game.dir = (game.horizontalMovement == HorizontalMovement.L) ? -1 : 1;
+        game.columnNumbers = (game.horizontalMovement == HorizontalMovement.L) ? game.columnNumbers : game.columnNumbers.Reverse();
         return game;
     };
 
-    private Func<Game, Game> update_board = delegate (Game game)
+    private Func<Game2048, Game2048>update_board = delegate (Game2048 game)
     {
-        ((Game2048)game).matrix = new string[((Game2048)game).height][];
-        for (int y = 0; y < ((Game2048)game).height; y++)
-            ((Game2048)game).matrix[y] = ((Game2048)game).input[1 + y];
+        game.matrix = new string[game.height][];
+        for (int y = 0; y < game.height; y++)
+            game.matrix[y] = game.input[1 + y];
         return game;
     };
 
-    private Func<Game, Game> merge_items = delegate (Game game)
+    private Func<Game2048, Game2048>merge_items = delegate (Game2048 game)
     {
-        for (int row = 0; row < ((Game2048)game).height; row++)
-            foreach (int col in ((Game2048)game).columnNumbers)
+        for (int row = 0; row < game.height; row++)
+            foreach (int col in game.columnNumbers)
             {
-                int next = foundTwinItem(((Game2048)game).matrix[row], col, ((Game2048)game).dir);
+                int next = foundTwinItem(game.matrix[row], col, game.dir);
                 if (next == col)
                     continue;
-                action_mergeItems(((Game2048)game).matrix, row, col, next);
+                action_mergeItems(game.matrix, row, col, next);
             }
         return game;
     };
 
-    private Func<Game, Game> move_items = delegate (Game game)
+    private Func<Game2048, Game2048>move_items = delegate (Game2048 game)
     {
-        for (int row = 0; row < ((Game2048)game).height; row++) 
-            foreach (int col in ((Game2048)game).columnNumbers)
+        for (int row = 0; row < game.height; row++) 
+            foreach (int col in game.columnNumbers)
             {
-                if (emptyItem(((Game2048)game).matrix, row, col))
+                if (emptyItem(game.matrix, row, col))
                     continue;
-                int next = foundEmptyItem(((Game2048)game).matrix[row], col, ((Game2048)game).dir);
+                int next = foundEmptyItem(game.matrix[row], col, game.dir);
                 if (next == col)
                     continue;
-                action_moveItem(((Game2048)game).matrix, row, col, next);
+                action_moveItem(game.matrix, row, col, next);
             }
         return game;
     };
