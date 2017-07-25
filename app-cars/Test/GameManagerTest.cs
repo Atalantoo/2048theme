@@ -8,82 +8,82 @@ using Commons.Lang;
 public class GameManagerUnitTest
 {
     [TestMethod]
-    public void usecase_01_init()
+    public void Usecase_01_init()
     {
         string[][] inp = GameTest.readFile("../../usecase_01_init-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_01_init-o.txt");
-        string[][] res = new GameManager().init(inp);
+        string[][] res = new GameManager().Init(inp);
         Assert.IsNotNull(exp);
         Assert.IsNotNull(res);
-        displayResult(res);
+        DisplayResult(res);
         Assert.AreEqual(exp.Length, res.Length);
-        Assert.IsTrue(14 <= count(res, "0"));
-        Assert.AreEqual(2, count(res, "2"));
+        Assert.IsTrue(14 <= Count(res, "0"));
+        Assert.AreEqual(2, Count(res, "2"));
     }
 
     [TestMethod]
-    public void usecase_02_move_mid_to_left()
+    public void Usecase_02_move_mid_to_left()
     {
         string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_left-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_left-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_02_move_mid_to_right()
+    public void Usecase_02_move_mid_to_right()
     {
         string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_right-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_03_move_twins_left()
+    public void Usecase_03_move_twins_left()
     {
         string[][] inp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_03_move_twins_mid_to_right()
+    public void Usecase_03_move_twins_mid_to_right()
     {
         string[][] inp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_04_move_blocked_twins_mid_to_right()
+    public void Usecase_04_move_blocked_twins_mid_to_right()
     {
         string[][] inp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     [TestMethod]
-    public void usecase_04_move_spaced_twins_mid_to_right()
+    public void Usecase_04_move_spaced_twins_mid_to_right()
     {
         string[][] inp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().turn(inp);
-        displayResult(res);
+        string[][] res = new GameManager().Turn(inp);
+        DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
     // IMPL
 
-    private int count(string[][] matrix, string match)
+    private int Count(string[][] matrix, string match)
     {
         int res = 0;
         for (int y = 0; y < matrix.Length; y++)
@@ -93,9 +93,9 @@ public class GameManagerUnitTest
         return res;
     }
 
-    private void displayResult(string[][] res)
+    private void DisplayResult(string[][] res)
     {
         foreach (string[] row in res)
-            Console.WriteLine(Joiner.on(" ").join(row));
+            Console.WriteLine(Joiner.On(" ").Join(row));
     }
 }

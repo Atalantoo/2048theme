@@ -6,22 +6,18 @@ using Commons.Lang;
 using Commons.Game;
 using System.Diagnostics;
 
+public enum GameState
+{
+    Playing, Won, Loss
+}
 public enum InputDirection
 {
     L, R, T, B
 }
-public enum GameState
-{
-    Playing,
-    Won,
-    Loss
-}
-
 public enum HorizontalMovement
 {
     L, R
 }
-
 public enum VerticalMovement
 {
     T, B
@@ -34,11 +30,11 @@ public class GameManager : Game
     int width;
     int height;
     string[][] matrix;
-    GameState state;
-    int score;
+    // TODO GameState state;
+    // TODO int score;
     InputDirection inputDir;
-
-    // TODO histo
+    // TODO string[][][] histoStates;
+    // TODO string[] histoEvents;
 
     public GameManager()
     {
@@ -47,21 +43,27 @@ public class GameManager : Game
 
     // PUBLIC *******************************************************
 
-    public string[][] init(string[][] input)
+    public string[][] Init(string[][] input)
     {
-        PreConditions.checkArgument(null != input);
+        PreConditions.CheckArgument(null != input);
+
         this.input = input;
-        rules.getRound("init").execute();
+        rules.GetRound("init").Execute();
         output = matrix;
+
+        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
         return output;
     }
 
-    public string[][] turn(string[][] input)
+    public string[][] Turn(string[][] input)
     {
-        PreConditions.checkArgument(null != input);
+        PreConditions.CheckArgument(null != input);
+
         this.input = input;
-        rules.getRound("turn").execute();
+        rules.GetRound("turn").Execute();
         output = matrix;
+
+        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
         return output;
     }
 
@@ -69,41 +71,41 @@ public class GameManager : Game
 
     void Initialize()
     {
-        rules = Rules.get("game")
-            .start(Rounds.get("init")
-                .start(Phases.get("board")
-                    .start(update_size)
-                    .next(create_zeros)
-                    .next(create_random_item)
-                    .next(create_random_item))
-                .next(Phases.get("end")
-                    .start(update_score)))
+        rules = Rules.Get("solo_game")
+            .Start(Rounds.Get("init")
+                .Start(Phases.Get("board")
+                    .Start(Update_size)
+                    .Next(Create_zeros)
+                    .Next(Create_random_item)
+                    .Next(Create_random_item))
+                .Next(Phases.Get("end")
+                    .Start(Update_score)))
             //       .next( available_moves)))
-            .next(Rounds.get("turn")
-                .start(Phases.get("start")
-                    .start(update_size)
-                    .next(update_board)
-                    .next(player_action))
-                .next(Phases.get("play")
-                    .start(merge_items)
-                    .next(move_items))
+            .Next(Rounds.Get("turn")
+                .Start(Phases.Get("start")
+                    .Start(Update_size)
+                    .Next(Update_board)
+                    .Next(Input_direction))
+                .Next(Phases.Get("play")
+                    .Start(Merge_items)
+                    .Next(Move_items))
                 //.next(create_random_item)
-                .next(Phases.get("end")
-                    .start(update_score)))
+                .Next(Phases.Get("end")
+                    .Start(Update_score)))
             //       .next( available_moves)))
             //next(Rounds.get("end")
             //   .start(end)
             //   .next( available_moves)))
-            .build();
+            .Build();
     }
 
-    void update_score()
+    void Update_score()
     {
-        state = GameState.Playing;
-        score = 0;
+        // TODO state = GameState.Playing;
+        // TODO score = 0;
     }
 
-    void update_size()
+    void Update_size()
     {
         Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
 
@@ -113,7 +115,7 @@ public class GameManager : Game
         Debug.Assert(width > 0 && height > 0);
     }
 
-    void create_zeros()
+    void Create_zeros()
     {
         Debug.Assert(width > 0 && height > 0);
 
@@ -126,33 +128,33 @@ public class GameManager : Game
         }
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
-        Debug.Assert(count(matrix, "0") == width * height);
+        Debug.Assert(Count(matrix, "0") == width * height);
     }
 
-    void create_random_item()
+    void Create_random_item()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(matrix != null && matrix.Length > 0);
-        int old2Ones = count(matrix, "2");
+        int old2Ones = Count(matrix, "2");
 
-        int freeOnes = count(matrix, "0");
+        int freeOnes = Count(matrix, "0");
         Random rnd = new Random();
         int nextOne = rnd.Next(0, freeOnes);
         int i = 0;
         for (int y = 0; y < width; y++)
             for (int x = 0; x < height; x++)
             {
-                if (emptyItem(matrix, y, x))
+                if (EmptyItem(matrix, y, x))
                     i++;
                 if (nextOne == i)
                     matrix[y][x] = "2";
             }
 
-        int new2Ones = count(matrix, "2");
+        int new2Ones = Count(matrix, "2");
         Debug.Assert(new2Ones == old2Ones + 1);
     }
 
-    void update_board()
+    void Update_board()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
@@ -164,55 +166,55 @@ public class GameManager : Game
         Debug.Assert(matrix != null && matrix.Length > 0);
     }
 
-    void merge_items()
+    void Merge_items()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
 
         for (int y = 0; y < height; y++)
-            foreach (int x in columnNumbers(inputDir, width))
+            foreach (int x in ColumnNumbers(inputDir, width))
             {
-                int next = foundTwinItem(matrix[y], x, dir(inputDir));
+                int next = FoundTwinItem(matrix[y], x, Dir(inputDir));
                 if (next == x)
                     continue;
-                action_mergeItems(matrix, y, x, next);
+                Action_mergeItems(matrix, y, x, next);
             }
 
         // TODO  Debug.Assert()
     }
 
-    void move_items()
+    void Move_items()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
 
         for (int y = 0; y < height; y++)
-            foreach (int x in columnNumbers(inputDir, width))
+            foreach (int x in ColumnNumbers(inputDir, width))
             {
-                if (emptyItem(matrix, y, x))
+                if (EmptyItem(matrix, y, x))
                     continue;
-                int next = foundEmptyItem(matrix[y], x, dir(inputDir));
+                int next = FoundEmptyItem(matrix[y], x, Dir(inputDir));
                 if (next == x)
                     continue;
-                action_moveItem(matrix, y, x, next);
+                Action_moveItem(matrix, y, x, next);
             }
 
         // TODO  Debug.Assert()
     }
 
-    void player_action()
+    void Input_direction()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
 
         string str = input[1 + height][0];
-        PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), str));
+        PreConditions.CheckArgument(Enum.IsDefined(typeof(InputDirection), str));
         inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
     }
 
     // STATIC *******************************************************
 
-    static IEnumerable<int> columnNumbers(InputDirection move, int width)
+    static IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {
         IEnumerable<int> nbr;
         HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
@@ -221,7 +223,7 @@ public class GameManager : Game
         return nbr;
     }
 
-    static int dir(InputDirection move)
+    static int Dir(InputDirection move)
     {
         int dir;
         HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
@@ -229,14 +231,14 @@ public class GameManager : Game
         return dir;
     }
 
-    static int foundEmptyItem(string[] row, int x, int direction)
+    static int FoundEmptyItem(string[] row, int x, int direction)
     {
         int item = x;
         bool emptyItemFound = true;
         while (emptyItemFound)
         {
             int next = item + direction;
-            emptyItemFound = Arrays.inBound(row, next) && emptyItem(row, next);
+            emptyItemFound = Arrays.InBound(row, next) && EmptyItem(row, next);
             if (emptyItemFound)
                 item = next;
             else
@@ -245,7 +247,7 @@ public class GameManager : Game
         return item;
     }
 
-    static int count(string[][] matrix, string match)
+    static int Count(string[][] matrix, string match)
     {
         int res = 0;
         for (int y = 0; y < matrix.Length; y++)
@@ -255,34 +257,34 @@ public class GameManager : Game
         return res;
     }
 
-    static bool emptyItem(string[] row, int x)
+    static bool EmptyItem(string[] row, int x)
     {
         return "0".Equals(row[x]);
     }
 
-    static bool emptyItem(string[][] matrix, int y, int x)
+    static bool EmptyItem(string[][] matrix, int y, int x)
     {
         return "0".Equals(matrix[y][x]);
     }
 
-    static void action_mergeItems(string[][] matrix, int y, int x, int next)
+    static void Action_mergeItems(string[][] matrix, int y, int x, int next)
     {
         int val = Int32.Parse(matrix[y][x]) * 2;
         matrix[y][x] = val.ToString();
         matrix[y][next] = "0";
     }
 
-    static void action_moveItem(string[][] matrix, int y, int x, int next)
+    static void Action_moveItem(string[][] matrix, int y, int x, int next)
     {
         matrix[y][next] = matrix[y][x];
         matrix[y][x] = "0";
     }
 
-    static int foundTwinItem(string[] row, int x, int direction)
+    static int FoundTwinItem(string[] row, int x, int direction)
     {
         int item = x;
         int next = item + direction;
-        if (Arrays.inBound(row, next) && row[x].Equals(row[next]))
+        if (Arrays.InBound(row, next) && row[x].Equals(row[next]))
             item = next;
         return item;
     }

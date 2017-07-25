@@ -13,12 +13,12 @@ namespace Commons.Lang
     // https://google.github.io/guava/releases/16.0/api/docs/com/google/common/base/Preconditions.html
     public class PreConditions
     {
-        public static void checkArgument(bool condition)
+        public static void CheckArgument(bool condition)
         {
-            checkArgument(condition, null);
+            CheckArgument(condition, null);
         }
 
-        public static void checkArgument(bool condition, string message)
+        public static void CheckArgument(bool condition, string message)
         {
             if (!condition)
                 throw new Exception("Illegal Argument!" + (message == null ? "" : ": " + message));
@@ -28,17 +28,17 @@ namespace Commons.Lang
     // https://google.github.io/guava/releases/16.0/api/docs/com/google/common/base/Strings.html)
     public class Strings
     {
-        public static bool isNullOrEmpty(string str)
+        public static bool NullOrEmpty(string str)
         {
             return str == null || str.Length == 0;
         }
 
-        public static bool isNullOrBlank(string str)
+        public static bool NullOrBlank(string str)
         {
-            return isNullOrEmpty(str == null ? null : replaceAll(str, " ", ""));
+            return NullOrEmpty(str == null ? null : ReplaceAll(str, " ", ""));
         }
 
-        public static string replaceAll(string str, string oldChar, string newChar)
+        public static string ReplaceAll(string str, string oldChar, string newChar)
         {
             return Regex.Replace(str, @"\s+", "");
         }
@@ -46,7 +46,7 @@ namespace Commons.Lang
 
     public class Arrays
     {
-        public static T[] add<T>(T[] array, T element)
+        public static T[] Add<T>(T[] array, T element)
         {
             T[] res = new T[array.Length + 1];
             for (int i = 0; i < array.Length; i++)
@@ -54,14 +54,14 @@ namespace Commons.Lang
             res[array.Length] = element;
             return res;
         }
-        public static bool inBound(string[] array, int i)
+        public static bool InBound(string[] array, int i)
         {
             return i < array.Length && i > -1;
         }
 
-        public static bool outOfBound(string[] array, int i)
+        public static bool OutOfBound(string[] array, int i)
         {
-            return !inBound(array, i);
+            return !InBound(array, i);
         }
     }
 
@@ -70,14 +70,14 @@ namespace Commons.Lang
     {
         string separator;
 
-        public static Joiner on(string separator)
+        public static Joiner On(string separator)
         {
             Joiner j = new Joiner();
             j.separator = separator;
             return j;
         }
 
-        public string join(string[] array)
+        public string Join(string[] array)
         {
             string line = "";
             bool first = true;

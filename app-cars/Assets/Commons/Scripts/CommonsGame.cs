@@ -28,34 +28,34 @@ namespace Commons.Game
         public string name;
         public Rounds [] childs;
 
-        public static Rules get(string name)
+        public static Rules Get(string name)
         {
             Rules builder = new Rules();
             builder.name = name;
             return builder;
         }
 
-        public Rules start(Rounds child)
+        public Rules Start(Rounds child)
         {
             childs = new Rounds[1];
             childs[0] = child;
             return this;
         }
 
-        public Rules next(Rounds child)
+        public Rules Next(Rounds child)
         {
-            childs = Arrays.add(childs, child);
+            childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Rule build()
+        public Rule Build()
         {
             Console.WriteLine("Rule: "+name+" build()");
             Rule obj = new Rule();
             obj.name = name;
             obj.childs = new Round[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
-                obj.childs[i] = this.childs[i].build();
+                obj.childs[i] = this.childs[i].Build();
             Console.WriteLine("Done.");
             Console.WriteLine(" ");
             return obj;
@@ -67,33 +67,33 @@ namespace Commons.Game
         public string name;
         public Phases[] childs;
 
-        public static Rounds  get(string name)
+        public static Rounds  Get(string name)
         {
             Rounds  builder = new Rounds ();
             builder.name = name;
             return builder;
         }
 
-        public Rounds  start(Phases child)
+        public Rounds  Start(Phases child)
         {
             childs = new Phases[1];
             childs[0] = child;
             return this;
         }
 
-        public Rounds  next(Phases child)
+        public Rounds  Next(Phases child)
         {
-            childs = Arrays.add(childs, child);
+            childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Round build()
+        public Round Build()
         {
             Round obj = new Round();
             obj.name = name;
             obj.childs = new Phase[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
-                obj.childs[i] = this.childs[i].build();
+                obj.childs[i] = this.childs[i].Build();
             return obj;
         }
     }
@@ -103,27 +103,27 @@ namespace Commons.Game
         public string name;
         public Action[] childs;
 
-        public static Phases get(string name)
+        public static Phases Get(string name)
         {
             Phases builder = new Phases();
             builder.name = name;
             return builder;
         }
 
-        public Phases start(Action child)
+        public Phases Start(Action child)
         {
             childs = new Action[1];
             childs[0] = child;
             return this;
         }
 
-        public Phases next(Action child)
+        public Phases Next(Action child)
         {
-            childs = Arrays.add(childs, child);
+            childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Phase build()
+        public Phase Build()
         {
             Phase obj = new Phase();
             obj.name = name;
@@ -138,9 +138,9 @@ namespace Commons.Game
 
     public class Rule : GameStructure<Round> 
     {
-        public Round getRound(string child)
+        public Round GetRound(string child)
         {
-            Console.WriteLine("Rule: " + name + " load: "+ child);
+            Console.WriteLine("Rule: " + name + ", load: "+ child);
             foreach (Round i in childs)
                 if (child.Equals(i.name))
                     return i;
@@ -150,12 +150,12 @@ namespace Commons.Game
 
     public class Round : GameStructure<Phase> 
     {
-        public void execute()
+        public void Execute()
         {
-            Console.WriteLine("- Round: "+ name );
+            Console.WriteLine("  Round: "+ name + ", execute...");
             foreach (Phase i in childs)
-                i.execute();
-            Console.WriteLine("- Done.");
+                i.Execute();
+            Console.WriteLine("  Done.");
             Console.WriteLine(" ");
         }
     }
@@ -165,12 +165,12 @@ namespace Commons.Game
         public string name;
         public Action[] childs;
 
-        public void execute()
+        public void Execute()
         {
-            Console.WriteLine("-- Phase: " + name);
+            Console.WriteLine("    Phase: " + name);
             foreach (Action i in childs)
             {
-                Console.WriteLine("--- Step: " + i.Method.Name);
+                Console.WriteLine("      Step: " + i.Method.Name);
                 i.Invoke();
             }
         }
@@ -188,7 +188,7 @@ namespace Commons.Game
     {
         public GameStructure<TC> obj;
 
-        public static GameStructureBuilder<T, TC> get(string name)
+        public static GameStructureBuilder<T, TC> Get(string name)
         {
             GameStructureBuilder<T, TC> build = new GameStructureBuilder<T, TC>();
             build.obj = new GameStructure<TC>();
@@ -196,23 +196,23 @@ namespace Commons.Game
             return build;
         }
 
-        public GameStructureBuilder<T, TC> start(TC child)
+        public GameStructureBuilder<T, TC> Start(TC child)
         {
             obj.childs[0] = child;
             return this;
         }
-        public GameStructureBuilder<T, TC> start(Func<GameState, GameState> func)
+        public GameStructureBuilder<T, TC> Start(Func<GameState, GameState> func)
         {
             throw new NotImplementedException();
         }
 
-        public GameStructureBuilder<T, TC> next(TC child)
+        public GameStructureBuilder<T, TC> Next(TC child)
         {
             obj.childs[1] = child;
             return this;
         }
 
-        public GameStructure<TC> build()
+        public GameStructure<TC> Build()
         {
             return obj;
         }
