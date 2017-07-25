@@ -23,37 +23,39 @@ namespace Commons.Game
         public string[][] output;
     }
 
-    public class Rules 
+    public class Parties
     {
-        public string name;
-        public Rounds [] childs;
+        public string _name;
+        public Rounds[] childs;
 
-        public static Rules Get(string name)
+        public static Parties Get(string name)
         {
-            Rules builder = new Rules();
-            builder.name = name;
-            return builder;
+            return new Parties()
+            {
+                _name = name,
+                childs = new Rounds[0]
+            };
         }
 
-        public Rules Start(Rounds child)
+        public Parties Start(Rounds child)
         {
-            childs = new Rounds[1];
-            childs[0] = child;
-            return this;
+            return Next(child);
         }
 
-        public Rules Next(Rounds child)
+        public Parties Next(Rounds child)
         {
             childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Rule Build()
+        public Party Build()
         {
-            Console.WriteLine("Rule: "+name+" build()");
-            Rule obj = new Rule();
-            obj.name = name;
-            obj.childs = new Round[this.childs.Length];
+            Console.WriteLine("Rule: " + _name + " build()");
+            Party obj = new Party()
+            {
+                name = _name,
+                childs = new Round[this.childs.Length]
+            };
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].Build();
             Console.WriteLine("Done.");
@@ -62,26 +64,26 @@ namespace Commons.Game
         }
     }
 
-    public class Rounds 
+    public class Rounds
     {
-        public string name;
+        public string _name;
         public Phases[] childs;
 
-        public static Rounds  Get(string name)
+        public static Rounds Get(string name)
         {
-            Rounds  builder = new Rounds ();
-            builder.name = name;
-            return builder;
+            return new Rounds()
+            {
+                _name = name,
+                childs = new Phases[0]
+            };
         }
 
-        public Rounds  Start(Phases child)
+        public Rounds Start(Phases child)
         {
-            childs = new Phases[1];
-            childs[0] = child;
-            return this;
+            return Next(child);
         }
 
-        public Rounds  Next(Phases child)
+        public Rounds Next(Phases child)
         {
             childs = Arrays.Add(childs, child);
             return this;
@@ -89,32 +91,34 @@ namespace Commons.Game
 
         public Round Build()
         {
-            Round obj = new Round();
-            obj.name = name;
-            obj.childs = new Phase[this.childs.Length];
+            Round obj = new Round()
+            {
+                name = this._name,
+                childs = new Phase[this.childs.Length]
+            };
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].Build();
             return obj;
         }
     }
 
-    public class Phases 
+    public class Phases
     {
-        public string name;
+        public string _name;
         public Action[] childs;
 
         public static Phases Get(string name)
         {
-            Phases builder = new Phases();
-            builder.name = name;
-            return builder;
+            return new Phases()
+            {
+                _name = name,
+                childs = new Action[0]
+            };
         }
 
         public Phases Start(Action child)
         {
-            childs = new Action[1];
-            childs[0] = child;
-            return this;
+            return Next(child);
         }
 
         public Phases Next(Action child)
@@ -125,9 +129,11 @@ namespace Commons.Game
 
         public Phase Build()
         {
-            Phase obj = new Phase();
-            obj.name = name;
-            obj.childs = new Action[this.childs.Length];
+            Phase obj = new Phase()
+            {
+                name = _name,
+                childs = new Action[this.childs.Length]
+            };
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i];
             return obj;
@@ -136,11 +142,11 @@ namespace Commons.Game
 
     // IMPL
 
-    public class Rule : GameStructure<Round> 
+    public class Party : GameStructure<Round>
     {
-        public Round GetRound(string child)
+        public Round Round(string child)
         {
-            Console.WriteLine("Rule: " + name + ", load: "+ child);
+            Console.WriteLine("Rule: " + name + ", load: " + child);
             foreach (Round i in childs)
                 if (child.Equals(i.name))
                     return i;
@@ -148,11 +154,11 @@ namespace Commons.Game
         }
     }
 
-    public class Round : GameStructure<Phase> 
+    public class Round : GameStructure<Phase>
     {
         public void Execute()
         {
-            Console.WriteLine("  Round: "+ name + ", execute...");
+            Console.WriteLine("  Round: " + name + ", execute...");
             foreach (Phase i in childs)
                 i.Execute();
             Console.WriteLine("  Done.");
@@ -160,11 +166,8 @@ namespace Commons.Game
         }
     }
 
-    public class Phase 
+    public class Phase : GameStructure<Action>
     {
-        public string name;
-        public Action[] childs;
-
         public void Execute()
         {
             Console.WriteLine("    Phase: " + name);
@@ -177,45 +180,10 @@ namespace Commons.Game
     }
 
 
-    public class GameStructure<TC>
+    public abstract class GameStructure<TC>
     {
         public string name;
         public TC[] childs;
-        /*public Func<GameState, GameState>[] funcs;*/
     }
 
-    public class GameStructureBuilder<T, TC>
-    {
-        public GameStructure<TC> obj;
-
-        public static GameStructureBuilder<T, TC> Get(string name)
-        {
-            GameStructureBuilder<T, TC> build = new GameStructureBuilder<T, TC>();
-            build.obj = new GameStructure<TC>();
-            /* build.obj.name = name;*/
-            return build;
-        }
-
-        public GameStructureBuilder<T, TC> Start(TC child)
-        {
-            obj.childs[0] = child;
-            return this;
-        }
-        public GameStructureBuilder<T, TC> Start(Func<GameState, GameState> func)
-        {
-            throw new NotImplementedException();
-        }
-
-        public GameStructureBuilder<T, TC> Next(TC child)
-        {
-            obj.childs[1] = child;
-            return this;
-        }
-
-        public GameStructure<TC> Build()
-        {
-            return obj;
-        }
-
-    }
 }

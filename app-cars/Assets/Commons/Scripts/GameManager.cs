@@ -26,7 +26,7 @@ public enum VerticalMovement
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
 public class GameManager : Game
 {
-    Rule rules;
+    Party rules;
     int width;
     int height;
     string[][] matrix;
@@ -48,7 +48,7 @@ public class GameManager : Game
         PreConditions.CheckArgument(null != input);
 
         this.input = input;
-        rules.GetRound("init").Execute();
+        rules.Round("init").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
@@ -60,7 +60,7 @@ public class GameManager : Game
         PreConditions.CheckArgument(null != input);
 
         this.input = input;
-        rules.GetRound("turn").Execute();
+        rules.Round("turn").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
@@ -71,7 +71,7 @@ public class GameManager : Game
 
     void Initialize()
     {
-        rules = Rules.Get("solo_game")
+        rules = Parties.Get("solo_game")
             .Start(Rounds.Get("init")
                 .Start(Phases.Get("board")
                     .Start(Update_size)
