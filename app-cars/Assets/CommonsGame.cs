@@ -23,104 +23,111 @@ namespace Commons.Game
         public string[][] output;
     }
 
-    public class Rules<G> where G:Game
-    {
-        public Rounds<G> [] childs;
-
-        public static Rules<G> get(string name)
-        {
-            Rules<G> builder = new Rules<G>();
-            return builder;
-        }
-
-        public Rules<G> start(Rounds<G> child)
-        {
-            childs = new Rounds<G>[1];
-            childs[0] = child;
-            return this;
-        }
-
-        public Rules<G> next(Rounds<G> child)
-        {
-            childs = Arrays.add(childs, child);
-            return this;
-        }
-
-        public Rule<G> build()
-        {
-            Rule<G> obj = new Rule<G>();
-            obj.childs = new Round<G>[this.childs.Length];
-            for (int i = 0; i < this.childs.Length; i++)
-                obj.childs[i] = this.childs[i].build();
-            return obj;
-        }
-    }
-
-    public class Rounds<G> where G : Game
+    public class Rules 
     {
         public string name;
-        public Phases<G>[] childs;
+        public Rounds [] childs;
 
-        public static Rounds<G>  get(string name)
+        public static Rules get(string name)
         {
-            Rounds<G>  builder = new Rounds<G> ();
+            Rules builder = new Rules();
             builder.name = name;
             return builder;
         }
 
-        public Rounds<G>  start(Phases<G> child)
+        public Rules start(Rounds child)
         {
-            childs = new Phases<G>[1];
+            childs = new Rounds[1];
             childs[0] = child;
             return this;
         }
 
-        public Rounds<G>  next(Phases<G> child)
+        public Rules next(Rounds child)
         {
             childs = Arrays.add(childs, child);
             return this;
         }
 
-        public Round<G> build()
+        public Rule build()
         {
-            Round<G> obj = new Round<G>();
+            Console.WriteLine("Rule: "+name+" build()");
+            Rule obj = new Rule();
             obj.name = name;
-            obj.childs = new Phase<G>[this.childs.Length];
+            obj.childs = new Round[this.childs.Length];
+            for (int i = 0; i < this.childs.Length; i++)
+                obj.childs[i] = this.childs[i].build();
+            Console.WriteLine("Done.");
+            Console.WriteLine(" ");
+            return obj;
+        }
+    }
+
+    public class Rounds 
+    {
+        public string name;
+        public Phases[] childs;
+
+        public static Rounds  get(string name)
+        {
+            Rounds  builder = new Rounds ();
+            builder.name = name;
+            return builder;
+        }
+
+        public Rounds  start(Phases child)
+        {
+            childs = new Phases[1];
+            childs[0] = child;
+            return this;
+        }
+
+        public Rounds  next(Phases child)
+        {
+            childs = Arrays.add(childs, child);
+            return this;
+        }
+
+        public Round build()
+        {
+            Round obj = new Round();
+            obj.name = name;
+            obj.childs = new Phase[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].build();
             return obj;
         }
     }
 
-    public class Phases<G> where G : Game
+    public class Phases 
     {
-        public Func<G, G>[] childs;
+        public string name;
+        public Action[] childs;
 
-        public static Phases<G> get(string name)
+        public static Phases get(string name)
         {
-            Phases<G> builder = new Phases<G>();
-            /* builder.obj = new Phase();*/
-            /* builder.obj.name = name;*/
+            Phases builder = new Phases();
+            builder.name = name;
             return builder;
         }
 
-        public Phases<G> start(Func<G, G> child)
+        public Phases start(Action child)
         {
-            childs = new Func<G, G>[1];
+            childs = new Action[1];
             childs[0] = child;
             return this;
         }
 
-        public Phases<G> next(Func<G, G> child)
+        public Phases next(Action child)
         {
             childs = Arrays.add(childs, child);
             return this;
         }
 
-        public Phase<G> build()
+        public Phase build()
         {
-            Phase<G> obj = new Phase<G>();
-            obj.childs = new Func<G, G>[this.childs.Length];
+            Phase obj = new Phase();
+            obj.name = name;
+            obj.childs = new Action[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i];
             return obj;
@@ -129,37 +136,43 @@ namespace Commons.Game
 
     // IMPL
 
-    public class Rule<G> : GameStructure<Round<G>> where G : Game
+    public class Rule : GameStructure<Round> 
     {
-        public Round<G> getRound(string name)
+        public Round getRound(string child)
         {
-            foreach (Round<G> i in childs)
-                if (name.Equals(i.name))
+            Console.WriteLine("Rule: " + name + " load: "+ child);
+            foreach (Round i in childs)
+                if (child.Equals(i.name))
                     return i;
             throw new Exception("Not found");
         }
     }
 
-    public class Round<G> : GameStructure<Phase<G>> where G: Game
+    public class Round : GameStructure<Phase> 
     {
-        public G execute(G game)
+        public void execute()
         {
-            foreach (Phase<G> i in childs)
-                game = i.execute(game);
-            return game;
+            Console.WriteLine("- Round: "+ name );
+            foreach (Phase i in childs)
+                i.execute();
+            Console.WriteLine("- Done.");
+            Console.WriteLine(" ");
         }
     }
 
-    public class Phase<G> where G : Game
+    public class Phase 
     {
-        /* public string name; */
-        public Func<G, G>[] childs;
+        public string name;
+        public Action[] childs;
 
-        public G execute(G state)
+        public void execute()
         {
-            foreach (Func<G, G> i in childs)
-                state = i.Invoke(state);
-            return state;
+            Console.WriteLine("-- Phase: " + name);
+            foreach (Action i in childs)
+            {
+                Console.WriteLine("--- Step: " + i.Method.Name);
+                i.Invoke();
+            }
         }
     }
 

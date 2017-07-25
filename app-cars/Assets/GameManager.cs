@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Commons.Lang;
 using Commons.Game;
+using System.Diagnostics;
 
 public enum InputDirection
 {
@@ -26,167 +27,209 @@ public enum VerticalMovement
     T, B
 }
 
-public class Game2048 : Game
-{
-    public int width;
-    public int height;
-    public string[][] matrix;
-    public GameState state;
-    public int score;
-    // TODO histo
-    public HorizontalMovement horizontalMovement;
-    public IEnumerable<int> columnNumbers;
-    public int dir;
-}
-
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
-public class GameManager
+public class GameManager : Game
 {
-    Game2048 game;
-    Rule<Game2048> rules;
+    Rule rules;
+    int width;
+    int height;
+    string[][] matrix;
+    GameState state;
+    int score;
+    InputDirection inputDir;
+
+    // TODO histo
 
     public GameManager()
     {
-        rules = Rules<Game2048>.get("game")
-            .start(Rounds<Game2048>.get("init")
-                .start(Phases<Game2048>.get("board")
+        Initialize();
+    }
+
+    // PUBLIC *******************************************************
+
+    public string[][] init(string[][] input)
+    {
+        PreConditions.checkArgument(null != input);
+        this.input = input;
+        rules.getRound("init").execute();
+        output = matrix;
+        return output;
+    }
+
+    public string[][] turn(string[][] input)
+    {
+        PreConditions.checkArgument(null != input);
+        this.input = input;
+        rules.getRound("turn").execute();
+        output = matrix;
+        return output;
+    }
+
+    //  PRIVATE *******************************************************
+
+    void Initialize()
+    {
+        rules = Rules.get("game")
+            .start(Rounds.get("init")
+                .start(Phases.get("board")
                     .start(update_size)
                     .next(create_zeros)
                     .next(create_random_item)
                     .next(create_random_item))
-                .next(Phases<Game2048>.get("end")
+                .next(Phases.get("end")
                     .start(update_score)))
             //       .next( available_moves)))
-            .next(Rounds<Game2048>.get("turn")
-                .start(Phases<Game2048>.get("start")
+            .next(Rounds.get("turn")
+                .start(Phases.get("start")
                     .start(update_size)
                     .next(update_board)
-                    .next(update_direction))
-                .next(Phases<Game2048>.get("play")
+                    .next(player_action))
+                .next(Phases.get("play")
                     .start(merge_items)
                     .next(move_items))
-                    //.next(create_random_item)
-                .next(Phases<Game2048>.get("end")
+                //.next(create_random_item)
+                .next(Phases.get("end")
                     .start(update_score)))
             //       .next( available_moves)))
-            //next(Rounds<Game2048>.get("end")
+            //next(Rounds.get("end")
             //   .start(end)
             //   .next( available_moves)))
             .build();
     }
 
-    public string[][] init(string[][] input)
+    void update_score()
     {
-        game = new Game2048();
-        game.input = input;
-        game = rules.getRound("init").execute(game);
-        game.output = game.matrix;
-        return game.output;
+        state = GameState.Playing;
+        score = 0;
     }
 
-    public string[][] turn(string[][] input)
+    void update_size()
     {
-        game = new Game2048();
-        game.input = input;
-        game = rules.getRound("turn").execute(game);
-        game.output = game.matrix;
-        return game.output;
+        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
+
+        width = Int32.Parse(input[0][0]);
+        height = Int32.Parse(input[0][1]);
+
+        Debug.Assert(width > 0 && height > 0);
     }
 
-    private Func<Game2048, Game2048>update_score = delegate (Game2048 game)
+    void create_zeros()
     {
-        game.score = 0;
-        game.state = GameState.Playing;
-        return game;
-    };
+        Debug.Assert(width > 0 && height > 0);
 
-    private Func<Game2048, Game2048>update_size = delegate (Game2048 game)
-    {
-        game.width = Int32.Parse(game.input[0][0]);
-        game.height = Int32.Parse(game.input[0][1]);
-        return game;
-    };
-
-    private Func<Game2048, Game2048>create_zeros = delegate (Game2048 game)
-    {
-        game.matrix = new string[game.height][];
-        for (int y = 0; y < game.height; y++)
+        matrix = new string[height][];
+        for (int y = 0; y < height; y++)
         {
-            game.matrix[y] = new string[game.width];
-            for (int x = 0; x < game.width; x++)
-                game.matrix[y][x] = "0";
+            matrix[y] = new string[width];
+            for (int x = 0; x < this.width; x++)
+                matrix[y][x] = "0";
         }
-        return game;
-    };
 
-    private Func<Game2048, Game2048>create_random_item = delegate (Game2048 game)
+        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
+        Debug.Assert(count(matrix, "0") == width * height);
+    }
+
+    void create_random_item()
     {
-        int freeOnes = count(game.matrix, "0");
+        Debug.Assert(width > 0 && height > 0);
+        Debug.Assert(matrix != null && matrix.Length > 0);
+        int old2Ones = count(matrix, "2");
+
+        int freeOnes = count(matrix, "0");
         Random rnd = new Random();
         int nextOne = rnd.Next(0, freeOnes);
         int i = 0;
-        for (int y = 0; y < game.matrix.Length; y++)
-            for (int x = 0; x < game.matrix[0].Length; x++)
+        for (int y = 0; y < width; y++)
+            for (int x = 0; x < height; x++)
             {
-                if (emptyItem(game.matrix, y, x))
+                if (emptyItem(matrix, y, x))
                     i++;
                 if (nextOne == i)
-                    game.matrix[y][x] = "2";
+                    matrix[y][x] = "2";
             }
-        return game;
-    };
 
-    private Func<Game2048, Game2048>update_direction = delegate (Game2048 game)
-    {
-        string[][] action;
-        action = new string[1][];
-        action[0] = game.input[1 + game.height];
-        string move = action[0][0];
-        PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), move));
-        game.horizontalMovement = ("R".Equals(move)) ? HorizontalMovement.R : HorizontalMovement.L;
-        game.columnNumbers = Enumerable.Range(0, game.width);
-        game.dir = (game.horizontalMovement == HorizontalMovement.L) ? -1 : 1;
-        game.columnNumbers = (game.horizontalMovement == HorizontalMovement.L) ? game.columnNumbers : game.columnNumbers.Reverse();
-        return game;
-    };
+        int new2Ones = count(matrix, "2");
+        Debug.Assert(new2Ones == old2Ones + 1);
+    }
 
-    private Func<Game2048, Game2048>update_board = delegate (Game2048 game)
+    void update_board()
     {
-        game.matrix = new string[game.height][];
-        for (int y = 0; y < game.height; y++)
-            game.matrix[y] = game.input[1 + y];
-        return game;
-    };
+        Debug.Assert(width > 0 && height > 0);
+        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
 
-    private Func<Game2048, Game2048>merge_items = delegate (Game2048 game)
+        matrix = new string[height][];
+        for (int y = 0; y < height; y++)
+            matrix[y] = input[1 + y];
+
+        Debug.Assert(matrix != null && matrix.Length > 0);
+    }
+
+    void merge_items()
     {
-        for (int row = 0; row < game.height; row++)
-            foreach (int col in game.columnNumbers)
+        Debug.Assert(width > 0 && height > 0);
+        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
+
+        for (int y = 0; y < height; y++)
+            foreach (int x in columnNumbers(inputDir, width))
             {
-                int next = foundTwinItem(game.matrix[row], col, game.dir);
-                if (next == col)
+                int next = foundTwinItem(matrix[y], x, dir(inputDir));
+                if (next == x)
                     continue;
-                action_mergeItems(game.matrix, row, col, next);
+                action_mergeItems(matrix, y, x, next);
             }
-        return game;
-    };
 
-    private Func<Game2048, Game2048>move_items = delegate (Game2048 game)
+        // TODO  Debug.Assert()
+    }
+
+    void move_items()
     {
-        for (int row = 0; row < game.height; row++) 
-            foreach (int col in game.columnNumbers)
-            {
-                if (emptyItem(game.matrix, row, col))
-                    continue;
-                int next = foundEmptyItem(game.matrix[row], col, game.dir);
-                if (next == col)
-                    continue;
-                action_moveItem(game.matrix, row, col, next);
-            }
-        return game;
-    };
+        Debug.Assert(width > 0 && height > 0);
+        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
 
-    private static int foundEmptyItem(string[] row, int x, int direction)
+        for (int y = 0; y < height; y++)
+            foreach (int x in columnNumbers(inputDir, width))
+            {
+                if (emptyItem(matrix, y, x))
+                    continue;
+                int next = foundEmptyItem(matrix[y], x, dir(inputDir));
+                if (next == x)
+                    continue;
+                action_moveItem(matrix, y, x, next);
+            }
+
+        // TODO  Debug.Assert()
+    }
+
+    void player_action()
+    {
+        Debug.Assert(width > 0 && height > 0);
+        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
+
+        string str = input[1 + height][0];
+        PreConditions.checkArgument(Enum.IsDefined(typeof(InputDirection), str));
+        inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
+    }
+
+    // STATIC *******************************************************
+
+    static IEnumerable<int> columnNumbers(InputDirection move, int width)
+    {
+        IEnumerable<int> nbr;
+        HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
+        nbr = Enumerable.Range(0, width);
+        nbr = (mov == HorizontalMovement.L) ? nbr : nbr.Reverse();
+        return nbr;
+    }
+
+    static int dir(InputDirection move)
+    {
+        int dir;
+        HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
+        dir = (mov == HorizontalMovement.L) ? -1 : 1;
+        return dir;
+    }
+
+    static int foundEmptyItem(string[] row, int x, int direction)
     {
         int item = x;
         bool emptyItemFound = true;
@@ -202,7 +245,7 @@ public class GameManager
         return item;
     }
 
-    private static int count(string[][] matrix, string match)
+    static int count(string[][] matrix, string match)
     {
         int res = 0;
         for (int y = 0; y < matrix.Length; y++)
@@ -212,30 +255,30 @@ public class GameManager
         return res;
     }
 
-    private static bool emptyItem(string[] row, int x)
+    static bool emptyItem(string[] row, int x)
     {
         return "0".Equals(row[x]);
     }
 
-    private static bool emptyItem(string[][] matrix, int y, int x)
+    static bool emptyItem(string[][] matrix, int y, int x)
     {
         return "0".Equals(matrix[y][x]);
     }
 
-    private static void action_mergeItems(string[][] matrix, int y, int x, int next)
+    static void action_mergeItems(string[][] matrix, int y, int x, int next)
     {
         int val = Int32.Parse(matrix[y][x]) * 2;
         matrix[y][x] = val.ToString();
         matrix[y][next] = "0";
     }
 
-    private static void action_moveItem(string[][] matrix, int y, int x, int next)
+    static void action_moveItem(string[][] matrix, int y, int x, int next)
     {
         matrix[y][next] = matrix[y][x];
         matrix[y][x] = "0";
     }
 
-    private static int foundTwinItem(string[] row, int x, int direction)
+    static int foundTwinItem(string[] row, int x, int direction)
     {
         int item = x;
         int next = item + direction;
@@ -243,5 +286,4 @@ public class GameManager
             item = next;
         return item;
     }
-
 }
