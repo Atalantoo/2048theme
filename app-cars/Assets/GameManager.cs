@@ -79,7 +79,7 @@ public class GameManager
     {
         game = new Game2048();
         game.input = input;
-        game = rules.childs[0].execute(game);
+        game = rules.getRound("init").execute(game);
         game.output = game.matrix;
         return game.output;
     }
@@ -88,7 +88,7 @@ public class GameManager
     {
         game = new Game2048();
         game.input = input;
-        game = rules.childs[1].execute(game);
+        game = rules.getRound("turn").execute(game);
         game.output = game.matrix;
         return game.output;
     }

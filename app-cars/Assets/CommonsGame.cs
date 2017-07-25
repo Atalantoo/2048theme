@@ -3,6 +3,10 @@ using Commons.Lang;
 
 namespace Commons.Game
 {
+    // TODO decision
+    // TODO fplit
+    // TODO flow
+
     class CommonsGame
     {
     }
@@ -54,11 +58,13 @@ namespace Commons.Game
 
     public class Rounds<G> where G : Game
     {
+        public string name;
         public Phases<G>[] childs;
 
         public static Rounds<G>  get(string name)
         {
             Rounds<G>  builder = new Rounds<G> ();
+            builder.name = name;
             return builder;
         }
 
@@ -78,6 +84,7 @@ namespace Commons.Game
         public Round<G> build()
         {
             Round<G> obj = new Round<G>();
+            obj.name = name;
             obj.childs = new Phase<G>[this.childs.Length];
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].build();
@@ -123,14 +130,14 @@ namespace Commons.Game
     // IMPL
 
     public class Rule<G> : GameStructure<Round<G>> where G : Game
-    {/*
-        public Round getRound(string name)
+    {
+        public Round<G> getRound(string name)
         {
-            foreach (Round i in childs)
+            foreach (Round<G> i in childs)
                 if (name.Equals(i.name))
                     return i;
-            throw new Exception();
-        }*/
+            throw new Exception("Not found");
+        }
     }
 
     public class Round<G> : GameStructure<Phase<G>> where G: Game
@@ -159,7 +166,7 @@ namespace Commons.Game
 
     public class GameStructure<TC>
     {
-        /* public string name;*/
+        public string name;
         public TC[] childs;
         /*public Func<GameState, GameState>[] funcs;*/
     }
