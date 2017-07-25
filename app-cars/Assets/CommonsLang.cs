@@ -35,7 +35,7 @@ namespace Commons.Lang
 
         public static bool isNullOrBlank(string str)
         {
-            return isNullOrEmpty(str==null ? null : replaceAll(str, " ", ""));
+            return isNullOrEmpty(str == null ? null : replaceAll(str, " ", ""));
         }
 
         public static string replaceAll(string str, string oldChar, string newChar)
@@ -46,6 +46,14 @@ namespace Commons.Lang
 
     public class Arrays
     {
+        public static T[] add<T>(T[] array, T element)
+        {
+            T[] res = new T[array.Length + 1];
+            for (int i = 0; i < array.Length; i++)
+                res[i] = array[i];
+            res[array.Length] = element;
+            return res;
+        }
         public static bool inBound(string[] array, int i)
         {
             return i < array.Length && i > -1;
@@ -82,7 +90,5 @@ namespace Commons.Lang
             }
             return line;
         }
-
-
     }
 }
