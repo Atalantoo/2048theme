@@ -35,7 +35,7 @@ public class GameManager2048 : GameManager
         PreConditions.CheckArgument(null != turnInput);
 
         input = turnInput;
-        rules.Turn("Turn").Execute();
+        rules.Turn("Player Turn").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
@@ -46,35 +46,36 @@ public class GameManager2048 : GameManager
 
     void InitializeRules()
     {
-        rules = Games.Get("Game")
-                //TODO .Add(Modes.Get("singleplayer")
-                //TODO .Add(Variant
-                .Start(Turns.Get("Starting the Game")
-                    .Start(Phases.Get("Setup")
-                        .Start(Update_size)
-                        .Next(Create_zeros)
-                        .Next(Create_random_item)
-                        .Next(Create_random_item))
-                    .Next(Phases.Get("end")
-                        .Start(Update_score)))
-                // TODO      .next( available_moves)))
-                .Next(Turns.Get("Turn")
-                    .Start(Phases.Get("Beginning phase")
-                        .Start(Update_size)
-                        .Next(Update_board)
-                        .Next(Input_direction))
-                    .Next(Phases.Get("Move phase")
-                        .Start(Merge_identical_items)
-                        .Next(Move_items))
-                    //.next(create_random_item)
-                    .Next(Phases.Get("Ending phase")
-                        .Start(Update_score)))
-            //)
-            //  TODO     .next( available_moves)))
-            // TODO next(Turns.get("Ending the Game")
-            //  TODO .start(end)
-            //  TODO .next( available_moves)))                  
-            .Build();
+        rules = Games.Get("SinglePlayer Game")
+            .Start(Turns.Get("Starting the Game")
+                .Start(Phases.Get("Setup phase")
+                    .Start(Steps.Get(Update_size))
+                    .Next(Steps.Get(Create_zeros))
+                    .Next(Steps.Get(Create_random_item))
+                    .Next(Steps.Get(Create_random_item)))
+                .Next(Phases.Get("Ending phase")
+                    .Start(Steps.Get(Update_score))))
+            .Next(Turns.Get("Player Turn")
+                .Start(Phases.Get("Beginning phase")
+                    .Start(Steps.Get(Update_size))
+                    .Next(Steps.Get(Update_board))
+                    .Next(Steps.Get(Input_direction)))
+                .Next(Phases.Get("Move phase")
+                    .Start(Steps.Get(Merge_identical_items))
+                    .Next(Steps.Get(Move_items))
+                    .Next(Steps.Get(Create_random_item)))
+                .Next(Phases.Get("Ending phase")
+                    .Start(Steps.Get(Update_score))))
+        .Build();
+
+        //TODO .Add(Modes.Get( "singleplayer" )
+        //TODO .Add(Variant
+        // TODO      .Next(  available_moves )))
+        // )
+        //  TODO     .Next(  available_moves )))
+        // TODO next(Turns.Get( "Ending the Game" )
+        //  TODO .Start( end )
+        //  TODO .Next(  available_moves )))    
     }
 
     //  OBJECT *******************************************************
@@ -203,7 +204,7 @@ public class GameManager2048 : GameManager
         inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
     }
 
-    // FUNCTION(S) *******************************************************
+    // FUNCTION(S ) *******************************************************
 
     static IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {

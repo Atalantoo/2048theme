@@ -1,5 +1,6 @@
 ﻿using System;
 using Commons.Lang;
+using System.Diagnostics;
 
 namespace Commons.Game
 {
@@ -95,23 +96,23 @@ namespace Commons.Game
         }
     }
 
-    public class Phases : RuleBuilder<Action>
+    public class Phases : RuleBuilder<Steps>
     {
         public static Phases Get(string name)
         {
             return new Phases()
             {
                 name = name,
-                childs = new Action[0]
+                childs = new Steps[0]
             };
         }
 
-        public Phases Start(Action child)
+        public Phases Start(Steps child)
         {
             return Next(child);
         }
 
-        public Phases Next(Action child)
+        public Phases Next(Steps child)
         {
             childs = Arrays.Add(childs, child);
             return this;
@@ -122,11 +123,31 @@ namespace Commons.Game
             Phase obj = new Phase()
             {
                 name = name,
-                childs = new Action[this.childs.Length]
+                childs = new Step[this.childs.Length]
             };
             for (int i = 0; i < this.childs.Length; i++)
-                obj.childs[i] = this.childs[i];
+                obj.childs[i] = this.childs[i].Build();
             return obj;
+        }
+    }
+
+    public class Steps : RuleBuilder<Action>
+    {
+        public static Steps Get(Action action)
+        {
+            return new Steps()
+            {
+                name = action.Method.Name,
+                childs = new Action[1] { action }
+            };
+        }
+        public Step Build()
+        {
+            return new Step()
+            {
+                name = name,
+                childs = new Action[1] { childs[0] }
+            };
         }
     }
 
@@ -156,27 +177,34 @@ namespace Commons.Game
         }
     }
 
-    public class Phase : Rule<Action>
+    public class Phase : Rule<Step>
     {
         public void Execute()
         {
             Console.WriteLine("    Phase: " + name);
-            foreach (Action i in childs)
-            {
-                Console.WriteLine("      Step: " + i.Method.Name);
-                i.Invoke();
-            }
+            foreach (Step i in childs)
+                i.Execute();
         }
     }
-
+    public class Step : Rule<Action>
+    {
+        public void Execute()
+        {
+            Console.WriteLine("      Step: " + name);
+            Console.WriteLine("        Action: " + name);
+            childs[0].Invoke();
+        }
+    }
     // RULE ENGINE
 
+    [DebuggerDisplay("Name = {name}")]
     public abstract class Rule<T>
     {
         public string name;
         public T[] childs;
     }
 
+    [DebuggerDisplay("Name = {name}")]
     public abstract class RuleBuilder<T>
     {
         public string name;
