@@ -7,54 +7,50 @@ namespace Commons.Game
     // TODO fplit
     // TODO flow
 
-    class CommonsGame
-    {
-    }
-
-    public interface IGamemanager
-    {
-        // GameState turn(GameState inputs);
-    }
-
-    // API
-    public class Game
+    // MANAGER
+    public abstract class GameManager
     {
         public string[][] input;
         public string[][] output;
+        public abstract void Initialize();
     }
 
-    public class Parties
-    {
-        public string _name;
-        public Rounds[] childs;
+    // RULES
+    // Game
+    // Mode
+    // Turn
+    // Phase
+    // Steps
 
-        public static Parties Get(string name)
+    public class Games : RuleBuilder<Turns>
+    {
+        public static Games Get(string name)
         {
-            return new Parties()
+            return new Games()
             {
-                _name = name,
-                childs = new Rounds[0]
+                name = name,
+                childs = new Turns[0]
             };
         }
 
-        public Parties Start(Rounds child)
+        public Games Start(Turns child)
         {
             return Next(child);
         }
 
-        public Parties Next(Rounds child)
+        public Games Next(Turns child)
         {
             childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Party Build()
+        public Game Build()
         {
-            Console.WriteLine("Rule: " + _name + " build()");
-            Party obj = new Party()
+            Console.WriteLine("Rule: " + name + " build()");
+            Game obj = new Game()
             {
-                name = _name,
-                childs = new Round[this.childs.Length]
+                name = name,
+                childs = new Turn[this.childs.Length]
             };
             for (int i = 0; i < this.childs.Length; i++)
                 obj.childs[i] = this.childs[i].Build();
@@ -64,36 +60,33 @@ namespace Commons.Game
         }
     }
 
-    public class Rounds
+    public class Turns : RuleBuilder<Phases>
     {
-        public string _name;
-        public Phases[] childs;
-
-        public static Rounds Get(string name)
+        public static Turns Get(string name)
         {
-            return new Rounds()
+            return new Turns()
             {
-                _name = name,
+                name = name,
                 childs = new Phases[0]
             };
         }
 
-        public Rounds Start(Phases child)
+        public Turns Start(Phases child)
         {
             return Next(child);
         }
 
-        public Rounds Next(Phases child)
+        public Turns Next(Phases child)
         {
             childs = Arrays.Add(childs, child);
             return this;
         }
 
-        public Round Build()
+        public Turn Build()
         {
-            Round obj = new Round()
+            Turn obj = new Turn()
             {
-                name = this._name,
+                name = name,
                 childs = new Phase[this.childs.Length]
             };
             for (int i = 0; i < this.childs.Length; i++)
@@ -102,16 +95,13 @@ namespace Commons.Game
         }
     }
 
-    public class Phases
+    public class Phases : RuleBuilder<Action>
     {
-        public string _name;
-        public Action[] childs;
-
         public static Phases Get(string name)
         {
             return new Phases()
             {
-                _name = name,
+                name = name,
                 childs = new Action[0]
             };
         }
@@ -131,7 +121,7 @@ namespace Commons.Game
         {
             Phase obj = new Phase()
             {
-                name = _name,
+                name = name,
                 childs = new Action[this.childs.Length]
             };
             for (int i = 0; i < this.childs.Length; i++)
@@ -142,19 +132,19 @@ namespace Commons.Game
 
     // IMPL
 
-    public class Party : GameStructure<Round>
+    public class Game : Rule<Turn>
     {
-        public Round Round(string child)
+        public Turn Round(string child)
         {
             Console.WriteLine("Rule: " + name + ", load: " + child);
-            foreach (Round i in childs)
+            foreach (Turn i in childs)
                 if (child.Equals(i.name))
                     return i;
             throw new Exception("Not found");
         }
     }
 
-    public class Round : GameStructure<Phase>
+    public class Turn : Rule<Phase>
     {
         public void Execute()
         {
@@ -166,7 +156,7 @@ namespace Commons.Game
         }
     }
 
-    public class Phase : GameStructure<Action>
+    public class Phase : Rule<Action>
     {
         public void Execute()
         {
@@ -179,11 +169,18 @@ namespace Commons.Game
         }
     }
 
+    // RULE ENGINE
 
-    public abstract class GameStructure<TC>
+    public abstract class Rule<T>
     {
         public string name;
-        public TC[] childs;
+        public T[] childs;
     }
 
+    public abstract class RuleBuilder<T>
+    {
+        public string name;
+        public int level;
+        public T[] childs;
+    }
 }

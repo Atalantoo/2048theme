@@ -7,12 +7,21 @@ using Commons.Lang;
 [TestClass]
 public class GameManagerUnitTest
 {
+
+    GameManager2048 Game()
+    {
+        GameManager2048 game;
+        game = new GameManager2048();
+        game.Initialize();
+        return game;
+    }
+
     [TestMethod]
     public void Usecase_01_init()
     {
         string[][] inp = GameTest.readFile("../../usecase_01_init-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_01_init-o.txt");
-        string[][] res = new GameManager().Init(inp);
+        string[][] res = Game().Start(inp);
         Assert.IsNotNull(exp);
         Assert.IsNotNull(res);
         DisplayResult(res);
@@ -26,7 +35,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_left-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_left-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
@@ -36,7 +45,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_right-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
@@ -46,7 +55,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
@@ -56,7 +65,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
@@ -66,7 +75,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
@@ -76,7 +85,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-o.txt");
-        string[][] res = new GameManager().Turn(inp);
+        string[][] res = Game().Turn(inp);
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }

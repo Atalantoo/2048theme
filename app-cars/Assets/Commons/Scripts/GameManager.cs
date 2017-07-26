@@ -24,9 +24,9 @@ public enum VerticalMovement
 }
 
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
-public class GameManager : Game
+public class GameManager2048 : GameManager
 {
-    Party rules;
+    Game rules;
     int width;
     int height;
     string[][] matrix;
@@ -36,68 +36,65 @@ public class GameManager : Game
     // TODO string[][][] histoStates;
     // TODO string[] histoEvents;
 
-    public GameManager()
-    {
-        Initialize();
-    }
-
     // PUBLIC *******************************************************
 
-    public string[][] Init(string[][] input)
+    public string[][] Start(string[][] startInput)
     {
-        PreConditions.CheckArgument(null != input);
+        PreConditions.CheckArgument(null != startInput);
 
-        this.input = input;
-        rules.Round("init").Execute();
+        input = startInput;
+        rules.Round("Starting the Game").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
         return output;
     }
 
-    public string[][] Turn(string[][] input)
+    public string[][] Turn(string[][] turnInput)
     {
-        PreConditions.CheckArgument(null != input);
+        PreConditions.CheckArgument(null != turnInput);
 
-        this.input = input;
-        rules.Round("turn").Execute();
+        input = turnInput;
+        rules.Round("Turn").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
         return output;
+    }
+
+    public override void Initialize()
+    {
+        rules = Games.Get("Game")
+            //.Add(Modes.Get("singleplayer")
+                .Start(Turns.Get("Starting the Game")
+                    .Start(Phases.Get("Setup")
+                        .Start(Update_size)
+                        .Next(Create_zeros)
+                        .Next(Create_random_item)
+                        .Next(Create_random_item))
+                    .Next(Phases.Get("end")
+                        .Start(Update_score)))
+                // TODO      .next( available_moves)))
+                .Next(Turns.Get("Turn")
+                    .Start(Phases.Get("Beginning phase")
+                        .Start(Update_size)
+                        .Next(Update_board)
+                        .Next(Input_direction))
+                    .Next(Phases.Get("play phase")
+                        .Start(Merge_items)
+                        .Next(Move_items))
+                    //.next(create_random_item)
+                    .Next(Phases.Get("Ending phase")
+                        .Start(Update_score)))
+            //)
+            //  TODO     .next( available_moves)))
+            // TODO next(Turns.get("Ending the Game")
+            //  TODO .start(end)
+            //  TODO .next( available_moves)))                  
+            .Build();
     }
 
     //  PRIVATE *******************************************************
-
-    void Initialize()
-    {
-        rules = Parties.Get("solo_game")
-            .Start(Rounds.Get("init")
-                .Start(Phases.Get("board")
-                    .Start(Update_size)
-                    .Next(Create_zeros)
-                    .Next(Create_random_item)
-                    .Next(Create_random_item))
-                .Next(Phases.Get("end")
-                    .Start(Update_score)))
-            //       .next( available_moves)))
-            .Next(Rounds.Get("turn")
-                .Start(Phases.Get("start")
-                    .Start(Update_size)
-                    .Next(Update_board)
-                    .Next(Input_direction))
-                .Next(Phases.Get("play")
-                    .Start(Merge_items)
-                    .Next(Move_items))
-                //.next(create_random_item)
-                .Next(Phases.Get("end")
-                    .Start(Update_score)))
-            //       .next( available_moves)))
-            //next(Rounds.get("end")
-            //   .start(end)
-            //   .next( available_moves)))
-            .Build();
-    }
 
     void Update_score()
     {
