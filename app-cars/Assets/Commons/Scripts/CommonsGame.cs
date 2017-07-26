@@ -134,9 +134,9 @@ namespace Commons.Game
 
     public class Game : Rule<Turn>
     {
-        public Turn Round(string child)
+        public Turn Turn(string child)
         {
-            Console.WriteLine("Rule: " + name + ", load: " + child);
+            Console.WriteLine("Turn: " + name + ", load: " + child);
             foreach (Turn i in childs)
                 if (child.Equals(i.name))
                     return i;
@@ -148,7 +148,7 @@ namespace Commons.Game
     {
         public void Execute()
         {
-            Console.WriteLine("  Round: " + name + ", execute...");
+            Console.WriteLine("  Turn: " + name + ", execute...");
             foreach (Phase i in childs)
                 i.Execute();
             Console.WriteLine("  Done.");

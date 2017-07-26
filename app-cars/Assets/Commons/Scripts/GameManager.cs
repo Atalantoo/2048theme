@@ -6,44 +6,24 @@ using Commons.Lang;
 using Commons.Game;
 using System.Diagnostics;
 
-public enum GameState
-{
-    Playing, Won, Loss
-}
-public enum InputDirection
-{
-    L, R, T, B
-}
-public enum HorizontalMovement
-{
-    L, R
-}
-public enum VerticalMovement
-{
-    T, B
-}
-
 // https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
 public class GameManager2048 : GameManager
 {
     Game rules;
-    int width;
-    int height;
-    string[][] matrix;
-    // TODO GameState state;
-    // TODO int score;
-    InputDirection inputDir;
-    // TODO string[][][] histoStates;
-    // TODO string[] histoEvents;
 
-    // PUBLIC *******************************************************
+    // API *******************************************************
+
+    public override void Initialize()
+    {
+        InitializeRules();
+    }
 
     public string[][] Start(string[][] startInput)
     {
         PreConditions.CheckArgument(null != startInput);
 
         input = startInput;
-        rules.Round("Starting the Game").Execute();
+        rules.Turn("Starting the Game").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
@@ -55,17 +35,20 @@ public class GameManager2048 : GameManager
         PreConditions.CheckArgument(null != turnInput);
 
         input = turnInput;
-        rules.Round("Turn").Execute();
+        rules.Turn("Turn").Execute();
         output = matrix;
 
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
         return output;
     }
 
-    public override void Initialize()
+    // RULES *******************************************************
+
+    void InitializeRules()
     {
         rules = Games.Get("Game")
-            //.Add(Modes.Get("singleplayer")
+                //TODO .Add(Modes.Get("singleplayer")
+                //TODO .Add(Variant
                 .Start(Turns.Get("Starting the Game")
                     .Start(Phases.Get("Setup")
                         .Start(Update_size)
@@ -80,8 +63,8 @@ public class GameManager2048 : GameManager
                         .Start(Update_size)
                         .Next(Update_board)
                         .Next(Input_direction))
-                    .Next(Phases.Get("play phase")
-                        .Start(Merge_items)
+                    .Next(Phases.Get("Move phase")
+                        .Start(Merge_identical_items)
                         .Next(Move_items))
                     //.next(create_random_item)
                     .Next(Phases.Get("Ending phase")
@@ -94,12 +77,27 @@ public class GameManager2048 : GameManager
             .Build();
     }
 
-    //  PRIVATE *******************************************************
+    //  OBJECT *******************************************************
+    // TODO external Game object ?
+
+    enum GameState { Playing, Won, Loss }
+    enum InputDirection { L, R, T, B }
+    enum HorizontalMovement { L, R }
+    enum VerticalMovement { T, B }
+
+    int width;
+    int height;
+    string[][] matrix;
+    GameState state;
+    int score;
+    InputDirection inputDir;
+    // TODO string[][][] histoStates;
+    // TODO string[] histoEvents;
 
     void Update_score()
     {
-        // TODO state = GameState.Playing;
-        // TODO score = 0;
+        state = GameState.Playing;
+        score = 0;
     }
 
     void Update_size()
@@ -163,7 +161,7 @@ public class GameManager2048 : GameManager
         Debug.Assert(matrix != null && matrix.Length > 0);
     }
 
-    void Merge_items()
+    void Merge_identical_items()
     {
         Debug.Assert(width > 0 && height > 0);
         Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
@@ -176,8 +174,6 @@ public class GameManager2048 : GameManager
                     continue;
                 Action_mergeItems(matrix, y, x, next);
             }
-
-        // TODO  Debug.Assert()
     }
 
     void Move_items()
@@ -195,8 +191,6 @@ public class GameManager2048 : GameManager
                     continue;
                 Action_moveItem(matrix, y, x, next);
             }
-
-        // TODO  Debug.Assert()
     }
 
     void Input_direction()
@@ -209,7 +203,7 @@ public class GameManager2048 : GameManager
         inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
     }
 
-    // STATIC *******************************************************
+    // FUNCTION(S) *******************************************************
 
     static IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {
