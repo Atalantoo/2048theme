@@ -90,6 +90,26 @@ public class GameManagerUnitTest
         GameAssert.AreEqual(exp, res);
     }
 
+    [TestMethod]
+    public void Usecase_05_move_bot()
+    {
+        string[][] inp = GameTest.readFile("../../usecase_05_move_bot-i.txt");
+        string[][] exp = GameTest.readFile("../../usecase_05_move_bot-o.txt");
+        string[][] res = Game().Turn(inp);
+        DisplayResult(res);
+        GameAssert.AreEqual(exp, res);
+    }
+
+    [TestMethod]
+    public void Usecase_05_move_top()
+    {
+        string[][] inp = GameTest.readFile("../../usecase_05_move_top-i.txt");
+        string[][] exp = GameTest.readFile("../../usecase_05_move_top-o.txt");
+        string[][] res = Game().Turn(inp);
+        DisplayResult(res);
+        GameAssert.AreEqual(exp, res);
+    }
+
     // IMPL
 
     private int Count(string[][] matrix, string match)
