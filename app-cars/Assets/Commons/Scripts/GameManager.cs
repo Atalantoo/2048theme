@@ -26,7 +26,7 @@ public class GameManager2048 : GameManager
         rules.Turn("Starting the Game").Execute();
         output = matrix;
 
-        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
+
         return output;
     }
 
@@ -38,7 +38,7 @@ public class GameManager2048 : GameManager
         rules.Turn("Player Turn").Execute();
         output = matrix;
 
-        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
+
         return output;
     }
 
@@ -103,18 +103,12 @@ public class GameManager2048 : GameManager
 
     void Update_size()
     {
-        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
-
         width = Int32.Parse(input[0][0]);
         height = Int32.Parse(input[0][1]);
-
-        Debug.Assert(width > 0 && height > 0);
     }
 
     void Create_zeros()
     {
-        Debug.Assert(width > 0 && height > 0);
-
         matrix = new string[height][];
         for (int y = 0; y < height; y++)
         {
@@ -122,17 +116,10 @@ public class GameManager2048 : GameManager
             for (int x = 0; x < this.width; x++)
                 matrix[y][x] = "0";
         }
-
-        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
-        Debug.Assert(Count(matrix, "0") == width * height);
     }
 
     void Create_random_item()
     {
-        Debug.Assert(width > 0 && height > 0);
-        Debug.Assert(matrix != null && matrix.Length > 0);
-        int old2Ones = Count(matrix, "2");
-
         int freeOnes = Count(matrix, "0");
         Random rnd = new Random();
         int nextOne = rnd.Next(0, freeOnes);
@@ -145,28 +132,18 @@ public class GameManager2048 : GameManager
                 if (nextOne == i)
                     matrix[y][x] = "2";
             }
-
         int new2Ones = Count(matrix, "2");
-        Debug.Assert(new2Ones == old2Ones + 1);
     }
 
     void Update_board()
     {
-        Debug.Assert(width > 0 && height > 0);
-        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
-
         matrix = new string[height][];
         for (int y = 0; y < height; y++)
             matrix[y] = input[1 + y];
-
-        Debug.Assert(matrix != null && matrix.Length > 0);
     }
 
     void Merge_identical_items()
     {
-        Debug.Assert(width > 0 && height > 0);
-        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
-
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
@@ -179,9 +156,6 @@ public class GameManager2048 : GameManager
 
     void Move_items()
     {
-        Debug.Assert(width > 0 && height > 0);
-        Debug.Assert(matrix != null && matrix.Length > 0 && matrix[0].Length > 0);
-
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
@@ -196,9 +170,6 @@ public class GameManager2048 : GameManager
 
     void Input_direction()
     {
-        Debug.Assert(width > 0 && height > 0);
-        Debug.Assert(input != null && input.Length > 0 && input[0].Length > 0);
-
         string str = input[1 + height][0];
         PreConditions.CheckArgument(Enum.IsDefined(typeof(InputDirection), str));
         inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
