@@ -169,8 +169,8 @@ public class GameManager2048 : GameManager
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
-                int next = FoundTwinItem(matrix[y], x, Dir(inputDir));
-                if (next == x)
+                int next = FiundTwinItem(matrix[y], x, Dir(inputDir));
+                if (next == -1)
                     continue;
                 Action_mergeItems(matrix, y, x, next);
             }
@@ -186,7 +186,7 @@ public class GameManager2048 : GameManager
             {
                 if (EmptyItem(matrix, y, x))
                     continue;
-                int next = FoundEmptyItem(matrix[y], x, Dir(inputDir));
+                int next = FiundEmptyItem(matrix[y], x, Dir(inputDir));
                 if (next == x)
                     continue;
                 Action_moveItem(matrix, y, x, next);
@@ -222,7 +222,7 @@ public class GameManager2048 : GameManager
         return dir;
     }
 
-    static int FoundEmptyItem(string[] row, int x, int direction)
+    static int FiundEmptyItem(string[] row, int x, int direction)
     {
         int item = x;
         bool emptyItemFound = true;
@@ -271,12 +271,17 @@ public class GameManager2048 : GameManager
         matrix[y][x] = "0";
     }
 
-    static int FoundTwinItem(string[] row, int x, int direction)
+    static int FiundTwinItem(string[] row, int current, int direction)
     {
-        int item = x;
-        int next = item + direction;
-        if (Arrays.InBound(row, next) && row[x].Equals(row[next]))
-            item = next;
-        return item;
+        int next = current + direction;
+        while (Arrays.InBound(row, next))
+        {
+            if (row[next].Equals(row[current]))
+                return next;
+            if (!row[next].Equals("0"))
+                break;
+            next += direction;
+        }
+        return -1;
     }
 }
