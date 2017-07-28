@@ -2,26 +2,18 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Commons.Test;
-using Commons.Lang;
 
 [TestClass]
 public class GameManagerUnitTest
 {
-
-    GameManager2048 Game()
-    {
-        GameManager2048 game;
-        game = new GameManager2048();
-        game.Initialize();
-        return game;
-    }
 
     [TestMethod]
     public void Usecase_01_init()
     {
         string[][] inp = GameTest.readFile("../../usecase_01_init-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_01_init-o.txt");
-        string[][] res = Game().Start(inp);
+        string[][] res = FromOutputToArray(Game().Start(
+            FromArrayToInput(inp)));
         Assert.IsNotNull(exp);
         Assert.IsNotNull(res);
         DisplayResult(res);
@@ -30,85 +22,63 @@ public class GameManagerUnitTest
         Assert.AreEqual(2, Count(res, "2"));
     }
 
-    [TestMethod]
-    public void Usecase_02_move_mid_to_left()
+    [TestMethod] public void Usecase_02_move_mid_to_left() => Common("usecase_02_move_mid_to_left");
+    [TestMethod] public void Usecase_02_move_mid_to_right() => Common("usecase_02_move_mid_to_right");
+    [TestMethod] public void Usecase_03_move_twins_left() => Common("usecase_03_move_twins_left_to_left");
+    [TestMethod] public void Usecase_03_move_twins_mid_to_right() => Common("usecase_03_move_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => Common("usecase_04_move_blocked_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => Common("usecase_04_move_spaced_twins_mid_to_right");
+    [TestMethod] public void Usecase_05_move_bot() => Common("usecase_05_move_bot");
+    [TestMethod] public void Usecase_05_move_top() => Common("usecase_05_move_top");
+
+    GameManager Game()
     {
-        string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_left-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_left-o.txt");
-        string[][] res = Game().Turn(inp);
+        GameManager game;
+        game = new GameManager();
+        game.Initialize();
+        return game;
+    }
+
+    public void Common(string usecase)
+    {
+        string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
+        string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
+        Game().Reload(
+            FromArrayToInput3(inp));
+        string[][] res = FromOutputToArray(
+            Game().Turn(
+                FromArrayToInput2(inp)));
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
     }
 
-    [TestMethod]
-    public void Usecase_02_move_mid_to_right()
+    GameStartInput FromArrayToInput(string[][] input)
     {
-        string[][] inp = GameTest.readFile("../../usecase_02_move_mid_to_right-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_02_move_mid_to_right-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
+        return new GameStartInput()
+        {
+            Width = Int32.Parse(input[0][0]),
+            Height = Int32.Parse(input[0][1])
+        };
+    }
+    Game FromArrayToInput3(string[][] input)
+    {
+        return new Game()
+        {
+            Width = Int32.Parse(input[0][0]),
+            Height = Int32.Parse(input[0][1])
+        };
+    }
+    GameTurnInput FromArrayToInput2(string[][] input)
+    {
+        return new GameTurnInput()
+        {
+            Width = Int32.Parse(input[0][0]),
+            Height = Int32.Parse(input[0][1])
+        };
     }
 
-    [TestMethod]
-    public void Usecase_03_move_twins_left()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_03_move_twins_left_to_left-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
-
-    [TestMethod]
-    public void Usecase_03_move_twins_mid_to_right()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_03_move_twins_mid_to_right-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
-
-    [TestMethod]
-    public void Usecase_04_move_blocked_twins_mid_to_right()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_04_move_blocked_twins_mid_to_right-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
-
-    [TestMethod]
-    public void Usecase_04_move_spaced_twins_mid_to_right()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_04_move_spaced_twins_mid_to_right-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
-
-    [TestMethod]
-    public void Usecase_05_move_bot()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_05_move_bot-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_05_move_bot-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
-
-    [TestMethod]
-    public void Usecase_05_move_top()
-    {
-        string[][] inp = GameTest.readFile("../../usecase_05_move_top-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_05_move_top-o.txt");
-        string[][] res = Game().Turn(inp);
-        DisplayResult(res);
-        GameAssert.AreEqual(exp, res);
-    }
+    private string[][] FromOutputToArray(Game input)
+         => new string[0][];
 
     // IMPL
 
@@ -125,6 +95,6 @@ public class GameManagerUnitTest
     private void DisplayResult(string[][] res)
     {
         foreach (string[] row in res)
-            Console.WriteLine(Joiner.On(" ").Join(row));
+            Console.WriteLine(row[0] + " " + row[1] + " " + row[2] + " " + row[3]);
     }
 }

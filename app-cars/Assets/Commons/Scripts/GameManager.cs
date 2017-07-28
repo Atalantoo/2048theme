@@ -2,98 +2,133 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using Commons.Lang;
-using Commons.Game;
 using System.Diagnostics;
 
-// https://dgkanatsios.com/2016/01/23/building-the-2048-game-in-unity-via-c-and-visual-studio/
-public class GameManager2048 : GameManager
+// API *******************************************************
+public enum GameState { Playing, Won, Loss }
+public enum InputDirection { L, R, T, B }
+public class GameStartInput
 {
-    Game rules;
+    public int Width;
+    public int Height;
+}
+public class GameTurnInput
+{
+    public string Move;
+}
+public class Game
+{
+    public int Width;
+    public int Height;
+    public int[,] board;
+    public GameState state;
+    public int score;
+    public InputDirection[] AvailableMoves;
+}
+public class GameManager
+{
 
-    // API *******************************************************
+    public void Initialize() { InitializeRules(); }
+    public Game Start(GameStartInput input) { actionStart.Invoke(input); return Game2(); }
+    public Game Turn(GameTurnInput input) { actionTurn.Invoke(input); return Game2(); }
+    public Game Reload(Game input) { actionReload.Invoke(input); return Game2(); }
 
-    public override void Initialize()
+    Game Game2()
     {
-        InitializeRules();
-    }
-
-    public string[][] Start(string[][] startInput)
-    {
-        PreConditions.CheckArgument(null != startInput);
-
-        input = startInput;
-        rules.Turn("Starting the Game").Execute();
-        output = matrix;
-
-
-        return output;
-    }
-
-    public string[][] Turn(string[][] turnInput)
-    {
-        PreConditions.CheckArgument(null != turnInput);
-
-        input = turnInput;
-        rules.Turn("Player Turn").Execute();
-        output = matrix;
-
-
-        return output;
+        return new Game()
+        {
+        };
     }
 
     // RULES *******************************************************
 
-    void InitializeRules()
-    {
-        rules = Games.Get("SinglePlayer Game")
-            .Start(Turns.Get("Starting the Game")
-                .Start(Phases.Get("Setup phase")
-                    .Start(Steps.Get(Update_size))
-                    .Next(Steps.Get(Create_zeros))
-                    .Next(Steps.Get(Create_random_item))
-                    .Next(Steps.Get(Create_random_item)))
-                .Next(Phases.Get("Ending phase")
-                    .Start(Steps.Get(Update_score))))
-            .Next(Turns.Get("Player Turn")
-                .Start(Phases.Get("Beginning phase")
-                    .Start(Steps.Get(Update_size))
-                    .Next(Steps.Get(Update_board))
-                    .Next(Steps.Get(Input_direction)))
-                .Next(Phases.Get("Move phase")
-                    .Start(Steps.Get(Merge_identical_items))
-                    .Next(Steps.Get(Move_items))
-                    .Next(Steps.Get(Create_random_item)))
-                .Next(Phases.Get("Ending phase")
-                    .Start(Steps.Get(Update_score))))
-        .Build();
+    Action<GameStartInput> actionStart;
+    Action<Game> actionReload;
+    Action<GameTurnInput> actionTurn;
 
+    public void InitializeRules()
+    {
         //TODO .Add(Modes.Get( "singleplayer" )
         //TODO .Add(Variant
-        // TODO      .Next(  available_moves )))
-        // )
-        //  TODO     .Next(  available_moves )))
+        actionReload = (i) =>
+        { // Starting_the_Game_Turn
+            { // Setup_Phase
+                Clean_game_states();
+                Reload_Board(i);
+            }
+            { // End
+                Update_score();
+                //  TODO     .Next(  available_moves )))
+                Return();
+            }
+        };
+        actionStart = (i) =>
+        { // Starting_the_Game_Turn
+            { // Setup_Phase
+                Update_input(i);
+                Clean_game_states();
+                Fill_with_zeros_items();
+                Create_random_item();
+                Create_random_item();
+            }
+            { // End
+                Update_score();
+                //  TODO     .Next(  available_moves )))
+                Return();
+            }
+        };
+        actionTurn = (i) =>
+        { // Player Turn
+            { // Beginning phase
+                Input_direction(i);
+            }
+            {  // Move phase
+                Merge_identical_items();
+                Move_items();
+                Create_random_item();
+            }
+            { // End
+                Update_score();
+                //  TODO     .Next(  available_moves )))
+                Return();
+            }
+        };
         // TODO next(Turns.Get( "Ending the Game" )
         //  TODO .Start( end )
-        //  TODO .Next(  available_moves )))    
+        //  TODO .Next(  available_moves )))   
     }
 
     //  OBJECT *******************************************************
     // TODO external Game object ?
 
-    enum GameState { Playing, Won, Loss }
-    enum InputDirection { L, R, T, B }
     enum HorizontalMovement { L, R }
     enum VerticalMovement { T, B }
+    class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
+    private const int NEW = 2;
+    private const int FREE = 0;
 
     int width;
     int height;
-    string[][] matrix;
+    int[,] matrix;
     GameState state;
     int score;
     InputDirection inputDir;
     // TODO string[][][] histoStates;
     // TODO string[] histoEvents;
+
+    void Update_input(GameStartInput input)
+    {
+        width = input.Width;
+        height = input.Height;
+    }
+
+    void Clean_game_states()
+    {
+        width = -1;
+        height = -1;
+        matrix = null;
+        score = -1;
+    }
 
     void Update_score()
     {
@@ -101,45 +136,19 @@ public class GameManager2048 : GameManager
         score = 0;
     }
 
-    void Update_size()
+    void Fill_with_zeros_items()
     {
-        width = Int32.Parse(input[0][0]);
-        height = Int32.Parse(input[0][1]);
-    }
-
-    void Create_zeros()
-    {
-        matrix = new string[height][];
+        matrix = new int[height, width];
         for (int y = 0; y < height; y++)
-        {
-            matrix[y] = new string[width];
-            for (int x = 0; x < this.width; x++)
-                matrix[y][x] = "0";
-        }
+            for (int x = 0; x < width; x++)
+                matrix[y, x] = FREE;
     }
 
     void Create_random_item()
     {
-        int freeOnes = Count(matrix, "0");
-        Random rnd = new Random();
-        int nextOne = rnd.Next(0, freeOnes);
-        int i = 0;
-        for (int y = 0; y < width; y++)
-            for (int x = 0; x < height; x++)
-            {
-                if (EmptyItem(matrix, y, x))
-                    i++;
-                if (nextOne == i)
-                    matrix[y][x] = "2";
-            }
-        int new2Ones = Count(matrix, "2");
-    }
-
-    void Update_board()
-    {
-        matrix = new string[height][];
-        for (int y = 0; y < height; y++)
-            matrix[y] = input[1 + y];
+        Point[] freeItems = GetEmptyItems();
+        int i = new Random().Next(0, freeItems.Length);
+        matrix[freeItems[i].y, freeItems[i].x] = NEW;
     }
 
     void Merge_identical_items()
@@ -147,10 +156,10 @@ public class GameManager2048 : GameManager
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
-                int next = FiundTwinItem(matrix[y], x, Dir(inputDir));
+                int next = FundTwinItem(y, x, Dir(inputDir));
                 if (next == -1)
                     continue;
-                Action_mergeItems(matrix, y, x, next);
+                Action_mergeItems(y, x, next);
             }
     }
 
@@ -159,101 +168,101 @@ public class GameManager2048 : GameManager
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
-                if (EmptyItem(matrix, y, x))
+                if (EmptyItem(y, x))
                     continue;
-                int next = FiundEmptyItem(matrix[y], x, Dir(inputDir));
+                int next = FindEmptyItem(y, x, Dir(inputDir));
                 if (next == x)
                     continue;
-                Action_moveItem(matrix, y, x, next);
+                Action_moveItem(y, x, next);
             }
     }
 
-    void Input_direction()
+    private void Input_direction(GameTurnInput i)
     {
-        string str = input[1 + height][0];
-        PreConditions.CheckArgument(Enum.IsDefined(typeof(InputDirection), str));
-        inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), str);
+        inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), i.Move);
+    }
+
+    private void Reload_Board(Game i)
+    {
+        width = i.Width;
+        height = i.Height;
+        matrix = i.board;
+    }
+
+    private void Return()
+    {
+        throw new NotImplementedException();
     }
 
     // FUNCTION(S ) *******************************************************
 
-    static IEnumerable<int> ColumnNumbers(InputDirection move, int width)
+    IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {
-        IEnumerable<int> nbr;
         HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
-        nbr = Enumerable.Range(0, width);
-        nbr = (mov == HorizontalMovement.L) ? nbr : nbr.Reverse();
-        return nbr;
+        IEnumerable<int>  nbr = Enumerable.Range(0, width);
+        return (mov == HorizontalMovement.L) ? nbr : nbr.Reverse();
     }
 
-    static int Dir(InputDirection move)
+    int Dir(InputDirection move)
     {
-        int dir;
         HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
-        dir = (mov == HorizontalMovement.L) ? -1 : 1;
-        return dir;
+        return (mov == HorizontalMovement.L) ? -1 : 1;
     }
 
-    static int FiundEmptyItem(string[] row, int x, int direction)
+    int FindEmptyItem(int y, int xStart, int direction)
     {
-        int item = x;
+        int x = xStart;
         bool emptyItemFound = true;
         while (emptyItemFound)
         {
-            int next = item + direction;
-            emptyItemFound = Arrays.InBound(row, next) && EmptyItem(row, next);
+            int next = x + direction;
+            emptyItemFound = (next >= 0 && next < width) && EmptyItem(y, next);
             if (emptyItemFound)
-                item = next;
-            else
-                return item;
-        }
-        return item;
-    }
-
-    static int Count(string[][] matrix, string match)
-    {
-        int res = 0;
-        for (int y = 0; y < matrix.Length; y++)
-            for (int x = 0; x < matrix[0].Length; x++)
-                if (match.Equals(matrix[y][x]))
-                    res++;
-        return res;
-    }
-
-    static bool EmptyItem(string[] row, int x)
-    {
-        return "0".Equals(row[x]);
-    }
-
-    static bool EmptyItem(string[][] matrix, int y, int x)
-    {
-        return "0".Equals(matrix[y][x]);
-    }
-
-    static void Action_mergeItems(string[][] matrix, int y, int x, int next)
-    {
-        int val = Int32.Parse(matrix[y][x]) * 2;
-        matrix[y][x] = val.ToString();
-        matrix[y][next] = "0";
-    }
-
-    static void Action_moveItem(string[][] matrix, int y, int x, int next)
-    {
-        matrix[y][next] = matrix[y][x];
-        matrix[y][x] = "0";
-    }
-
-    static int FiundTwinItem(string[] row, int current, int direction)
-    {
-        int next = current + direction;
-        while (Arrays.InBound(row, next))
-        {
-            if (row[next].Equals(row[current]))
                 return next;
-            if (!row[next].Equals("0"))
-                break;
-            next += direction;
+            else
+                return x;
         }
+        throw new Exception();
+    }
+
+    Point[] GetEmptyItems()
+    {
+        List<Point> res = new List<Point>();
+        for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                if (FREE.Equals(matrix[y, x]))
+                    res.Add(new Point(y, x));
+        return res.ToArray();
+    }
+
+    bool EmptyItem(int y, int x)
+    {
+        return FREE.Equals(matrix[y, x]);
+    }
+
+    void Action_mergeItems(int y, int x, int next)
+    {
+        int val = matrix[y, x] * 2;
+        matrix[y, x] = val;
+        matrix[y, next] = FREE;
+    }
+
+    void Action_moveItem(int y, int x, int next)
+    {
+        matrix[y, next] = matrix[y, x];
+        matrix[y, x] = FREE;
+    }
+
+    int FundTwinItem(int y, int xCurrent, int direction)
+    {
+        int x = xCurrent + direction;
+        while (x >= 0 && x < width)
+            if (matrix[y, xCurrent].Equals(matrix[y, x]))
+                return x;
+            else if (!FREE.Equals(matrix[y, x]))
+                break;
+            else
+                x += direction;
         return -1;
     }
 }
