@@ -145,7 +145,7 @@ public class GameManager : IGameManager
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
-                int next = FundTwinItem(y, x, Dir(inputDir));
+                int next = FindTwinItem(y, x, Dir(inputDir));
                 if (next == -1)
                     continue;
                 Action_mergeItems(y, x, next);
@@ -157,12 +157,13 @@ public class GameManager : IGameManager
         for (int y = 0; y < height; y++)
             foreach (int x in ColumnNumbers(inputDir, width))
             {
-                if (EmptyItem(y, x))
+                if (FREE.Equals(matrix[y, x]))
                     continue;
                 int next = FindEmptyItem(y, x, Dir(inputDir));
                 if (next == x)
                     continue;
-                Action_moveItem(y, x, next);
+                matrix[y, next] = matrix[y, x];
+                matrix[y, x] = FREE;
             }
     }
 
@@ -208,7 +209,7 @@ public class GameManager : IGameManager
         while (emptyItemFound)
         {
             int next = x + direction;
-            emptyItemFound = (next >= 0 && next < width) && EmptyItem(y, next);
+            emptyItemFound = (next >= 0 && next < width) && FREE.Equals(matrix[y, next]);
             if (emptyItemFound)
                 x = next;
         }
@@ -225,11 +226,6 @@ public class GameManager : IGameManager
         return res.ToArray();
     }
 
-    bool EmptyItem(int y, int x)
-    {
-        return FREE.Equals(matrix[y, x]);
-    }
-
     void Action_mergeItems(int y, int x, int next)
     {
         int val = matrix[y, x] * 2;
@@ -237,13 +233,7 @@ public class GameManager : IGameManager
         matrix[y, next] = FREE;
     }
 
-    void Action_moveItem(int y, int x, int next)
-    {
-        matrix[y, next] = matrix[y, x];
-        matrix[y, x] = FREE;
-    }
-
-    int FundTwinItem(int y, int xCurrent, int direction)
+    int FindTwinItem(int y, int xCurrent, int direction)
     {
         int x = xCurrent + direction;
         while (x >= 0 && x < width)
