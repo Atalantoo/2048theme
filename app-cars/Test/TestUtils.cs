@@ -33,7 +33,7 @@ namespace Commons.Test
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected.Length, actual.Length);
             for (int i = 0; i < expected.Length; i++)
-                if ("?".Equals(expected[i]) == false)
+                if (!"?".Equals(expected[i]))
                     Assert.AreEqual(expected[i], actual[i]);
         }
 

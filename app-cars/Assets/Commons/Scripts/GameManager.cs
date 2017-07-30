@@ -5,16 +5,12 @@ using System.Linq;
 using System.Diagnostics;
 
 // API *******************************************************
-public enum GameState { Playing, Won, Loss }
-public enum InputDirection { L, R, T, B }
-public class GameStartInput
+
+public interface IGameManager
 {
-    public int Width;
-    public int Height;
-}
-public class GameTurnInput
-{
-    public string Move;
+    Game Start(GameStartInput input);
+    Game Turn(GameTurnInput input);
+    Game Reload(Game input);
 }
 public class Game
 {
@@ -25,78 +21,71 @@ public class Game
     public int score;
     public InputDirection[] AvailableMoves;
 }
-public class GameManager
+public class GameStartInput
 {
+    public int Width;
+    public int Height;
+}
+public class GameTurnInput
+{
+    public string Move;
+}
+public enum GameState { Playing, Won, Loss }
+public enum InputDirection { L, R, T, B }
 
-    public void Initialize() { InitializeRules(); }
-    public Game Start(GameStartInput input) { actionStart.Invoke(input); return Game2(); }
-    public Game Turn(GameTurnInput input) { actionTurn.Invoke(input); return Game2(); }
-    public Game Reload(Game input) { actionReload.Invoke(input); return Game2(); }
+// IMPL *******************************************************
 
-    Game Game2()
-    {
-        return new Game()
-        {
-        };
+public class GameManager : IGameManager
+{
+    public Game Start(GameStartInput input)
+    { // Starting_the_Game_Turn
+        { // Setup_Phase
+            Clean_game_states();
+            Update_input(input);
+            Fill_with_zeros_items();
+            Create_random_item();
+            Create_random_item();
+        }
+        { // End
+            Update_score();
+            //  TODO     .Next(  available_moves )))
+        }
+        return Return();
     }
 
-    // RULES *******************************************************
-
-    Action<GameStartInput> actionStart;
-    Action<Game> actionReload;
-    Action<GameTurnInput> actionTurn;
-
-    public void InitializeRules()
-    {
-        //TODO .Add(Modes.Get( "singleplayer" )
-        //TODO .Add(Variant
-        actionReload = (i) =>
-        { // Starting_the_Game_Turn
-            { // Setup_Phase
-                Clean_game_states();
-                Reload_Board(i);
-            }
-            { // End
-                Update_score();
-                //  TODO     .Next(  available_moves )))
-                Return();
-            }
-        };
-        actionStart = (i) =>
-        { // Starting_the_Game_Turn
-            { // Setup_Phase
-                Update_input(i);
-                Clean_game_states();
-                Fill_with_zeros_items();
-                Create_random_item();
-                Create_random_item();
-            }
-            { // End
-                Update_score();
-                //  TODO     .Next(  available_moves )))
-                Return();
-            }
-        };
-        actionTurn = (i) =>
-        { // Player Turn
-            { // Beginning phase
-                Input_direction(i);
-            }
-            {  // Move phase
-                Merge_identical_items();
-                Move_items();
-                Create_random_item();
-            }
-            { // End
-                Update_score();
-                //  TODO     .Next(  available_moves )))
-                Return();
-            }
-        };
-        // TODO next(Turns.Get( "Ending the Game" )
-        //  TODO .Start( end )
-        //  TODO .Next(  available_moves )))   
+    public Game Turn(GameTurnInput input)
+    { // Player Turn
+        { // Beginning phase
+            Input_direction(input);
+        }
+        {  // Move phase
+            Merge_identical_items();
+            Move_items();
+            Create_random_item();
+        }
+        { // End
+            Update_score();
+            //  TODO     .Next(  available_moves )))
+        }
+        return Return();
     }
+
+    public Game Reload(Game input)
+    { // Starting_the_Game_Turn
+        { // Setup_Phase
+            Clean_game_states();
+            Reload_Board(input);
+        }
+        { // End
+            Update_score();
+            //  TODO     .Next(  available_moves )))
+        }
+        return Return();
+    }
+
+    // TODO next(Turns.Get( "Ending the Game" )
+    //  TODO .Start( end )
+    //  TODO .Next(  available_moves )))   
 
     //  OBJECT *******************************************************
     // TODO external Game object ?
@@ -177,21 +166,24 @@ public class GameManager
             }
     }
 
-    private void Input_direction(GameTurnInput i)
+    void Input_direction(GameTurnInput i)
     {
         inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), i.Move);
     }
 
-    private void Reload_Board(Game i)
+    void Reload_Board(Game i)
     {
         width = i.Width;
         height = i.Height;
         matrix = i.board;
     }
 
-    private void Return()
+    Game Return()
     {
-        throw new NotImplementedException();
+        return new Game()
+        {
+            board = matrix
+        };
     }
 
     // FUNCTION(S ) *******************************************************
@@ -199,7 +191,7 @@ public class GameManager
     IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {
         HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
-        IEnumerable<int>  nbr = Enumerable.Range(0, width);
+        IEnumerable<int> nbr = Enumerable.Range(0, width);
         return (mov == HorizontalMovement.L) ? nbr : nbr.Reverse();
     }
 
@@ -218,11 +210,9 @@ public class GameManager
             int next = x + direction;
             emptyItemFound = (next >= 0 && next < width) && EmptyItem(y, next);
             if (emptyItemFound)
-                return next;
-            else
-                return x;
+                x = next;
         }
-        throw new Exception();
+        return x;
     }
 
     Point[] GetEmptyItems()

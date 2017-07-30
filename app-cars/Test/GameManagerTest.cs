@@ -12,7 +12,7 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../usecase_01_init-i.txt");
         string[][] exp = GameTest.readFile("../../usecase_01_init-o.txt");
-        string[][] res = FromOutputToArray(Game().Start(
+        string[][] res = FromOutputToArray(game.Start(
             FromArrayToInput(inp)));
         Assert.IsNotNull(exp);
         Assert.IsNotNull(res);
@@ -31,11 +31,11 @@ public class GameManagerUnitTest
     [TestMethod] public void Usecase_05_move_bot() => Common("usecase_05_move_bot");
     [TestMethod] public void Usecase_05_move_top() => Common("usecase_05_move_top");
 
-    GameManager Game()
+    static GameManager game = Init();
+    static GameManager Init()
     {
         GameManager game;
         game = new GameManager();
-        game.Initialize();
         return game;
     }
 
@@ -43,10 +43,10 @@ public class GameManagerUnitTest
     {
         string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
         string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
-        Game().Reload(
+        game.Reload(
             FromArrayToInput3(inp));
         string[][] res = FromOutputToArray(
-            Game().Turn(
+            game.Turn(
                 FromArrayToInput2(inp)));
         DisplayResult(res);
         GameAssert.AreEqual(exp, res);
@@ -62,23 +62,40 @@ public class GameManagerUnitTest
     }
     Game FromArrayToInput3(string[][] input)
     {
-        return new Game()
+        Game g = new Game()
         {
             Width = Int32.Parse(input[0][0]),
-            Height = Int32.Parse(input[0][1])
+            Height = Int32.Parse(input[0][1]),
         };
+        g.board = new int[,]{
+            { Int32.Parse(input[1][0]), Int32.Parse(input[1][1]), Int32.Parse(input[1][2]), Int32.Parse(input[1][3]) },
+            { Int32.Parse(input[2][0]), Int32.Parse(input[2][1]), Int32.Parse(input[2][2]), Int32.Parse(input[2][3]) },
+            { Int32.Parse(input[3][0]), Int32.Parse(input[3][1]), Int32.Parse(input[3][2]), Int32.Parse(input[3][3]) },
+            { Int32.Parse(input[4][0]), Int32.Parse(input[4][1]), Int32.Parse(input[4][2]), Int32.Parse(input[4][3]) }
+        };
+        return g;
     }
     GameTurnInput FromArrayToInput2(string[][] input)
     {
         return new GameTurnInput()
         {
-            Width = Int32.Parse(input[0][0]),
-            Height = Int32.Parse(input[0][1])
+            Move = input[5][0]
         };
     }
 
-    private string[][] FromOutputToArray(Game input)
-         => new string[0][];
+    private string[][] FromOutputToArray(Game output)
+    {
+        string[][] res = new string[4][];
+        for (int i = 0; i < 4; i++)
+        {
+            res[i] = new string[4];
+            for (int j = 0; j < 4; j++)
+            {
+                res[i][j] = "" + output.board[i, j];
+            }
+        }
+        return res;
+    }
 
     // IMPL
 
