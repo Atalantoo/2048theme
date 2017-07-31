@@ -117,7 +117,7 @@ public class GameManager : Game, IGameManager
     void Update_score()
     {
         State = GameState.Playing;
-        Score = 0;
+        Score = Calc_score(Width, Board);
     }
 
     void Fill_with_zeros_items()
@@ -148,7 +148,8 @@ public class GameManager : Game, IGameManager
         {
             Width = Width,
             Height = Height,
-            Board = Board
+            Board = Board,
+            Score = Score
         };
     }
 
@@ -230,6 +231,34 @@ public class GameManager : Game, IGameManager
                     }
                 }
     }
+
+
+    public static int Calc_score(int width, int[,] matrix)
+    {
+        int score = 0;
+        for (int y = 0; y < width; y++)
+            for (int x = 0; x < width; x++)
+                score += Calc_score(matrix[y, x]);
+        return score;
+    }
+    public static int Calc_score(int value)
+    {
+        int[] val = new int[2049];
+        val[0] = 0;
+        val[2] = 0;
+        val[4] = 4;
+        val[8] = 8 + 2 * val[4];
+        val[16] = 16 + 2 * val[8];
+        val[32] = 32 + 2 * val[16];
+        val[64] = 64 + 2 * val[32];
+        val[128] = 128 + 2 * val[64];
+        val[256] = 256 + 2 * val[128];
+        val[512] = 512 + 2 * val[256];
+        val[1024] = 1024 + 2 * val[512];
+        val[2048] = 2048 + 2 * val[1024];
+        return val[value];
+    }
+
 
     // FUNCTION(S ) *******************************************************
 

@@ -86,18 +86,17 @@ public class GameManagerUnitTest
 
     private string[][] FromOutputToArray(Game output)
     {
-        string[][] res = new string[1+4][];
-        res[0] = new string[2];
-        res[0][0] = output.Width.ToString();
-        res[0][1] = output.Height.ToString();
+        string[][] res = new string[1 + 4+1][];
+        res[0] = new string[] { output.Width.ToString(), output.Height.ToString() };
         for (int i = 0; i < 4; i++)
         {
-            res[i+1] = new string[4];
+            res[i + 1] = new string[4];
             for (int j = 0; j < 4; j++)
             {
-                res[i+1][j] = "" + output.Board[i, j];
+                res[i + 1][j] = "" + output.Board[i, j];
             }
         }
+        res[5] = new string[] { output.Score.ToString() };
         return res;
     }
 
@@ -115,7 +114,63 @@ public class GameManagerUnitTest
 
     private void DisplayResult(string[][] res)
     {
+        Console.WriteLine(res[0][0] + " " + res[0][1]);
         for (int i = 1; i < 5; i++)
             Console.WriteLine(res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
+        Console.WriteLine(res[5][0]);
+    }
+
+    [TestMethod]
+    public void Test_Calc_score()
+    {
+        Assert.AreEqual(0,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,0,0,0 },
+                { 0,0,0,0 },
+                { 0,0,0,0 },
+                { 0,0,0,0 }
+        }));
+        Assert.AreEqual(0,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,0,0,2 },
+                { 0,0,0,2 },
+                { 0,0,0,0 },
+                { 0,0,0,0 }
+        }));
+        Assert.AreEqual(4,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,0,0,4 },
+                { 0,0,0,2 },
+                { 0,0,0,0 },
+                { 0,0,0,0 }
+        }));
+        Assert.AreEqual(16,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,0,0,8 },
+                { 0,0,0,2 },
+                { 0,0,0,2 },
+                { 2,0,0,2 }
+        }));
+        Assert.AreEqual(24,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,2,2,8 },
+                { 0,0,0,4 },
+                { 0,0,0,4 },
+                { 0,0,0,0 }
+        }));
+        Assert.AreEqual(32,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,2,2,8 },
+                { 0,0,2,8 },
+                { 0,0,0,0 },
+                { 0,0,0,0 }
+        }));
+        Assert.AreEqual(52,
+            GameManager.Calc_score(4, new int[,]{
+                { 0,2,4,16 },
+                { 0,0,0,0 },
+                { 0,0,0,0 },
+                { 2,0,0,0 }
+                }));
     }
 }
