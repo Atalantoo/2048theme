@@ -4,3 +4,5 @@
 ?    ?     ?     ?
 512  ?    512    ?
 8192
+Playing
+Top Bottom Left Right

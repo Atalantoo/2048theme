@@ -86,7 +86,7 @@ public class GameManagerUnitTest
 
     private string[][] FromOutputToArray(Game output)
     {
-        string[][] res = new string[1 + 4 + 1][];
+        string[][] res = new string[1 + 4 + 1 + 1 + 1][];
         res[0] = new string[] { output.Width.ToString(), output.Height.ToString() };
         for (int i = 0; i < 4; i++)
         {
@@ -97,6 +97,12 @@ public class GameManagerUnitTest
             }
         }
         res[5] = new string[] { output.Score.ToString() };
+        res[6] = new string[] { output.State.ToString() };
+        res[7] = new string[output.AvailableMoves.Length];
+        for (int i = 0; i < output.AvailableMoves.Length; i++)
+        {
+            res[7][i] = output.AvailableMoves[i].ToString();
+        }
         return res;
     }
 
@@ -118,6 +124,9 @@ public class GameManagerUnitTest
         for (int i = 1; i < 5; i++)
             Console.WriteLine(res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
         Console.WriteLine(res[5][0]);
+        Console.WriteLine(res[6][0]);
+        foreach (string s in res[7])
+            Console.Write(s + " ");
     }
 
     [TestMethod]

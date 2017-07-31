@@ -17,8 +17,8 @@ public class Game
     public int Width;
     public int Height;
     public int[,] Board;
-    public GameState State;
     public int Score;
+    public GameState State;
     public Movement[] AvailableMoves;
 }
 public class GameStartInput
@@ -47,9 +47,9 @@ public class GameManager : Game, IGameManager
             Create_random_item();
         }
         { // End
-            Update_score();
-            Update_State();
             Calc_available_moves();
+            Update_State();
+            Update_score();
         }
         return Return();
     }
@@ -65,9 +65,9 @@ public class GameManager : Game, IGameManager
             Create_random_item();
         }
         { // End
-            Update_score();
-            Update_State();
             Calc_available_moves();
+            Update_State();
+            Update_score();
         }
         return Return();
     }
@@ -79,9 +79,9 @@ public class GameManager : Game, IGameManager
             Reload_Board(input);
         }
         { // End
-            Update_score();
-            Update_State();
             Calc_available_moves();
+            Update_State();
+            Update_score();
         }
         return Return();
     }
@@ -122,8 +122,12 @@ public class GameManager : Game, IGameManager
 
     void Update_State()
     {
-        State = GameState.Playing;
-        // TODO
+        if (AvailableMoves.Length > 0)
+            State = GameState.Playing;
+        else if (GetItems(Width, Board, 2048).Length > 0)
+            State = GameState.Won;
+        else
+            State = GameState.Loss;
     }
 
     void Fill_with_zeros_items()
@@ -136,7 +140,7 @@ public class GameManager : Game, IGameManager
 
     void Create_random_item()
     {
-        Point[] freeItems = GetEmptyItems(Width, Board);
+        Point[] freeItems = GetItems(Width, Board, FREE);
         int i = new Random().Next(0, freeItems.Length);
         Board[freeItems[i].y, freeItems[i].x] = NEW;
     }
@@ -155,7 +159,9 @@ public class GameManager : Game, IGameManager
             Width = Width,
             Height = Height,
             Board = Board,
-            Score = Score
+            Score = Score,
+            State = State,
+            AvailableMoves = AvailableMoves
         };
     }
 
@@ -312,16 +318,6 @@ public class GameManager : Game, IGameManager
         return ((int)move == -1) ? Enumerable.Range(0, width) : Enumerable.Range(0, width).Reverse();
     }
 
-    static Point[] GetEmptyItems(int Width, int[,] Board)
-    {
-        List<Point> res = new List<Point>();
-        for (int y = 0; y < Width; y++)
-            for (int x = 0; x < Width; x++)
-                if (FREE.Equals(Board[y, x]))
-                    res.Add(new Point(y, x));
-        return res.ToArray();
-    }
-
     public static int Calc_score(int width, int[,] matrix)
     {
         int score = 0;
@@ -351,7 +347,7 @@ public class GameManager : Game, IGameManager
     public static Movement[] Calc_available_moves(int Width, int[,] Board)
     {
         List<Movement> moves = new List<Movement>();
-        bool hasFree = GetEmptyItems(Width, Board).Length > 0;
+        bool hasFree = GetItems(Width, Board, FREE).Length > 0;
         if (hasFree)
         {
             moves.Add(Movement.Top);
@@ -389,10 +385,18 @@ public class GameManager : Game, IGameManager
     {
         for (int y = 0; y < width; y++)
             for (int x = 0; x < width - 1; x++)
-                if (board[y, x] == board[y , x + 1])
+                if (board[y, x] == board[y, x + 1])
                     return true;
         return false;
     }
 
-
+    static Point[] GetItems(int Width, int[,] Board, int value)
+    {
+        List<Point> res = new List<Point>();
+        for (int y = 0; y < Width; y++)
+            for (int x = 0; x < Width; x++)
+                if (value.Equals(Board[y, x]))
+                    res.Add(new Point(y, x));
+        return res.ToArray();
+    }
 }
