@@ -22,14 +22,15 @@ public class GameManagerUnitTest
         Assert.AreEqual(2, Count(res, "2"));
     }
 
-    [TestMethod] public void Usecase_02_move_mid_to_left() => Common("usecase_02_move_mid_to_left");
-    [TestMethod] public void Usecase_02_move_mid_to_right() => Common("usecase_02_move_mid_to_right");
-    [TestMethod] public void Usecase_03_move_twins_left() => Common("usecase_03_move_twins_left_to_left");
-    [TestMethod] public void Usecase_03_move_twins_mid_to_right() => Common("usecase_03_move_twins_mid_to_right");
-    [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => Common("usecase_04_move_blocked_twins_mid_to_right");
-    [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => Common("usecase_04_move_spaced_twins_mid_to_right");
-    [TestMethod] public void Usecase_05_move_bot() => Common("usecase_05_move_bot");
-    [TestMethod] public void Usecase_05_move_top() => Common("usecase_05_move_top");
+    [TestMethod] public void Usecase_02_move_mid_to_left() => TestUniqueTurn("usecase_02_move_mid_to_left");
+    [TestMethod] public void Usecase_02_move_mid_to_right() => TestUniqueTurn("usecase_02_move_mid_to_right");
+    [TestMethod] public void Usecase_03_move_twins_left() => TestUniqueTurn("usecase_03_move_twins_left_to_left");
+    [TestMethod] public void Usecase_03_move_twins_mid_to_right() => TestUniqueTurn("usecase_03_move_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => TestUniqueTurn("usecase_04_move_blocked_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => TestUniqueTurn("usecase_04_move_spaced_twins_mid_to_right");
+    [TestMethod] public void Usecase_05_move_bot() => TestUniqueTurn("usecase_05_move_bot");
+    [TestMethod] public void Usecase_05_move_top() => TestUniqueTurn("usecase_05_move_top");
+    [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestUniqueTurn("usecase_06_move_spaced_twins_mid_to_top");
 
     static GameManager game = Init();
     static GameManager Init()
@@ -39,7 +40,7 @@ public class GameManagerUnitTest
         return game;
     }
 
-    public void Common(string usecase)
+    public void TestUniqueTurn(string usecase)
     {
         string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
         string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
