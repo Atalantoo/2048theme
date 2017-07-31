@@ -86,7 +86,7 @@ public class GameManagerUnitTest
 
     private string[][] FromOutputToArray(Game output)
     {
-        string[][] res = new string[1 + 4+1][];
+        string[][] res = new string[1 + 4 + 1][];
         res[0] = new string[] { output.Width.ToString(), output.Height.ToString() };
         for (int i = 0; i < 4; i++)
         {
@@ -129,42 +129,42 @@ public class GameManagerUnitTest
                 { 0,0,0,0 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
-        }));
+                }));
         Assert.AreEqual(0,
             GameManager.Calc_score(4, new int[,]{
                 { 0,0,0,2 },
                 { 0,0,0,2 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
-        }));
+                }));
         Assert.AreEqual(4,
             GameManager.Calc_score(4, new int[,]{
                 { 0,0,0,4 },
                 { 0,0,0,2 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
-        }));
+                }));
         Assert.AreEqual(16,
             GameManager.Calc_score(4, new int[,]{
                 { 0,0,0,8 },
                 { 0,0,0,2 },
                 { 0,0,0,2 },
                 { 2,0,0,2 }
-        }));
+                }));
         Assert.AreEqual(24,
             GameManager.Calc_score(4, new int[,]{
                 { 0,2,2,8 },
                 { 0,0,0,4 },
                 { 0,0,0,4 },
                 { 0,0,0,0 }
-        }));
+                }));
         Assert.AreEqual(32,
             GameManager.Calc_score(4, new int[,]{
                 { 0,2,2,8 },
                 { 0,0,2,8 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
-        }));
+                }));
         Assert.AreEqual(52,
             GameManager.Calc_score(4, new int[,]{
                 { 0,2,4,16 },
@@ -172,5 +172,59 @@ public class GameManagerUnitTest
                 { 0,0,0,0 },
                 { 2,0,0,0 }
                 }));
+    }
+
+    [TestMethod]
+    public void Test_Calc_moves()
+    {
+        Assert.AreEqual(4,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 0,2,0,0 },
+                { 0,0,0,0 },
+                { 0,0,0,0 },
+                { 2,0,0,0 }
+                }).Length);
+        Assert.AreEqual(0,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,2 },
+                { 2,4,2,4 }
+                }).Length);
+        Assert.AreEqual(4,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,2 },
+                { 2,4,2,0 }
+                }).Length);
+        Assert.AreEqual(2,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,32 },
+                { 2,4,2,32 }
+                }).Length);
+        Assert.AreEqual(Movement.Top,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,32 },
+                { 2,4,8,32 }
+                })[0]);
+        Assert.AreEqual(Movement.Bottom,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,32 },
+                { 2,4,8,32 }
+                })[1]);
+        Assert.AreEqual(Movement.Left,
+            GameManager.Calc_available_moves(4, new int[,]{
+                { 4,2,4,2 },
+                { 2,4,2,4 },
+                { 4,2,4,2 },
+                { 2,4,32,32 }
+                })[0]);
     }
 }

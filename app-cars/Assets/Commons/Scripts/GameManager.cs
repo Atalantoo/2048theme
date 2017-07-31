@@ -48,7 +48,8 @@ public class GameManager : Game, IGameManager
         }
         { // End
             Update_score();
-            //  TODO     .Next(  available_moves )))
+            Update_State();
+            Calc_available_moves();
         }
         return Return();
     }
@@ -65,7 +66,8 @@ public class GameManager : Game, IGameManager
         }
         { // End
             Update_score();
-            //  TODO     .Next(  available_moves )))
+            Update_State();
+            Calc_available_moves();
         }
         return Return();
     }
@@ -78,14 +80,14 @@ public class GameManager : Game, IGameManager
         }
         { // End
             Update_score();
-            //  TODO     .Next(  available_moves )))
+            Update_State();
+            Calc_available_moves();
         }
         return Return();
     }
 
     // TODO next(Turns.Get( "Ending the Game" )
     //  TODO .Start( end )
-    //  TODO .Next(  available_moves )))   
 
     //  OBJECT *******************************************************
     // TODO external Game object ?
@@ -98,7 +100,6 @@ public class GameManager : Game, IGameManager
 
     private Movement Move;
     // TODO string[][][] histoStates;
-    // TODO string[] histoEvents;
 
     void Update_input(GameStartInput input)
     {
@@ -116,8 +117,13 @@ public class GameManager : Game, IGameManager
 
     void Update_score()
     {
-        State = GameState.Playing;
         Score = Calc_score(Width, Board);
+    }
+
+    void Update_State()
+    {
+        State = GameState.Playing;
+        // TODO
     }
 
     void Fill_with_zeros_items()
@@ -130,7 +136,7 @@ public class GameManager : Game, IGameManager
 
     void Create_random_item()
     {
-        Point[] freeItems = GetEmptyItems();
+        Point[] freeItems = GetEmptyItems(Width, Board);
         int i = new Random().Next(0, freeItems.Length);
         Board[freeItems[i].y, freeItems[i].x] = NEW;
     }
@@ -233,30 +239,12 @@ public class GameManager : Game, IGameManager
     }
 
 
-    public static int Calc_score(int width, int[,] matrix)
+    private void Calc_available_moves()
     {
-        int score = 0;
-        for (int y = 0; y < width; y++)
-            for (int x = 0; x < width; x++)
-                score += Calc_score(matrix[y, x]);
-        return score;
-    }
-    public static int Calc_score(int value)
-    {
-        int[] val = new int[2049];
-        val[0] = 0;
-        val[2] = 0;
-        val[4] = 4;
-        val[8] = 8 + 2 * val[4];
-        val[16] = 16 + 2 * val[8];
-        val[32] = 32 + 2 * val[16];
-        val[64] = 64 + 2 * val[32];
-        val[128] = 128 + 2 * val[64];
-        val[256] = 256 + 2 * val[128];
-        val[512] = 512 + 2 * val[256];
-        val[1024] = 1024 + 2 * val[512];
-        val[2048] = 2048 + 2 * val[1024];
-        return val[value];
+        if (State == GameState.Playing)
+            AvailableMoves = Calc_available_moves(Width, Board);
+        else
+            AvailableMoves = new Movement[0];
     }
 
 
@@ -324,14 +312,87 @@ public class GameManager : Game, IGameManager
         return ((int)move == -1) ? Enumerable.Range(0, width) : Enumerable.Range(0, width).Reverse();
     }
 
-    Point[] GetEmptyItems()
+    static Point[] GetEmptyItems(int Width, int[,] Board)
     {
         List<Point> res = new List<Point>();
-        for (int y = 0; y < Height; y++)
+        for (int y = 0; y < Width; y++)
             for (int x = 0; x < Width; x++)
                 if (FREE.Equals(Board[y, x]))
                     res.Add(new Point(y, x));
         return res.ToArray();
     }
+
+    public static int Calc_score(int width, int[,] matrix)
+    {
+        int score = 0;
+        for (int y = 0; y < width; y++)
+            for (int x = 0; x < width; x++)
+                score += Calc_score(matrix[y, x]);
+        return score;
+    }
+    public static int Calc_score(int value)
+    {
+        int[] val = new int[2049];
+        val[0] = 0;
+        val[2] = 0;
+        val[4] = 4;
+        val[8] = 8 + 2 * val[4];
+        val[16] = 16 + 2 * val[8];
+        val[32] = 32 + 2 * val[16];
+        val[64] = 64 + 2 * val[32];
+        val[128] = 128 + 2 * val[64];
+        val[256] = 256 + 2 * val[128];
+        val[512] = 512 + 2 * val[256];
+        val[1024] = 1024 + 2 * val[512];
+        val[2048] = 2048 + 2 * val[1024];
+        return val[value];
+    }
+
+    public static Movement[] Calc_available_moves(int Width, int[,] Board)
+    {
+        List<Movement> moves = new List<Movement>();
+        bool hasFree = GetEmptyItems(Width, Board).Length > 0;
+        if (hasFree)
+        {
+            moves.Add(Movement.Top);
+            moves.Add(Movement.Bottom);
+            moves.Add(Movement.Left);
+            moves.Add(Movement.Right);
+        }
+        else
+        {
+            if (HasVerticalMovement(Width, Board))
+            {
+                moves.Add(Movement.Top);
+                moves.Add(Movement.Bottom);
+
+            }
+            if (HasHorizontalMovement(Width, Board))
+            {
+                moves.Add(Movement.Left);
+                moves.Add(Movement.Right);
+            }
+        }
+        return moves.ToArray<Movement>();
+    }
+
+    private static bool HasVerticalMovement(int width, int[,] board)
+    {
+        for (int y = 0; y < width - 1; y++)
+            for (int x = 0; x < width; x++)
+                if (board[y, x] == board[y + 1, x])
+                    return true;
+        return false;
+    }
+
+    private static bool HasHorizontalMovement(int width, int[,] board)
+    {
+        for (int y = 0; y < width; y++)
+            for (int x = 0; x < width - 1; x++)
+                if (board[y, x] == board[y , x + 1])
+                    return true;
+        return false;
+    }
+
 
 }
