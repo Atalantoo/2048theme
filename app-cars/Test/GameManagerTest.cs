@@ -86,13 +86,16 @@ public class GameManagerUnitTest
 
     private string[][] FromOutputToArray(Game output)
     {
-        string[][] res = new string[4][];
+        string[][] res = new string[1+4][];
+        res[0] = new string[2];
+        res[0][0] = output.Width.ToString();
+        res[0][1] = output.Height.ToString();
         for (int i = 0; i < 4; i++)
         {
-            res[i] = new string[4];
+            res[i+1] = new string[4];
             for (int j = 0; j < 4; j++)
             {
-                res[i][j] = "" + output.Board[i, j];
+                res[i+1][j] = "" + output.Board[i, j];
             }
         }
         return res;
@@ -103,8 +106,8 @@ public class GameManagerUnitTest
     private int Count(string[][] matrix, string match)
     {
         int res = 0;
-        for (int y = 0; y < matrix.Length; y++)
-            for (int x = 0; x < matrix[0].Length; x++)
+        for (int y = 1; y < 5; y++)
+            for (int x = 0; x < 4; x++)
                 if (match.Equals(matrix[y][x]))
                     res++;
         return res;
@@ -112,7 +115,7 @@ public class GameManagerUnitTest
 
     private void DisplayResult(string[][] res)
     {
-        foreach (string[] row in res)
-            Console.WriteLine(row[0] + " " + row[1] + " " + row[2] + " " + row[3]);
+        for (int i = 1; i < 5; i++)
+            Console.WriteLine(res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
     }
 }
