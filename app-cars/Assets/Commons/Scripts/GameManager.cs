@@ -122,10 +122,10 @@ public class GameManager : Game, IGameManager
 
     void Update_State()
     {
-        if (AvailableMoves.Length > 0)
-            State = GameState.Playing;
-        else if (GetItems(Width, Board, 2048).Length > 0)
+        if (GetItems(Width, Board, 2048).Length > 0)
             State = GameState.Won;
+        else if (AvailableMoves.Length > 0)
+            State = GameState.Playing;
         else
             State = GameState.Loss;
     }

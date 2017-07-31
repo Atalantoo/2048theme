@@ -1,0 +1,8 @@
+4 4
+0    0     2048  0
+0    0     0     0
+0    0     0     0
+0    0     0     0
+20480
+Won
+4 Top Bottom Left Right

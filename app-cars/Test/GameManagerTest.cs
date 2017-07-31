@@ -22,15 +22,17 @@ public class GameManagerUnitTest
         Assert.AreEqual(2, Count(res, "2"));
     }
 
-    [TestMethod] public void Usecase_02_move_mid_to_left() => TestUniqueTurn("usecase_02_move_mid_to_left");
-    [TestMethod] public void Usecase_02_move_mid_to_right() => TestUniqueTurn("usecase_02_move_mid_to_right");
-    [TestMethod] public void Usecase_03_move_twins_left() => TestUniqueTurn("usecase_03_move_twins_left_to_left");
-    [TestMethod] public void Usecase_03_move_twins_mid_to_right() => TestUniqueTurn("usecase_03_move_twins_mid_to_right");
-    [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => TestUniqueTurn("usecase_04_move_blocked_twins_mid_to_right");
-    [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => TestUniqueTurn("usecase_04_move_spaced_twins_mid_to_right");
-    [TestMethod] public void Usecase_05_move_bot() => TestUniqueTurn("usecase_05_move_bot");
-    [TestMethod] public void Usecase_05_move_top() => TestUniqueTurn("usecase_05_move_top");
-    [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestUniqueTurn("usecase_06_move_spaced_twins_mid_to_top");
+    [TestMethod] public void Usecase_02_move_mid_to_left() => TestReloadThenTurn("usecase_02_move_mid_to_left");
+    [TestMethod] public void Usecase_02_move_mid_to_right() => TestReloadThenTurn("usecase_02_move_mid_to_right");
+    [TestMethod] public void Usecase_03_move_twins_left() => TestReloadThenTurn("usecase_03_move_twins_left_to_left");
+    [TestMethod] public void Usecase_03_move_twins_mid_to_right() => TestReloadThenTurn("usecase_03_move_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_blocked_twins_mid_to_right");
+    [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_spaced_twins_mid_to_right");
+    [TestMethod] public void Usecase_05_move_bot() => TestReloadThenTurn("usecase_05_move_bot");
+    [TestMethod] public void Usecase_05_move_top() => TestReloadThenTurn("usecase_05_move_top");
+    [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
+    [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
+    [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
 
     static GameManager game = Init();
     static GameManager Init()
@@ -40,7 +42,18 @@ public class GameManagerUnitTest
         return game;
     }
 
-    public void TestUniqueTurn(string usecase)
+    public void TestReload(string usecase)
+    {
+        string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
+        string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
+        string[][] res = FromOutputToArray(
+            game.Reload(
+                FromArrayToInput3(inp)));
+        DisplayResult(res);
+        GameAssert.AreEqual(exp, res);
+    }
+
+    public void TestReloadThenTurn(string usecase)
     {
         string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
         string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
@@ -98,10 +111,11 @@ public class GameManagerUnitTest
         }
         res[5] = new string[] { output.Score.ToString() };
         res[6] = new string[] { output.State.ToString() };
-        res[7] = new string[output.AvailableMoves.Length];
+        res[7] = new string[output.AvailableMoves.Length+1];
+        res[7][0] = output.AvailableMoves.Length.ToString();
         for (int i = 0; i < output.AvailableMoves.Length; i++)
         {
-            res[7][i] = output.AvailableMoves[i].ToString();
+            res[7][i+1] = output.AvailableMoves[i].ToString();
         }
         return res;
     }

@@ -5,4 +5,4 @@
 ?    ?     ?     ?
 9216
 Playing
-Top Bottom Left Right
+4 Top Bottom Left Right
