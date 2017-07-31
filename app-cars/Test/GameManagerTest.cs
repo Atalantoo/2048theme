@@ -67,7 +67,7 @@ public class GameManagerUnitTest
             Width = Int32.Parse(input[0][0]),
             Height = Int32.Parse(input[0][1]),
         };
-        g.board = new int[,]{
+        g.Board = new int[,]{
             { Int32.Parse(input[1][0]), Int32.Parse(input[1][1]), Int32.Parse(input[1][2]), Int32.Parse(input[1][3]) },
             { Int32.Parse(input[2][0]), Int32.Parse(input[2][1]), Int32.Parse(input[2][2]), Int32.Parse(input[2][3]) },
             { Int32.Parse(input[3][0]), Int32.Parse(input[3][1]), Int32.Parse(input[3][2]), Int32.Parse(input[3][3]) },
@@ -91,7 +91,7 @@ public class GameManagerUnitTest
             res[i] = new string[4];
             for (int j = 0; j < 4; j++)
             {
-                res[i][j] = "" + output.board[i, j];
+                res[i][j] = "" + output.Board[i, j];
             }
         }
         return res;

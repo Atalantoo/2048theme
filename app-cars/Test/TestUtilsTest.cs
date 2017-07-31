@@ -15,7 +15,7 @@ namespace Commons.Test
             GameAssert.AreEqual(new string[] { "0", "0", "0", "0" }, res[1]);
             GameAssert.AreEqual(new string[] { "0", "1", "0", "0" }, res[2]);
             GameAssert.AreEqual(new string[] { "0", "0", "X", "0" }, res[3]);
-            GameAssert.AreEqual(new string[] { "R" }, res[4]);
+            GameAssert.AreEqual(new string[] { "Right" }, res[4]);
         }
 
         [TestMethod]

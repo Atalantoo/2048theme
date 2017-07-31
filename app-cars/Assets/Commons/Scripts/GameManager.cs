@@ -16,9 +16,9 @@ public class Game
 {
     public int Width;
     public int Height;
-    public int[,] board;
-    public GameState state;
-    public int score;
+    public int[,] Board;
+    public GameState State;
+    public int Score;
     public InputDirection[] AvailableMoves;
 }
 public class GameStartInput
@@ -31,11 +31,11 @@ public class GameTurnInput
     public string Move;
 }
 public enum GameState { Playing, Won, Loss }
-public enum InputDirection { L, R, T, B }
+public enum InputDirection { Left, Right, Top, Bottom }
 
 // IMPL *******************************************************
 
-public class GameManager : IGameManager
+public class GameManager : Game, IGameManager
 {
     public Game Start(GameStartInput input)
     { // Starting_the_Game_Turn
@@ -90,81 +90,49 @@ public class GameManager : IGameManager
     //  OBJECT *******************************************************
     // TODO external Game object ?
 
-    enum HorizontalMovement { L, R }
-    enum VerticalMovement { T, B }
-    class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
+    private enum HorizontalMovement { Left, Right }
+    private enum VerticalMovement { Top, Bottom }
     private const int NEW = 2;
     private const int FREE = 0;
+    private class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
 
-    int width;
-    int height;
-    int[,] matrix;
-    GameState state;
-    int score;
     InputDirection inputDir;
     // TODO string[][][] histoStates;
     // TODO string[] histoEvents;
 
     void Update_input(GameStartInput input)
     {
-        width = input.Width;
-        height = input.Height;
+        Width = input.Width;
+        Height = input.Height;
     }
 
     void Clean_game_states()
     {
-        width = -1;
-        height = -1;
-        matrix = null;
-        score = -1;
+        Width = -1;
+        Height = -1;
+        Board = null;
+        Score = -1;
     }
 
     void Update_score()
     {
-        state = GameState.Playing;
-        score = 0;
+        State = GameState.Playing;
+        Score = 0;
     }
 
     void Fill_with_zeros_items()
     {
-        matrix = new int[height, width];
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
-                matrix[y, x] = FREE;
+        Board = new int[Height, Width];
+        for (int y = 0; y < Height; y++)
+            for (int x = 0; x < Width; x++)
+                Board[y, x] = FREE;
     }
 
     void Create_random_item()
     {
         Point[] freeItems = GetEmptyItems();
         int i = new Random().Next(0, freeItems.Length);
-        matrix[freeItems[i].y, freeItems[i].x] = NEW;
-    }
-
-    void Merge_identical_items()
-    {
-        for (int y = 0; y < height; y++)
-            foreach (int x in ColumnNumbers(inputDir, width))
-            {
-                int next = FindTwinItem(y, x, Dir(inputDir));
-                if (next == -1)
-                    continue;
-                Action_mergeItems(y, x, next);
-            }
-    }
-
-    void Move_items()
-    {
-        for (int y = 0; y < height; y++)
-            foreach (int x in ColumnNumbers(inputDir, width))
-            {
-                if (FREE.Equals(matrix[y, x]))
-                    continue;
-                int next = FindEmptyItem(y, x, Dir(inputDir));
-                if (next == x)
-                    continue;
-                matrix[y, next] = matrix[y, x];
-                matrix[y, x] = FREE;
-            }
+        Board[freeItems[i].y, freeItems[i].x] = NEW;
     }
 
     void Input_direction(GameTurnInput i)
@@ -174,32 +142,78 @@ public class GameManager : IGameManager
 
     void Reload_Board(Game i)
     {
-        width = i.Width;
-        height = i.Height;
-        matrix = i.board;
+        Width = i.Width;
+        Height = i.Height;
+        Board = i.Board;
     }
 
     Game Return()
     {
         return new Game()
         {
-            board = matrix
+            Width = Width,
+            Height = Height,
+            Board = Board
         };
+    }
+
+    void Merge_identical_items()
+    {
+        for (int y = 0; y < Height; y++)
+            foreach (int x in ColumnNumbers(inputDir, Width))
+                if (!FREE.Equals(Board[y, x]))
+                {
+                    int next = FindTwinItem(y, x, Dir(inputDir));
+                    if (next != -1)
+                    {
+                        Board[y, x] = Board[y, x] * 2;
+                        Board[y, next] = FREE;
+                    }
+                }
+    }
+
+    void Move_items()
+    {
+        for (int y = 0; y < Height; y++)
+            foreach (int x in ColumnNumbers(inputDir, Width))
+                if (!FREE.Equals(Board[y, x]))
+                {
+                    int next = FindEmptyItem(y, x, Dir(inputDir));
+                    if (next != x)
+                    {
+                        Board[y, next] = Board[y, x];
+                        Board[y, x] = FREE;
+                    }
+                }
     }
 
     // FUNCTION(S ) *******************************************************
 
+
+    int FindTwinItem(int y, int xCurrent, int direction)
+    {
+        int x = xCurrent + direction;
+        while (x >= 0 && x < Width)
+            if (Board[y, xCurrent].Equals(Board[y, x]))
+                return x;
+            else if (!FREE.Equals(Board[y, x]))
+                break;
+            else
+                x += direction;
+        return -1;
+    }
+
     IEnumerable<int> ColumnNumbers(InputDirection move, int width)
     {
-        HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
+        HorizontalMovement mov = (move == InputDirection.Right) ? HorizontalMovement.Right : HorizontalMovement.Left;
         IEnumerable<int> nbr = Enumerable.Range(0, width);
-        return (mov == HorizontalMovement.L) ? nbr : nbr.Reverse();
+        return (mov == HorizontalMovement.Left) ? nbr : nbr.Reverse();
     }
 
     int Dir(InputDirection move)
     {
-        HorizontalMovement mov = (move == InputDirection.R) ? HorizontalMovement.R : HorizontalMovement.L;
-        return (mov == HorizontalMovement.L) ? -1 : 1;
+        HorizontalMovement mov = (move == InputDirection.Right) ? HorizontalMovement.Right : HorizontalMovement.Left;
+        return (mov == HorizontalMovement.Left) ? -1 : 1;
     }
 
     int FindEmptyItem(int y, int xStart, int direction)
@@ -209,40 +223,23 @@ public class GameManager : IGameManager
         while (emptyItemFound)
         {
             int next = x + direction;
-            emptyItemFound = (next >= 0 && next < width) && FREE.Equals(matrix[y, next]);
+            emptyItemFound = (next >= 0 && next < Width) && FREE.Equals(Board[y, next]);
             if (emptyItemFound)
                 x = next;
         }
         return x;
     }
 
+
     Point[] GetEmptyItems()
     {
         List<Point> res = new List<Point>();
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
-                if (FREE.Equals(matrix[y, x]))
+        for (int y = 0; y < Height; y++)
+            for (int x = 0; x < Width; x++)
+                if (FREE.Equals(Board[y, x]))
                     res.Add(new Point(y, x));
         return res.ToArray();
     }
 
-    void Action_mergeItems(int y, int x, int next)
-    {
-        int val = matrix[y, x] * 2;
-        matrix[y, x] = val;
-        matrix[y, next] = FREE;
-    }
 
-    int FindTwinItem(int y, int xCurrent, int direction)
-    {
-        int x = xCurrent + direction;
-        while (x >= 0 && x < width)
-            if (matrix[y, xCurrent].Equals(matrix[y, x]))
-                return x;
-            else if (!FREE.Equals(matrix[y, x]))
-                break;
-            else
-                x += direction;
-        return -1;
-    }
 }
