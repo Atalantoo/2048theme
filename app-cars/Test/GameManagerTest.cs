@@ -79,7 +79,7 @@ public class GameManagerUnitTest
     {
         return new GameTurnInput()
         {
-            Move = input[5][0]
+            Move = (Movement)Enum.Parse(typeof(Movement), input[5][0])
         };
     }
 

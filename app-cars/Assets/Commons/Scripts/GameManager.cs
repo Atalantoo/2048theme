@@ -19,7 +19,7 @@ public class Game
     public int[,] Board;
     public GameState State;
     public int Score;
-    public InputDirection[] AvailableMoves;
+    public Movement[] AvailableMoves;
 }
 public class GameStartInput
 {
@@ -28,10 +28,10 @@ public class GameStartInput
 }
 public class GameTurnInput
 {
-    public string Move;
+    public Movement Move;
 }
 public enum GameState { Playing, Won, Loss }
-public enum InputDirection { Left, Right, Top, Bottom }
+public enum Movement { Left, Right, Top, Bottom }
 
 // IMPL *******************************************************
 
@@ -56,11 +56,11 @@ public class GameManager : Game, IGameManager
     public Game Turn(GameTurnInput input)
     { // Player Turn
         { // Beginning phase
-            Input_direction(input);
+            Get_Input(input);
         }
         {  // Move phase
-            Merge_identical_items();
-            Move_items();
+            Merge_Items();
+            Move_Items();
             Create_random_item();
         }
         { // End
@@ -90,13 +90,13 @@ public class GameManager : Game, IGameManager
     //  OBJECT *******************************************************
     // TODO external Game object ?
 
-    private enum HorizontalMovement { Left, Right }
-    private enum VerticalMovement { Top, Bottom }
     private const int NEW = 2;
     private const int FREE = 0;
     private class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
+    public enum HorizontalMovement { Left = -1, Right = 1 }
+    public enum VerticalMovement { Top = -1, Bottom = 1 }
 
-    InputDirection inputDir;
+    private Movement Move;
     // TODO string[][][] histoStates;
     // TODO string[] histoEvents;
 
@@ -135,11 +135,6 @@ public class GameManager : Game, IGameManager
         Board[freeItems[i].y, freeItems[i].x] = NEW;
     }
 
-    void Input_direction(GameTurnInput i)
-    {
-        inputDir = (InputDirection)Enum.Parse(typeof(InputDirection), i.Move);
-    }
-
     void Reload_Board(Game i)
     {
         Width = i.Width;
@@ -157,31 +152,80 @@ public class GameManager : Game, IGameManager
         };
     }
 
-    void Merge_identical_items()
+    void Get_Input(GameTurnInput input)
+    {
+        Move = input.Move;
+    }
+
+    void Merge_Items()
+    {
+        if (Enum.IsDefined(typeof(HorizontalMovement), Move.ToString()))
+            Merge_horizontal((HorizontalMovement)Enum.Parse(typeof(HorizontalMovement), Move.ToString()));
+        else if (Enum.IsDefined(typeof(VerticalMovement), Move.ToString()))
+            Merge_vertical((VerticalMovement)Enum.Parse(typeof(VerticalMovement), Move.ToString()));
+    }
+
+    void Move_Items()
+    {
+        if (Enum.IsDefined(typeof(HorizontalMovement), Move.ToString()))
+            Move_horizontal((HorizontalMovement)Enum.Parse(typeof(HorizontalMovement), Move.ToString()));
+        else if (Enum.IsDefined(typeof(VerticalMovement), Move.ToString()))
+            Move_vertical((VerticalMovement)Enum.Parse(typeof(VerticalMovement), Move.ToString()));
+    }
+
+    void Merge_horizontal(HorizontalMovement move)
     {
         for (int y = 0; y < Height; y++)
-            foreach (int x in ColumnNumbers(inputDir, Width))
+            foreach (int x in OrderRange_horizontal(move, Width))
                 if (!FREE.Equals(Board[y, x]))
                 {
-                    int next = FindTwinItem(y, x, Dir(inputDir));
-                    if (next != -1)
+                    Point found = FindSameItem_Horizontal(y, x, move, Board[y, x]);
+                    if (found != null)
                     {
                         Board[y, x] = Board[y, x] * 2;
-                        Board[y, next] = FREE;
+                        Board[found.y, found.x] = FREE;
+                    }
+                }
+    }
+    void Merge_vertical(VerticalMovement move)
+    {
+        for (int x = 0; x < Height; x++)
+            foreach (int y in OrderRange_vertical(move, Width))
+                if (!FREE.Equals(Board[y, x]))
+                {
+                    Point found = FindSameItem_vertical(y, x, move, Board[y, x]);
+                    if (found != null)
+                    {
+                        Board[y, x] = Board[y, x] * 2;
+                        Board[found.y, found.x] = FREE;
                     }
                 }
     }
 
-    void Move_items()
+    void Move_horizontal(HorizontalMovement move)
     {
         for (int y = 0; y < Height; y++)
-            foreach (int x in ColumnNumbers(inputDir, Width))
+            foreach (int x in OrderRange_horizontal(move, Width))
                 if (!FREE.Equals(Board[y, x]))
                 {
-                    int next = FindEmptyItem(y, x, Dir(inputDir));
-                    if (next != x)
+                    Point found = FindEmptyItem_Horizontal(y, x, move);
+                    if (found != null)
                     {
-                        Board[y, next] = Board[y, x];
+                        Board[found.y, found.x] = Board[y, x];
+                        Board[y, x] = FREE;
+                    }
+                }
+    }
+    void Move_vertical(VerticalMovement move)
+    {
+        for (int x = 0; x < Height; x++)
+            foreach (int y in OrderRange_vertical(move, Width))
+                if (!FREE.Equals(Board[y, x]))
+                {
+                    Point found = FindEmptyItem_vertical(y, x, move);
+                    if (found != null)
+                    {
+                        Board[found.y, found.x] = Board[y, x];
                         Board[y, x] = FREE;
                     }
                 }
@@ -190,46 +234,66 @@ public class GameManager : Game, IGameManager
     // FUNCTION(S ) *******************************************************
 
 
-    int FindTwinItem(int y, int xCurrent, int direction)
+    Point FindSameItem_Horizontal(int y, int x, HorizontalMovement Move, int value)
     {
-        int x = xCurrent + direction;
-        while (x >= 0 && x < Width)
-            if (Board[y, xCurrent].Equals(Board[y, x]))
-                return x;
-            else if (!FREE.Equals(Board[y, x]))
+        int i = x + (int)Move;
+        while (i >= 0 && i < Width)
+            if (value.Equals(Board[y, i]))
+                return new Point(y, i);
+            else if (!FREE.Equals(Board[y, i]))
                 break;
             else
-                x += direction;
-        return -1;
+                i += (int)Move;
+        return null;
+    }
+    Point FindSameItem_vertical(int y, int x, VerticalMovement Move, int value)
+    {
+        int i = y + (int)Move;
+        while (i >= 0 && i < Width)
+            if (value.Equals(Board[i, x]))
+                return new Point(i, x);
+            else if (!FREE.Equals(Board[i, x]))
+                break;
+            else
+                i += (int)Move;
+        return null;
     }
 
-    IEnumerable<int> ColumnNumbers(InputDirection move, int width)
+    Point FindEmptyItem_Horizontal(int y, int x, HorizontalMovement Move)
     {
-        HorizontalMovement mov = (move == InputDirection.Right) ? HorizontalMovement.Right : HorizontalMovement.Left;
-        IEnumerable<int> nbr = Enumerable.Range(0, width);
-        return (mov == HorizontalMovement.Left) ? nbr : nbr.Reverse();
-    }
-
-    int Dir(InputDirection move)
-    {
-        HorizontalMovement mov = (move == InputDirection.Right) ? HorizontalMovement.Right : HorizontalMovement.Left;
-        return (mov == HorizontalMovement.Left) ? -1 : 1;
-    }
-
-    int FindEmptyItem(int y, int xStart, int direction)
-    {
-        int x = xStart;
+        int i = x;
         bool emptyItemFound = true;
         while (emptyItemFound)
         {
-            int next = x + direction;
+            int next = i + (int)Move;
             emptyItemFound = (next >= 0 && next < Width) && FREE.Equals(Board[y, next]);
             if (emptyItemFound)
-                x = next;
+                i = next;
         }
-        return x;
+        return new Point(y, i);
+    }
+    Point FindEmptyItem_vertical(int y, int x, VerticalMovement Move)
+    {
+        int i = y;
+        bool emptyItemFound = true;
+        while (emptyItemFound)
+        {
+            int next = i + (int)Move;
+            emptyItemFound = (next >= 0 && next < Width) && FREE.Equals(Board[next, x]);
+            if (emptyItemFound)
+                i = next;
+        }
+        return new Point(i, x);
     }
 
+    IEnumerable<int> OrderRange_horizontal(HorizontalMovement move, int width)
+    {
+        return ((int)move == -1) ? Enumerable.Range(0, width) : Enumerable.Range(0, width).Reverse();
+    }
+    IEnumerable<int> OrderRange_vertical(VerticalMovement move, int width)
+    {
+        return ((int)move == -1) ? Enumerable.Range(0, width) : Enumerable.Range(0, width).Reverse();
+    }
 
     Point[] GetEmptyItems()
     {
@@ -240,6 +304,5 @@ public class GameManager : Game, IGameManager
                     res.Add(new Point(y, x));
         return res.ToArray();
     }
-
 
 }
