@@ -11,6 +11,7 @@ public class Main : MonoBehaviour
     int Height = 4;
     float SpriteWidth = 300f;
     float SpriteHeight = 775f;
+    string levelName = "model_t";
 
     GameManager gameManager;
     Game game;
@@ -29,9 +30,31 @@ public class Main : MonoBehaviour
         UpdateScreen();
     }
 
-    void Update()
-    {
+    // ***************************
 
+    public void ResetAction()
+    {
+        LoadResources();
+        StartGame();
+        UpdateScreen();
+    }
+
+    public void LevelAction(string newLevelName)
+    {
+        levelName = newLevelName;
+        LoadResources();
+        game.Board[0, 3] = 2048;
+        game.Board[0, 2] = 1024;
+        game.Board[0, 1] = 512;
+        game.Board[0, 0] = 256;
+        game.Board[1, 0] = 128;
+        game.Board[1, 1] = 64;
+        game.Board[1, 2] = 32;
+        game.Board[1, 3] = 16;
+        game.Board[2, 3] = 8;
+        game.Board[2, 2] = 4;
+        game.Board[2, 1] = 2;
+        UpdateScreen();
     }
 
     // ***************************
@@ -93,7 +116,7 @@ public class Main : MonoBehaviour
     {
         sprites.Clear();
         foreach (string i in suite)
-            sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(i));
+            sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(levelName+"/"+i));
     }
 
 }
