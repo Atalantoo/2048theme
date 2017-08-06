@@ -73,6 +73,7 @@ public class Main : MonoBehaviour
         go = GameObject.Find("Button LVL 2");
         btn = go.GetComponent<Button>();
         btn.onClick.AddListener(Level2Action);
+
     }
 
     private void LoadResources()
