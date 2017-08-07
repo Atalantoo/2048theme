@@ -33,6 +33,7 @@ public class GameManagerUnitTest
     [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
     [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
     [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
+    [TestMethod] public void Usecase_fix_01_missing_item_on_border() => TestReloadThenTurn("usecase_fix_01_missing_item_on_border");
 
     static GameManager game = Init();
     static GameManager Init()
