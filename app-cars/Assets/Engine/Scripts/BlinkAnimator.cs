@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Blink : MonoBehaviour
+public class BlinkAnimator : MonoBehaviour
 {
     static float delayInSeconds = 1f;
     static float[][] transitionsFadeDelay;
 
-    public Blink()
+    public BlinkAnimator()
     {
         transitionsFadeDelay = new float[7][];
         transitionsFadeDelay[0] = new float[] { .4f, 1.5f };
