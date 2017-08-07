@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts;
 
 
 public class Main : MonoBehaviour
@@ -17,21 +18,42 @@ public class Main : MonoBehaviour
     Game game;
     Dictionary<int, Sprite> sprites;
 
-    public Main()
-    {
-        sprites = new Dictionary<int, Sprite>();
-        gameManager = new GameManager();
-    }
+    public IInputDetector inputDetector;
 
     void Start()
     {
+        sprites = new Dictionary<int, Sprite>();
+        gameManager = new GameManager();
+        inputDetector = GetComponent<IInputDetector>();
+
         BindButtons();
         LoadResources();
         StartGame();
         UpdateScreen();
     }
 
+
+
+    void Update()
+    {
+        if (game.State == GameState.Playing)
+        {
+            InputDirection? value = inputDetector.DetectInputDirection();
+            if (value.HasValue)
+            {
+                Debug.Log("dir ok");
+                game = gameManager.Turn(new GameTurnInput()
+                {
+                    Move = (Movement)Enum.Parse(typeof(Movement), value.ToString())
+                });
+
+                UpdateScreen();
+            }
+        }
+    }
     // ***************************
+
+
 
     public void ResetAction()
     {
@@ -45,35 +67,17 @@ public class Main : MonoBehaviour
 
     }
 
-    public void Level1Action()
-    {
-        LevelAction("model_t");
-    }
-
-    public void Level2Action()
-    {
-        LevelAction("f40");
-    }
-
     // ***************************
 
     private void BindButtons()
     {
         GameObject go;
         Button btn;
-
         go = GameObject.Find("Button RESET");
         btn = go.GetComponent<Button>();
         btn.onClick.AddListener(ResetAction);
-
-        go = GameObject.Find("Button LVL 1");
-        btn = go.GetComponent<Button>();
-        btn.onClick.AddListener(Level1Action);
-
-        go = GameObject.Find("Button LVL 2");
-        btn = go.GetComponent<Button>();
-        btn.onClick.AddListener(Level2Action);
-
+        go = GameObject.Find("botmove1");
+        go.AddComponent<BlinkAnimator>();
     }
 
     private void LoadResources()
@@ -99,6 +103,15 @@ public class Main : MonoBehaviour
         SpriteRenderer spriteRend;
         Sprite sprite;
 
+        for (int y = 0; y < Height; y++)
+        {
+            string row = "";
+            for (int x = 0; x < Width; x++)
+            {
+                row += game.Board[y, x];
+            }
+            Debug.Log(row);
+        }
         // TODO sprites
         for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
@@ -136,6 +149,22 @@ public class Main : MonoBehaviour
             sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(levelName + "/" + i));
     }
 
+    // DEBUG **************************
+
+    void OnGUI()
+    {
+        if (GUILayout.Button("Start at Level 1"))
+            LevelAction("model_t");
+        if (GUILayout.Button("Start at Level 2"))
+            LevelAction("f40");
+        if (GUILayout.Button("Win 512"))
+            throw new NotImplementedException();
+        if (GUILayout.Button("Win 1024"))
+            throw new NotImplementedException();
+        if (GUILayout.Button("Win 2048"))
+            throw new NotImplementedException();
+    }
+
     private void LevelAction(string newLevelName)
     {
         levelName = newLevelName;
@@ -153,6 +182,5 @@ public class Main : MonoBehaviour
         game.Board[2, 1] = 2;
         UpdateScreen();
     }
-
 
 }
