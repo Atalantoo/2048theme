@@ -10,8 +10,6 @@ public class Main : MonoBehaviour
 {
     int Width = 4;
     int Height = 4;
-    float SpriteWidth = 300f;
-    float SpriteHeight = 775f;
     string levelName = "model_t";
 
     GameManager gameManager;
@@ -116,7 +114,7 @@ public class Main : MonoBehaviour
         for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
             {
-                item = game.Board[y, x];
+                item = game.Board[y, x].Value;
                 sprite = sprites[item];
                 itemGO = GameObject.Find(y + "x" + x);
                 spriteRend = itemGO.GetComponent<SpriteRenderer>();
@@ -169,17 +167,17 @@ public class Main : MonoBehaviour
     {
         levelName = newLevelName;
         LoadResources();
-        game.Board[0, 3] = 2048;
-        game.Board[0, 2] = 1024;
-        game.Board[0, 1] = 512;
-        game.Board[0, 0] = 256;
-        game.Board[1, 0] = 128;
-        game.Board[1, 1] = 64;
-        game.Board[1, 2] = 32;
-        game.Board[1, 3] = 16;
-        game.Board[2, 3] = 8;
-        game.Board[2, 2] = 4;
-        game.Board[2, 1] = 2;
+        game.Board[0, 3].Value = 2048;
+        game.Board[0, 2].Value = 1024;
+        game.Board[0, 1].Value = 512;
+        game.Board[0, 0].Value = 256;
+        game.Board[1, 0].Value = 128;
+        game.Board[1, 1].Value = 64;
+        game.Board[1, 2].Value = 32;
+        game.Board[1, 3].Value = 16;
+        game.Board[2, 3].Value = 8;
+        game.Board[2, 2].Value = 4;
+        game.Board[2, 1].Value = 2;
         UpdateScreen();
     }
 
