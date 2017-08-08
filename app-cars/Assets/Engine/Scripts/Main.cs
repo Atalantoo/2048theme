@@ -5,6 +5,26 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts;
 
+public class InputDetectorAggregator: IInputDetector
+{
+    private IInputDetector[] inputDetectors;
+
+    public InputDetectorAggregator(IInputDetector[] inputDetectors)
+    {
+        this.inputDetectors = inputDetectors;
+    }
+
+    public InputDirection? DetectInputDirection()
+    {
+        foreach (IInputDetector i in inputDetectors)
+        {
+            InputDirection? value = i.DetectInputDirection();
+            if (value.HasValue)
+                return value;
+        }
+        return null;
+    }
+}
 
 public class Main : MonoBehaviour
 {
@@ -22,7 +42,7 @@ public class Main : MonoBehaviour
     {
         sprites = new Dictionary<int, Sprite>();
         gameManager = new GameManager();
-        inputDetector = GetComponent<IInputDetector>();
+        inputDetector = new InputDetectorAggregator(GetComponents<IInputDetector>());;
 
         BindButtons();
         LoadResources();
@@ -30,16 +50,13 @@ public class Main : MonoBehaviour
         UpdateScreen();
     }
 
-
-
     void Update()
     {
-        if (game.State == GameState.Playing)
-        {
+//        if (game.State == GameState.Playing)
+//        {
             InputDirection? value = inputDetector.DetectInputDirection();
             if (value.HasValue)
             {
-                Debug.Log("dir ok");
                 game = gameManager.Turn(new GameTurnInput()
                 {
                     Move = (Movement)Enum.Parse(typeof(Movement), value.ToString())
@@ -47,7 +64,7 @@ public class Main : MonoBehaviour
 
                 UpdateScreen();
             }
-        }
+//        }
     }
     // ***************************
 
@@ -108,7 +125,6 @@ public class Main : MonoBehaviour
             {
                 row += game.Board[y, x];
             }
-            Debug.Log(row);
         }
         // TODO sprites
         for (int y = 0; y < Height; y++)

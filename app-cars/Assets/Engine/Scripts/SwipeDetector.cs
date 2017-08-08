@@ -10,6 +10,7 @@ public enum State
 
 public class SwipeDetector : MonoBehaviour, IInputDetector
 {
+    private const int MARGIN_IN_DEGREE = 10;
 
     private State state = State.SwipeNotStarted;
     private Vector2 startPoint;
@@ -45,14 +46,14 @@ public class SwipeDetector : MonoBehaviour, IInputDetector
 
                     state = State.SwipeNotStarted;
 
-                    if ((angle >= 315 && angle < 360) || (angle >= 0 && angle <= 45))
-                        return InputDirection.Right;
-                    else if (angle > 45 && angle <= 135)
+                    if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
                         return InputDirection.Top;
-                    else if (angle > 135 && angle <= 225)
+                    else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
                         return InputDirection.Left;
-                    else
+                    else if (angle > 180 + MARGIN_IN_DEGREE && angle <= 270 - MARGIN_IN_DEGREE)
                         return InputDirection.Bottom;
+                    else if (angle > 270 + MARGIN_IN_DEGREE && angle <= 360 - MARGIN_IN_DEGREE)
+                        return InputDirection.Right;
                 }
             }
         }
