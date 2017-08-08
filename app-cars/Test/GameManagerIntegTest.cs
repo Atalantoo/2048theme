@@ -4,9 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Commons.Test;
 
 [TestClass]
-public class GameManagerUnitTest
+public class GameManagerIntegTest
 {
-
     [TestMethod]
     public void Usecase_01_init()
     {
@@ -34,125 +33,14 @@ public class GameManagerUnitTest
     [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
     [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
     [TestMethod] public void Usecase_fix_01_missing_item_on_border() => TestReloadThenTurn("usecase_fix_01_missing_item_on_border");
+    [TestMethod] public void Usecase_fix_01_too_much_moves() => TestReloadThenTurn("usecase_fix_01_too_much_moves");
 
-    [TestMethod]
-    public void Test_Calc_score()
+    static GameManager game = Init();
+    static GameManager Init()
     {
-        Assert.AreEqual(0,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,0,0,0 },
-                { 0,0,0,0 },
-                { 0,0,0,0 },
-                { 0,0,0,0 }
-                })));
-        Assert.AreEqual(0,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,0,0,2 },
-                { 0,0,0,2 },
-                { 0,0,0,0 },
-                { 0,0,0,0 }
-                })));
-        Assert.AreEqual(4,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,0,0,4 },
-                { 0,0,0,2 },
-                { 0,0,0,0 },
-                { 0,0,0,0 }
-                })));
-        Assert.AreEqual(16,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,0,0,8 },
-                { 0,0,0,2 },
-                { 0,0,0,2 },
-                { 2,0,0,2 }
-                })));
-        Assert.AreEqual(24,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,2,2,8 },
-                { 0,0,0,4 },
-                { 0,0,0,4 },
-                { 0,0,0,0 }
-                })));
-        Assert.AreEqual(32,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,2,2,8 },
-                { 0,0,2,8 },
-                { 0,0,0,0 },
-                { 0,0,0,0 }
-                })));
-        Assert.AreEqual(52,
-            game.Calc_score(Arrays(new int[,]{
-                { 0,2,4,16 },
-                { 0,0,0,0 },
-                { 0,0,0,0 },
-                { 2,0,0,0 }
-                })));
-    }
-
-    [TestMethod]
-    public void Test_Calc_moves()
-    {
-        Assert.AreEqual(4,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 0,2,0,0 },
-                { 0,0,0,0 },
-                { 0,0,0,0 },
-                { 2,0,0,0 }
-                })).Length);
-        Assert.AreEqual(0,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,2 },
-                { 2,4,2,4 }
-                })).Length);
-        Assert.AreEqual(4,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,2 },
-                { 2,4,2,0 }
-                })).Length);
-        Assert.AreEqual(2,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,32 },
-                { 2,4,2,32 }
-                })).Length);
-        Assert.AreEqual(Movement.Top,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,32 },
-                { 2,4,8,32 }
-                }))[0]);
-        Assert.AreEqual(Movement.Bottom,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,32 },
-                { 2,4,8,32 }
-                }))[1]);
-        Assert.AreEqual(Movement.Left,
-            GameManager.Calc_available_moves(Arrays(new int[,]{
-                { 4,2,4,2 },
-                { 2,4,2,4 },
-                { 4,2,4,2 },
-                { 2,4,32,32 }
-                }))[0]);
-    }
-
-    public static Item[,] Arrays(int[,] i)
-    {
-        Item[,] o;
-        int h = i.GetLength(0);
-        int w = i.GetLength(1);
-        o = new Item[h, w];
-        for (int y = 0; y < h; y++)
-            for (int x = 0; x < w; x++)
-                o[y, x] = new Item(i[y, x]);
-        return o;
+        GameManager game;
+        game = new GameManager();
+        return game;
     }
 
     public static int[,] Transform(Item[,] i)
@@ -241,14 +129,6 @@ public class GameManagerUnitTest
         Console.WriteLine(res[6][0]);
         foreach (string s in res[7])
             Console.Write(s + " ");
-    }
-
-    static GameManager game = Init();
-    static GameManager Init()
-    {
-        GameManager game;
-        game = new GameManager();
-        return game;
     }
 
     public void TestReload(string usecase)

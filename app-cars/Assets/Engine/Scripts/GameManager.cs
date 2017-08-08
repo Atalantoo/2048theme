@@ -201,6 +201,7 @@ public class GameManager : Game, IGameManager
         bool canMove = true;
         while (canMove)
         {
+            // BUGFIX too much simultaneous merge
             prev = Clone2(actu);
             switch (LastMove)
             {
