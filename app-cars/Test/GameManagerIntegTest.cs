@@ -9,8 +9,8 @@ public class GameManagerIntegTest
     [TestMethod]
     public void Usecase_01_init()
     {
-        string[][] inp = GameTest.readFile("../../usecase_01_init-i.txt");
-        string[][] exp = GameTest.readFile("../../usecase_01_init-o.txt");
+        string[][] inp = GameTest.readFile("../../Resources/usecase_01_init-i.txt");
+        string[][] exp = GameTest.readFile("../../Resources/usecase_01_init-o.txt");
         string[][] res = FromOutputToArray(game.Start(
             FromArrayToInput(inp)));
         Assert.IsNotNull(exp);
@@ -32,8 +32,8 @@ public class GameManagerIntegTest
     [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
     [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
     [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
-    [TestMethod] public void Usecase_fix_01_missing_item_on_border() => TestReloadThenTurn("usecase_fix_01_missing_item_on_border");
-    [TestMethod] public void Usecase_fix_01_too_much_moves() => TestReloadThenTurn("usecase_fix_01_too_much_moves");
+    [TestMethod] public void Usecase_fix_01_missing_item_on_border() => TestReloadThenTurn("Fix_01_missing_item_on_border");
+    [TestMethod] public void Usecase_fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
 
     static GameManager game = Init();
     static GameManager Init()
@@ -133,8 +133,8 @@ public class GameManagerIntegTest
 
     public void TestReload(string usecase)
     {
-        string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
-        string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
+        string[][] inp = GameTest.readFile("../../Resources/" + usecase + "-i.txt");
+        string[][] exp = GameTest.readFile("../../Resources/" + usecase + "-o.txt");
         string[][] res = FromOutputToArray(
             game.Reload(
                 FromArrayToInput3(inp)));
@@ -144,8 +144,8 @@ public class GameManagerIntegTest
 
     public void TestReloadThenTurn(string usecase)
     {
-        string[][] inp = GameTest.readFile("../../" + usecase + "-i.txt");
-        string[][] exp = GameTest.readFile("../../" + usecase + "-o.txt");
+        string[][] inp = GameTest.readFile("../../Resources/" + usecase + "-i.txt");
+        string[][] exp = GameTest.readFile("../../Resources/" + usecase + "-o.txt");
         game.Reload(
             FromArrayToInput3(inp));
         string[][] res = FromOutputToArray(

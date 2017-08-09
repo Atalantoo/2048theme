@@ -91,14 +91,14 @@ public class GameManagerUnitTest
                 { 4,2,4,32 },
                 { 2,4,2,32 }
                 })).Length);
-        Assert.AreEqual(Movement.Top,
+        Assert.AreEqual(Movement.Up,
             GameManager.Calc_available_moves(Arrays(new int[,]{
                 { 4,2,4,2 },
                 { 2,4,2,4 },
                 { 4,2,4,32 },
                 { 2,4,8,32 }
                 }))[0]);
-        Assert.AreEqual(Movement.Bottom,
+        Assert.AreEqual(Movement.Down,
             GameManager.Calc_available_moves(Arrays(new int[,]{
                 { 4,2,4,2 },
                 { 2,4,2,4 },

@@ -1,8 +1,8 @@
 4 4
 ?    ?     ?     ?
 ?    ?     ?     ?
-1024 ?     ?     ?
 ?    ?     ?     ?
-9216
+512  ?    512    ?
+8192
 Playing
-4 Top Bottom Left Right
+4 Up Down Left Right
