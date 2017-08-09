@@ -34,8 +34,8 @@ namespace Project2048.Core
         [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
         [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
         [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
-        [TestMethod] public void Usecase_fix_01_missing_item_on_border() => TestReloadThenTurn("Fix_01_missing_item_on_border");
-        [TestMethod] public void Usecase_fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
+        [TestMethod] public void Fix_01_missing_item_on_border() => TestReloadThenTurn("Fix_01_missing_item_on_border");
+        [TestMethod] public void Fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
 
         static GameManager game = Init();
         static GameManager Init()
@@ -67,7 +67,7 @@ namespace Project2048.Core
 
         private string[][] FromOutputToArray(Game output)
         {
-            string[][] res = new string[1 + 4 + 1 + 1 + 1][];
+            string[][] res = new string[1 + 4 + 1 /*+ 1 + 1*/][];
             res[0] = new string[] { output.Width.ToString(), output.Height.ToString() };
             for (int i = 0; i < 4; i++)
             {
@@ -78,13 +78,13 @@ namespace Project2048.Core
                 }
             }
             res[5] = new string[] { output.Score.ToString() };
-            res[6] = new string[] { output.State.ToString() };
-            res[7] = new string[output.AvailableMoves.Length + 1];
-            res[7][0] = output.AvailableMoves.Length.ToString();
-            for (int i = 0; i < output.AvailableMoves.Length; i++)
-            {
-                res[7][i + 1] = output.AvailableMoves[i].ToString();
-            }
+            //            res[6] = new string[] { output.State.ToString() };
+            //            res[7] = new string[output.AvailableMoves.Length + 1];
+            //            res[7][0] = output.AvailableMoves.Length.ToString();
+            //            for (int i = 0; i < output.AvailableMoves.Length; i++)
+            //            {
+            //                res[7][i + 1] = output.AvailableMoves[i].ToString();
+            //            }
             return res;
         }
 
@@ -97,6 +97,7 @@ namespace Project2048.Core
                 Height = Int32.Parse(input[0][1])
             };
         }
+
         Game FromArrayToInput3(string[][] input)
         {
             Game g = new Game()
@@ -112,6 +113,7 @@ namespace Project2048.Core
         };
             return g;
         }
+
         private int Count(string[][] matrix, string match)
         {
             int res = 0;
@@ -128,9 +130,9 @@ namespace Project2048.Core
             for (int i = 1; i < 5; i++)
                 Console.WriteLine(res[i][0] + " " + res[i][1] + " " + res[i][2] + " " + res[i][3]);
             Console.WriteLine(res[5][0]);
-            Console.WriteLine(res[6][0]);
-            foreach (string s in res[7])
-                Console.Write(s + " ");
+            //            Console.WriteLine(res[6][0]);
+            //            foreach (string s in res[7])
+            //               Console.Write(s + " ");
         }
 
         public void TestReload(string usecase)

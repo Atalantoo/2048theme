@@ -4,5 +4,3 @@
 2    ?     ?     ?
 ?    ?     ?     ?
 0
-Playing
-4 Up Down Left Right

@@ -4,5 +4,3 @@
 ?    ?     ?     ?
 ?    ?     ?     ?
 8192
-Playing
-4 Up Down Left Right

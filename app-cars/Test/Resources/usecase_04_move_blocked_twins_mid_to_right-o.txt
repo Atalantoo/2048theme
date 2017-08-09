@@ -4,5 +4,3 @@
 ?    512   2     512
 ?    ?     ?     ?
 8192
-Playing
-4 Up Down Left Right

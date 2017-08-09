@@ -4,5 +4,3 @@
 0    0     0     0
 0    0     0     0
 20480
-Won
-4 Up Down Left Right

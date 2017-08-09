@@ -205,38 +205,48 @@ namespace Project2048.Core
             bool canMove = true;
             while (canMove)
             {
-                // BUGFIX too much simultaneous merge
                 prev = Clone2(actu);
-                switch (LastMove)
-                {
-                    case Movement.Right:
-                        for (int y = 0; y < Height; y++)
-                            for (int x = Width - 2; x >= 0; x--)
-                                Move(actu[y, x], actu[y, x + 1]);
-                        break;
-                    case Movement.Left:
-                        for (int y = 0; y < Height; y++)
-                            for (int x = 1; x < Width; x++)
-                                Move(actu[y, x], actu[y, x - 1]);
-                        break;
-                    case Movement.Up:
-                        for (int x = 0; x < Width; x++)
-                            for (int y = 1; y < Height; y++)
-                                Move(actu[y, x], actu[y - 1, x]);
-                        break;
-                    case Movement.Down:
-                        for (int x = 0; x < Width; x++)
-                            for (int y = Height - 2; y >= 0; y--)
-                                Move(actu[y, x], actu[y + 1, x]);
-                        break;
-                }
-                Console.WriteLine("loop");
+                actu = Move_Items(actu, LastMove);
                 canMove = !Equals2(prev, actu);
             }
+            Board = actu;
         }
 
-        private bool Equals2(Item[,] a, Item[,] b)
+        private static Item[,] Move_Items(Item[,] matrix, Movement move)
         {
+            Item[,] array = Clone2(matrix);
+            int Height = matrix.GetLength(0);
+            int Width = matrix.GetLength(1);
+            switch (move)
+            {
+                case Movement.Right:
+                    for (int y = 0; y < Height; y++)
+                        for (int x = Width - 2; x >= 0; x--)
+                            Move(array[y, x], array[y, x + 1]);
+                    break;
+                case Movement.Left:
+                    for (int y = 0; y < Height; y++)
+                        for (int x = 1; x < Width; x++)
+                            Move(array[y, x], array[y, x - 1]);
+                    break;
+                case Movement.Up:
+                    for (int x = 0; x < Width; x++)
+                        for (int y = 1; y < Height; y++)
+                            Move(array[y, x], array[y - 1, x]);
+                    break;
+                case Movement.Down:
+                    for (int x = 0; x < Width; x++)
+                        for (int y = Height - 2; y >= 0; y--)
+                            Move(array[y, x], array[y + 1, x]);
+                    break;
+            }
+            return array;
+        }
+
+        private static bool Equals2(Item[,] a, Item[,] b)
+        {
+            int Height = a.GetLength(0);
+            int Width = a.GetLength(1);
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
                     if (a[y, x].Value != b[y, x].Value)
@@ -244,8 +254,10 @@ namespace Project2048.Core
             return true;
         }
 
-        private Item[,] Clone2(Item[,] src)
+        private static Item[,] Clone2(Item[,] src)
         {
+            int Height = src.GetLength(0);
+            int Width = src.GetLength(1);
             Item[,] dest = new Item[Height, Width];
             for (int y = 0; y < Height; y++)
                 for (int x = 0; x < Width; x++)
@@ -253,7 +265,7 @@ namespace Project2048.Core
             return dest;
         }
 
-        private void Move(Item from, Item to)
+        private static void Move(Item from, Item to)
         {
             if (FREE != from.Value)
                 if (FREE == to.Value)
@@ -270,40 +282,23 @@ namespace Project2048.Core
 
         private void Get_available_moves()
         {
-            if (State == GameState.Playing)
-                AvailableMoves = Calc_available_moves(Board);
-            else
-                AvailableMoves = new Movement[0];
+            AvailableMoves = Calc_available_moves(Board);
         }
-
 
         // FUNCTION(S ) *******************************************************
 
         public static Movement[] Calc_available_moves(Item[,] matrix)
         {
-            List<Movement> moves = new List<Movement>();
-            bool hasFree = GetItemsByValue(matrix, FREE).Length > 0;
-            if (hasFree)
-            {
+            Item[,] prev = Clone2(matrix);
+            List < Movement> moves = new List<Movement>();
+            if (!Equals2(prev, Move_Items(matrix, Movement.Up)))
                 moves.Add(Movement.Up);
+            if (!Equals2(prev, Move_Items(matrix, Movement.Down)))
                 moves.Add(Movement.Down);
+            if (!Equals2(prev, Move_Items(matrix, Movement.Left)))
                 moves.Add(Movement.Left);
+            if (!Equals2(prev, Move_Items(matrix, Movement.Right)))
                 moves.Add(Movement.Right);
-            }
-            else
-            {
-                if (HasVerticalMovement(matrix))
-                {
-                    moves.Add(Movement.Up);
-                    moves.Add(Movement.Down);
-
-                }
-                if (HasHorizontalMovement(matrix))
-                {
-                    moves.Add(Movement.Left);
-                    moves.Add(Movement.Right);
-                }
-            }
             return moves.ToArray<Movement>();
         }
 
