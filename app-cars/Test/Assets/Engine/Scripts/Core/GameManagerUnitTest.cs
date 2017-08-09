@@ -79,7 +79,7 @@ namespace Project2048.Core
                 { 4,2,4,2 },
                 { 2,4,2,4 }
                     })).Length);
-            Assert.AreEqual(4,
+            Assert.AreEqual(2,
                 GameManager.Calc_available_moves(Arrays(new int[,]{
                 { 4,2,4,2 },
                 { 2,4,2,4 },
