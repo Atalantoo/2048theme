@@ -32,7 +32,7 @@ public class GameTurnInput
     public Movement Move;
 }
 public enum GameState { Playing, Won, Loss }
-public enum Movement { Left, Right, Top, Bottom }
+public enum Movement { Left, Right, Up, Down }
 public class Item { public int Value; public Item(int value) { Value = value; } public string ToString() { return "" + Value; } }
 
 // IMPL *******************************************************
@@ -191,6 +191,7 @@ public class GameManager : Game, IGameManager
     {
         Point[] freeItems = GetItemsByValue(Board, FREE);
         int i = new Random().Next(0, freeItems.Length);
+        Console.WriteLine(i);
         Board[freeItems[i].y, freeItems[i].x].Value = NEW;
     }
 
@@ -215,12 +216,12 @@ public class GameManager : Game, IGameManager
                         for (int x = 1; x < Width; x++)
                             Move(actu[y, x], actu[y, x - 1]);
                     break;
-                case Movement.Top:
+                case Movement.Up:
                     for (int x = 0; x < Width; x++)
                         for (int y = 1; y < Height; y++)
                             Move(actu[y, x], actu[y - 1, x]);
                     break;
-                case Movement.Bottom:
+                case Movement.Down:
                     for (int x = 0; x < Width; x++)
                         for (int y = Height - 2; y >= 0; y--)
                             Move(actu[y, x], actu[y + 1, x]);
@@ -281,8 +282,8 @@ public class GameManager : Game, IGameManager
         bool hasFree = GetItemsByValue(matrix, FREE).Length > 0;
         if (hasFree)
         {
-            moves.Add(Movement.Top);
-            moves.Add(Movement.Bottom);
+            moves.Add(Movement.Up);
+            moves.Add(Movement.Down);
             moves.Add(Movement.Left);
             moves.Add(Movement.Right);
         }
@@ -290,8 +291,8 @@ public class GameManager : Game, IGameManager
         {
             if (HasVerticalMovement(matrix))
             {
-                moves.Add(Movement.Top);
-                moves.Add(Movement.Bottom);
+                moves.Add(Movement.Up);
+                moves.Add(Movement.Down);
 
             }
             if (HasHorizontalMovement(matrix))

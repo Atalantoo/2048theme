@@ -3,28 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Assets.Scripts;
-
-public class InputDetectorAggregator: IInputDetector
-{
-    private IInputDetector[] inputDetectors;
-
-    public InputDetectorAggregator(IInputDetector[] inputDetectors)
-    {
-        this.inputDetectors = inputDetectors;
-    }
-
-    public InputDirection? DetectInputDirection()
-    {
-        foreach (IInputDetector i in inputDetectors)
-        {
-            InputDirection? value = i.DetectInputDirection();
-            if (value.HasValue)
-                return value;
-        }
-        return null;
-    }
-}
 
 public class Main : MonoBehaviour
 {
@@ -36,13 +14,19 @@ public class Main : MonoBehaviour
     Game game;
     Dictionary<int, Sprite> sprites;
 
-    public IInputDetector inputDetector;
-
     void Start()
     {
+        // VALUES
         sprites = new Dictionary<int, Sprite>();
+        // DEPENDENCIES INJECTION
         gameManager = new GameManager();
-        inputDetector = new InputDetectorAggregator(GetComponents<IInputDetector>());;
+        foreach (InputDetector input in GetComponents<InputDetector>())
+        {
+            input.Left = MoveLeftAction;
+            input.Right = MoveRightAction;
+            input.Up = MoveUpAction;
+            input.Down = MoveDownAction;
+        }
 
         BindButtons();
         LoadResources();
@@ -50,25 +34,28 @@ public class Main : MonoBehaviour
         UpdateScreen();
     }
 
-    void Update()
-    {
-//        if (game.State == GameState.Playing)
-//        {
-            InputDirection? value = inputDetector.DetectInputDirection();
-            if (value.HasValue)
-            {
-                game = gameManager.Turn(new GameTurnInput()
-                {
-                    Move = (Movement)Enum.Parse(typeof(Movement), value.ToString())
-                });
-
-                UpdateScreen();
-            }
-//        }
-    }
     // ***************************
 
-
+    public void MoveLeftAction()
+    {
+        game = gameManager.Turn(new GameTurnInput() { Move = Movement.Left });
+        UpdateScreen();
+    }
+    public void MoveRightAction()
+    {
+        game = gameManager.Turn(new GameTurnInput() { Move = Movement.Right });
+        UpdateScreen();
+    }
+    public void MoveUpAction()
+    {
+        game = gameManager.Turn(new GameTurnInput() { Move = Movement.Up });
+        UpdateScreen();
+    }
+    public void MoveDownAction()
+    {
+        game = gameManager.Turn(new GameTurnInput() { Move = Movement.Down });
+        UpdateScreen();
+    }
 
     public void ResetAction()
     {
@@ -113,20 +100,18 @@ public class Main : MonoBehaviour
 
     private void UpdateScreen()
     {
+        UpdateSprites();
+        // TODO moves
+        // TODO score
+    }
+
+    private void UpdateSprites()
+    {
+        // TODO sprites
         int item;
         GameObject itemGO;
         SpriteRenderer spriteRend;
         Sprite sprite;
-
-        for (int y = 0; y < Height; y++)
-        {
-            string row = "";
-            for (int x = 0; x < Width; x++)
-            {
-                row += game.Board[y, x];
-            }
-        }
-        // TODO sprites
         for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
             {
@@ -136,11 +121,7 @@ public class Main : MonoBehaviour
                 spriteRend = itemGO.GetComponent<SpriteRenderer>();
                 spriteRend.sprite = sprite;
             }
-        // TODO moves
-        // TODO score
     }
-
-    // **************************
 
     static string[] suite = new string[] { //
             "0000",

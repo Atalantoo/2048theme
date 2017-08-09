@@ -1,19 +1,18 @@
-using Assets.Scripts;
 using UnityEngine;
+using System;
 
-public class ArrowKeysDetector : MonoBehaviour, IInputDetector
+public class ArrowKeysDetector : InputDetector
 {
-    public InputDirection? DetectInputDirection()
+
+    void Update()
     {
         if (Input.GetKeyUp(KeyCode.UpArrow))
-            return InputDirection.Top;
+            Up();
         else if (Input.GetKeyUp(KeyCode.DownArrow))
-            return InputDirection.Bottom;
+            Down();
         else if (Input.GetKeyUp(KeyCode.RightArrow))
-            return InputDirection.Right;
+            Right();
         else if (Input.GetKeyUp(KeyCode.LeftArrow))
-            return InputDirection.Left;
-        else
-            return null;
+            Left();
     }
 }

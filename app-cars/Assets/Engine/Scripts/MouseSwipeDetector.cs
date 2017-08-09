@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-using Assets.Scripts;
 
 public enum State
 {
@@ -8,7 +7,7 @@ public enum State
     SwipeStarted
 }
 
-public class SwipeDetector : MonoBehaviour, IInputDetector
+public class MouseSwipeDetector : InputDetector
 {
     private const int MARGIN_IN_DEGREE = 10;
 
@@ -18,7 +17,7 @@ public class SwipeDetector : MonoBehaviour, IInputDetector
     private TimeSpan maxSwipeDuration = TimeSpan.FromSeconds(1);
     private TimeSpan minSwipeDuration = TimeSpan.FromMilliseconds(100);
 
-    public InputDirection? DetectInputDirection()
+    void Update()
     {
         if (state == State.SwipeNotStarted)
         {
@@ -47,17 +46,16 @@ public class SwipeDetector : MonoBehaviour, IInputDetector
                     state = State.SwipeNotStarted;
 
                     if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
-                        return InputDirection.Top;
+                        Up();
                     else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
-                        return InputDirection.Left;
+                        Left();
                     else if (angle > 180 + MARGIN_IN_DEGREE && angle <= 270 - MARGIN_IN_DEGREE)
-                        return InputDirection.Bottom;
+                        Down();
                     else if (angle > 270 + MARGIN_IN_DEGREE && angle <= 360 - MARGIN_IN_DEGREE)
-                        return InputDirection.Right;
+                        Right();
                 }
             }
         }
-        return null;
     }
 
 }
