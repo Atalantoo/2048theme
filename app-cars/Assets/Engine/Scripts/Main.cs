@@ -1,54 +1,46 @@
-﻿using System;
-using System.Collections;
+﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary
+ * Written by Damien Fremont
+ */
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Project2048.Core;
-using Commons.Inputs;
-using Commons.Animations;
 
 namespace Project2048
 {
     public class Main : MonoBehaviour
     {
-        int Width = 4;
-        int Height = 4;
-        string levelName = "model_t";
 
-        GameManager gameManager;
-        Game game;
-        Dictionary<int, Sprite> sprites;
+        public GameManager gameManager;
+
+        private string levelName = "model_t";
+        private Game game;
+        private Dictionary<int, Sprite> sprites;
 
         void Start()
         {
-            // VALUES
+            MainDependecy.InjectCore(this);
+            MainDependecy.InjectUI(this);
             sprites = new Dictionary<int, Sprite>();
-            // DEPENDENCIES INJECTION
-            gameManager = new GameManager();
-            InputDetector input;
-            input = gameObject.AddComponent<ArrowKeysDetector>();
-            input.Left = MoveLeftAction;
-            input.Right = MoveRightAction;
-            input.Up = MoveUpAction;
-            input.Down = MoveDownAction;
-            input = gameObject.AddComponent<MouseSwipeDetector>();
-            input.Left = MoveLeftAction;
-            input.Right = MoveRightAction;
-            input.Up = MoveUpAction;
-            input.Down = MoveDownAction;
-            input = gameObject.AddComponent<TouchGestureDetector>();
-            input.Left = MoveLeftAction;
-            input.Right = MoveRightAction;
-            input.Up = MoveUpAction;
-            input.Down = MoveDownAction;
+            ResetAction();
+        }
 
-            BindButtons();
+        // ***************************
+
+        public void ResetAction()
+        {
             LoadResources();
             StartGame();
             UpdateScreen();
         }
 
-        // ***************************
+        public void BackAction()
+        {
+
+        }
 
         public void MoveLeftAction()
         {
@@ -71,30 +63,7 @@ namespace Project2048
             UpdateScreen();
         }
 
-        public void ResetAction()
-        {
-            LoadResources();
-            StartGame();
-            UpdateScreen();
-        }
-
-        public void BackAction()
-        {
-
-        }
-
         // ***************************
-
-        private void BindButtons()
-        {
-            GameObject go;
-            Button btn;
-            go = GameObject.Find("Button RESET");
-            btn = go.GetComponent<Button>();
-            btn.onClick.AddListener(ResetAction);
-            go = GameObject.Find("botmove1");
-            go.AddComponent<BlinkAnimator>();
-        }
 
         private void LoadResources()
         {
@@ -105,29 +74,27 @@ namespace Project2048
         {
             GameStartInput startInput = new GameStartInput()
             {
-                Height = Height,
-                Width = Width
+                Height = Globals.Height,
+                Width = Globals.Width
             };
             game = gameManager.Start(startInput);
         }
 
-
         private void UpdateScreen()
         {
             UpdateSprites();
-            // TODO moves
             // TODO score
+            // TODO moves
         }
 
         private void UpdateSprites()
         {
-            // TODO sprites
             int item;
             GameObject itemGO;
             SpriteRenderer spriteRend;
             Sprite sprite;
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
+            for (int y = 0; y < Globals.Height; y++)
+                for (int x = 0; x < Globals.Width; x++)
                 {
                     item = game.Board[y, x].Value;
                     sprite = sprites[item];
@@ -158,8 +125,7 @@ namespace Project2048
                 sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(levelName + "/" + i));
         }
 
-        // DEBUG **************************
-
+#if UNITY_EDITOR
         void OnGUI()
         {
             if (GUILayout.Button("Start at Level 1"))
@@ -191,6 +157,6 @@ namespace Project2048
             game.Board[2, 1].Value = 2;
             UpdateScreen();
         }
-
+#endif
     }
 }
