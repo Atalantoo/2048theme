@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary
+ * Written by Damien Fremont
+ */
+
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -6,40 +12,6 @@ using System.Diagnostics;
 
 namespace Project2048.Core
 {
-
-    // API *******************************************************
-
-    public interface IGameManager
-    {
-        Game Start(GameStartInput input);
-        Game Turn(GameTurnInput input);
-        Game Reload(Game input);
-    }
-    public class Game
-    {
-        public int Width;
-        public int Height;
-        public Item[,] Board;
-        public int Score;
-        public GameState State;
-        public Movement[] AvailableMoves;
-        public Movement LastMove;
-    }
-    public class GameStartInput
-    {
-        public int Width;
-        public int Height;
-    }
-    public class GameTurnInput
-    {
-        public Movement Move;
-    }
-    public enum GameState { Playing, Won, Loss }
-    public enum Movement { Left, Right, Up, Down }
-    public class Item { public int Value; public Item(int value) { Value = value; } public string ToString() { return "" + Value; } }
-
-    // IMPL *******************************************************
-
     public class GameManager : Game, IGameManager
     {
         public Game Start(GameStartInput input)
@@ -97,27 +69,10 @@ namespace Project2048.Core
         private const int NEW = 2;
         private const int FREE = 0;
         private const int MAX = 2048;
-        private int[] score_values;
+        private static int[] score_values = Build_score_values();
         private class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
 
         // TODO string[][][] histoStates;
-
-        public GameManager()
-        {
-            score_values = new int[2049];
-            score_values[0] = 0;
-            score_values[2] = 0;
-            score_values[4] = 4;
-            score_values[8] = 8 + 2 * score_values[4];
-            score_values[16] = 16 + 2 * score_values[8];
-            score_values[32] = 32 + 2 * score_values[16];
-            score_values[64] = 64 + 2 * score_values[32];
-            score_values[128] = 128 + 2 * score_values[64];
-            score_values[256] = 256 + 2 * score_values[128];
-            score_values[512] = 512 + 2 * score_values[256];
-            score_values[1024] = 1024 + 2 * score_values[512];
-            score_values[2048] = 2048 + 2 * score_values[1024];
-        }
 
         private void Clean()
         {
@@ -164,12 +119,12 @@ namespace Project2048.Core
             Score = Calc_score(Board);
         }
 
-        public int Calc_score(Item[,] matrix)
+        public static int Calc_score(Item[,] Board)
         {
             int res = 0;
-            for (int y = 0; y < matrix.GetLength(0); y++)
-                for (int x = 0; x < matrix.GetLength(1); x++)
-                    res += score_values[matrix[y, x].Value];
+            for (int y = 0; y < Board.GetLength(0); y++)
+                for (int x = 0; x < Board.GetLength(1); x++)
+                    res += score_values[Board[y, x].Value];
             return res;
         }
 
@@ -193,9 +148,12 @@ namespace Project2048.Core
         private void Create_random_item()
         {
             Point[] freeItems = GetItemsByValue(Board, FREE);
-            int i = new Random().Next(0, freeItems.Length);
-            Console.WriteLine(i);
-            Board[freeItems[i].y, freeItems[i].x].Value = NEW;
+            if (freeItems.Length > 0)
+            {
+                int i = new Random().Next(0, freeItems.Length);
+                Point newItem = freeItems[i];
+                Board[newItem.y, newItem.x].Value = NEW;
+            }
         }
 
         private void Move_Items()
@@ -205,18 +163,18 @@ namespace Project2048.Core
             bool canMove = true;
             while (canMove)
             {
-                prev = Clone2(actu);
+                prev = Clone_Board(actu);
                 actu = Move_Items(actu, LastMove);
-                canMove = !Equals2(prev, actu);
+                canMove = !Equals_Board(prev, actu);
             }
             Board = actu;
         }
 
-        private static Item[,] Move_Items(Item[,] matrix, Movement move)
+        private static Item[,] Move_Items(Item[,] board, Movement move)
         {
-            Item[,] array = Clone2(matrix);
-            int Height = matrix.GetLength(0);
-            int Width = matrix.GetLength(1);
+            Item[,] array = Clone_Board(board);
+            int Height = board.GetLength(0);
+            int Width = board.GetLength(1);
             switch (move)
             {
                 case Movement.Right:
@@ -243,7 +201,7 @@ namespace Project2048.Core
             return array;
         }
 
-        private static bool Equals2(Item[,] a, Item[,] b)
+        private static bool Equals_Board(Item[,] a, Item[,] b)
         {
             int Height = a.GetLength(0);
             int Width = a.GetLength(1);
@@ -254,7 +212,7 @@ namespace Project2048.Core
             return true;
         }
 
-        private static Item[,] Clone2(Item[,] src)
+        private static Item[,] Clone_Board(Item[,] src)
         {
             int Height = src.GetLength(0);
             int Width = src.GetLength(1);
@@ -287,41 +245,38 @@ namespace Project2048.Core
 
         // FUNCTION(S ) *******************************************************
 
+        public static int[] Build_score_values()
+        {
+            int[] score_values;
+            score_values = new int[2049];
+            score_values[0] = 0;
+            score_values[2] = 0;
+            score_values[4] = 4;
+            score_values[8] = 8 + 2 * score_values[4];
+            score_values[16] = 16 + 2 * score_values[8];
+            score_values[32] = 32 + 2 * score_values[16];
+            score_values[64] = 64 + 2 * score_values[32];
+            score_values[128] = 128 + 2 * score_values[64];
+            score_values[256] = 256 + 2 * score_values[128];
+            score_values[512] = 512 + 2 * score_values[256];
+            score_values[1024] = 1024 + 2 * score_values[512];
+            score_values[2048] = 2048 + 2 * score_values[1024];
+            return score_values;
+        }
+
         public static Movement[] Calc_available_moves(Item[,] matrix)
         {
-            Item[,] prev = Clone2(matrix);
-            List < Movement> moves = new List<Movement>();
-            if (!Equals2(prev, Move_Items(matrix, Movement.Up)))
+            Item[,] prev = Clone_Board(matrix);
+            List<Movement> moves = new List<Movement>();
+            if (!Equals_Board(prev, Move_Items(matrix, Movement.Up)))
                 moves.Add(Movement.Up);
-            if (!Equals2(prev, Move_Items(matrix, Movement.Down)))
+            if (!Equals_Board(prev, Move_Items(matrix, Movement.Down)))
                 moves.Add(Movement.Down);
-            if (!Equals2(prev, Move_Items(matrix, Movement.Left)))
+            if (!Equals_Board(prev, Move_Items(matrix, Movement.Left)))
                 moves.Add(Movement.Left);
-            if (!Equals2(prev, Move_Items(matrix, Movement.Right)))
+            if (!Equals_Board(prev, Move_Items(matrix, Movement.Right)))
                 moves.Add(Movement.Right);
             return moves.ToArray<Movement>();
-        }
-
-        // TODO simulation (robust)
-        [System.Obsolete]
-        private static bool HasVerticalMovement(Item[,] matrix)
-        {
-            for (int y = 0; y < matrix.GetLength(0) - 1; y++)
-                for (int x = 0; x < matrix.GetLength(1); x++)
-                    if (matrix[y, x] == matrix[y + 1, x])
-                        return true;
-            return false;
-        }
-
-        // TODO simulation (robust)
-        [System.Obsolete]
-        private static bool HasHorizontalMovement(Item[,] matrix)
-        {
-            for (int y = 0; y < matrix.GetLength(0); y++)
-                for (int x = 0; x < matrix.GetLength(1) - 1; x++)
-                    if (matrix[y, x] == matrix[y, x + 1])
-                        return true;
-            return false;
         }
 
         private static Point[] GetItemsByValue(Item[,] matrix, int value)

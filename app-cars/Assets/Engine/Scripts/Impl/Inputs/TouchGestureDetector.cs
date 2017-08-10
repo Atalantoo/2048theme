@@ -1,4 +1,10 @@
-﻿using System;
+﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary
+ * Written by Damien Fremont
+ */
+ 
+ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +47,6 @@ namespace Commons.Inputs
 
                             if (Right != null && Left != null && Up != null && Down != null)
                             {
-                                GUILayout.Button("angle="+angle);
                                 if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
                                     Up();
                                 else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
