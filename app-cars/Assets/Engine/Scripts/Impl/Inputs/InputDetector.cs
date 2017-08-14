@@ -3,8 +3,8 @@
  * Proprietary
  * Written by Damien Fremont
  */
- 
- using UnityEngine;
+
+using UnityEngine;
 using System;
 
 namespace Commons.Inputs

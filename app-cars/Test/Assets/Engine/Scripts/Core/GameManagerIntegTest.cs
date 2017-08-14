@@ -8,6 +8,20 @@ namespace Project2048.Core
     [TestClass]
     public class GameManagerIntegTest
     {
+        [TestMethod] public void Usecase_02_move_mid_to_left() => TestReloadThenTurn("usecase_02_move_mid_to_left");
+        [TestMethod] public void Usecase_02_move_mid_to_right() => TestReloadThenTurn("usecase_02_move_mid_to_right");
+        [TestMethod] public void Usecase_03_move_twins_left() => TestReloadThenTurn("usecase_03_move_twins_left_to_left");
+        [TestMethod] public void Usecase_03_move_twins_mid_to_right() => TestReloadThenTurn("usecase_03_move_twins_mid_to_right");
+        [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_blocked_twins_mid_to_right");
+        [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_spaced_twins_mid_to_right");
+        [TestMethod] public void Usecase_05_move_bot() => TestReloadThenTurn("usecase_05_move_bot");
+        [TestMethod] public void Usecase_05_move_top() => TestReloadThenTurn("usecase_05_move_top");
+        [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
+        [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
+        [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
+        [TestMethod] public void Fix_01_missing_item_on_border() => TestReloadThenTurn("Fix_01_missing_item_on_border");
+        [TestMethod] public void Fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
+        [TestMethod] public void Fix_01_move_forbiden() => TestReloadThenTurn("Fix_01_move_forbiden");
         [TestMethod]
         public void Usecase_01_init()
         {
@@ -22,20 +36,6 @@ namespace Project2048.Core
             Assert.IsTrue(14 <= Count(res, "0"));
             Assert.AreEqual(2, Count(res, "2"));
         }
-
-        [TestMethod] public void Usecase_02_move_mid_to_left() => TestReloadThenTurn("usecase_02_move_mid_to_left");
-        [TestMethod] public void Usecase_02_move_mid_to_right() => TestReloadThenTurn("usecase_02_move_mid_to_right");
-        [TestMethod] public void Usecase_03_move_twins_left() => TestReloadThenTurn("usecase_03_move_twins_left_to_left");
-        [TestMethod] public void Usecase_03_move_twins_mid_to_right() => TestReloadThenTurn("usecase_03_move_twins_mid_to_right");
-        [TestMethod] public void Usecase_04_move_blocked_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_blocked_twins_mid_to_right");
-        [TestMethod] public void Usecase_04_move_spaced_twins_mid_to_right() => TestReloadThenTurn("usecase_04_move_spaced_twins_mid_to_right");
-        [TestMethod] public void Usecase_05_move_bot() => TestReloadThenTurn("usecase_05_move_bot");
-        [TestMethod] public void Usecase_05_move_top() => TestReloadThenTurn("usecase_05_move_top");
-        [TestMethod] public void Usecase_06_move_spaced_twins_mid_to_top() => TestReloadThenTurn("usecase_06_move_spaced_twins_mid_to_top");
-        [TestMethod] public void Usecase_07_won() => TestReload("usecase_07_won");
-        [TestMethod] public void Usecase_07_loss() => TestReload("usecase_07_loss");
-        [TestMethod] public void Fix_01_missing_item_on_border() => TestReloadThenTurn("Fix_01_missing_item_on_border");
-        [TestMethod] public void Fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
 
         static GameManager game = Init();
         static GameManager Init()

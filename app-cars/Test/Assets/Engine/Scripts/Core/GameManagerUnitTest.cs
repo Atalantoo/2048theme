@@ -12,49 +12,49 @@ namespace Project2048.Core
         public void Test_Calc_score()
         {
             Assert.AreEqual(0,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,0,0,0 },
                 { 0,0,0,0 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
                     })));
             Assert.AreEqual(0,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,0,0,2 },
                 { 0,0,0,2 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
                     })));
             Assert.AreEqual(4,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,0,0,4 },
                 { 0,0,0,2 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
                     })));
             Assert.AreEqual(16,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,0,0,8 },
                 { 0,0,0,2 },
                 { 0,0,0,2 },
                 { 2,0,0,2 }
                     })));
             Assert.AreEqual(24,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,2,2,8 },
                 { 0,0,0,4 },
                 { 0,0,0,4 },
                 { 0,0,0,0 }
                     })));
             Assert.AreEqual(32,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,2,2,8 },
                 { 0,0,2,8 },
                 { 0,0,0,0 },
                 { 0,0,0,0 }
                     })));
             Assert.AreEqual(52,
-                game.Calc_score(Arrays(new int[,]{
+                GameManager.Calc_score(Arrays(new int[,]{
                 { 0,2,4,16 },
                 { 0,0,0,0 },
                 { 0,0,0,0 },
@@ -116,14 +116,6 @@ namespace Project2048.Core
                     }))[0]);
         }
 
-        static GameManager game = Init();
-        static GameManager Init()
-        {
-            GameManager game;
-            game = new GameManager();
-            return game;
-        }
-
         public static Item[,] Arrays(int[,] i)
         {
             Item[,] o;
@@ -135,7 +127,6 @@ namespace Project2048.Core
                     o[y, x] = new Item(i[y, x]);
             return o;
         }
-
     }
 
 }

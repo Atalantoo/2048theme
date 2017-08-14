@@ -41,20 +41,21 @@ namespace Project2048
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
             input.Down = main.MoveDownAction;
-
+#if UNITY_EDITOR
             input = gameObject.AddComponent<MouseSwipeDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
             input.Down = main.MoveDownAction;
-
+#endif
+#if UNITY_ANDROID
             input = gameObject.AddComponent<TouchGestureDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
             input.Down = main.MoveDownAction;
+#endif
         }
-
         private static void BindButtons(Main main)
         {
             GameObject go;

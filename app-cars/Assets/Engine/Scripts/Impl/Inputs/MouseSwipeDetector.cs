@@ -3,8 +3,8 @@
  * Proprietary
  * Written by Damien Fremont
  */
- 
- using UnityEngine;
+
+using UnityEngine;
 using System;
 
 namespace Commons.Inputs
@@ -27,6 +27,9 @@ namespace Commons.Inputs
 
         void Update()
         {
+            if (Right == null || Left == null || Up == null || Down == null)
+                return;
+
             if (state == State.SwipeNotStarted)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -53,18 +56,18 @@ namespace Commons.Inputs
 
                         state = State.SwipeNotStarted;
 
-                        if (Right != null && Left != null && Up != null && Down != null)
-                        {
-                            if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
-                                Up();
-                            else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
-                                Left();
-                            else if (angle > 180 + MARGIN_IN_DEGREE && angle <= 270 - MARGIN_IN_DEGREE)
-                                Down();
-                            else if (angle > 270 + MARGIN_IN_DEGREE && angle <= 360 - MARGIN_IN_DEGREE)
-                                Right();
-                        }
+                        Debug.Log("MouseSwipeDetector angle " + angle);
+
+                        if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
+                            Up();
+                        else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
+                            Left();
+                        else if (angle > 180 + MARGIN_IN_DEGREE && angle <= 270 - MARGIN_IN_DEGREE)
+                            Down();
+                        else if (angle > 270 + MARGIN_IN_DEGREE && angle <= 360 - MARGIN_IN_DEGREE)
+                            Right();
                     }
+
                 }
             }
         }
