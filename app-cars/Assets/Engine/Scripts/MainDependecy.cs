@@ -36,7 +36,7 @@ namespace Project2048
 
             gameObject = main.gameObject;
 
-            input = gameObject.AddComponent<ArrowKeysDetector>();
+            input = gameObject.AddComponent<KeysArrowDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
@@ -49,7 +49,7 @@ namespace Project2048
             input.Down = main.MoveDownAction;
 #endif
 #if UNITY_ANDROID
-            input = gameObject.AddComponent<TouchGestureDetector>();
+            input = gameObject.AddComponent<TouchSwipeDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;

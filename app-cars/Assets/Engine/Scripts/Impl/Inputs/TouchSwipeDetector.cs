@@ -12,9 +12,10 @@ using UnityEngine;
 
 namespace Commons.Inputs
 {
-    class TouchGestureDetector : InputDetector
+    class TouchSwipeDetector : InputDetector
     {
-        private const int MARGIN_IN_DEGREE = 10;
+        private const int MARGIN_IN_DEGREE = 5;
+        private const int MIN_DIRECTION = 0;
 
         private bool swiping = false;
         private bool eventSent = false;
@@ -43,16 +44,12 @@ namespace Commons.Inputs
                         Vector2 direction = Input.GetTouch(0).position - lastPosition;
 
                         double radAngle = Math.Atan2(direction.y, direction.x);
-                        radAngle = radAngle > 0 ? radAngle : radAngle + 2 * Math.PI;
+                        if (radAngle < 0)
+                            radAngle += 2 * Math.PI;
                         double angle = radAngle * (180.0 / Math.PI);
 
-                        Debug.Log("TouchGestureDetector direction.y " + direction.y);
-                        Debug.Log("TouchGestureDetector direction.x " + direction.x);
-                        Debug.Log("TouchGestureDetector radAngle " + radAngle);
-                        Debug.Log("TouchGestureDetector angle " + angle);
-
-                        if (direction.y > 25 && direction.x > 25)
-
+                        if (Math.Abs(direction.y) > MIN_DIRECTION && Math.Abs(direction.x) > MIN_DIRECTION)
+                        {
                             if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
                                 Up();
                             else if (angle > 90 + MARGIN_IN_DEGREE && angle <= 180 - MARGIN_IN_DEGREE)
@@ -61,6 +58,7 @@ namespace Commons.Inputs
                                 Down();
                             else if (angle > 270 + MARGIN_IN_DEGREE && angle <= 360 - MARGIN_IN_DEGREE)
                                 Right();
+                        }
 
                         eventSent = true;
                     }

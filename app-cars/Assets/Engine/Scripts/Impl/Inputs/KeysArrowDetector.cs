@@ -9,7 +9,7 @@ using System;
 
 namespace Commons.Inputs
 {
-    public class ArrowKeysDetector : InputDetector
+    public class KeysArrowDetector : InputDetector
     {
         void Update()
         {

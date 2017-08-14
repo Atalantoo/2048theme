@@ -17,7 +17,7 @@ namespace Commons.Inputs
 
     public class MouseSwipeDetector : InputDetector
     {
-        private const int MARGIN_IN_DEGREE = 10;
+        private const int MARGIN_IN_DEGREE = 5;
 
         private State state = State.SwipeNotStarted;
         private Vector2 startPoint;
@@ -55,8 +55,6 @@ namespace Commons.Inputs
                             angle = 360 - angle;
 
                         state = State.SwipeNotStarted;
-
-                        Debug.Log("MouseSwipeDetector angle " + angle);
 
                         if (angle > 0 + MARGIN_IN_DEGREE && angle <= 90 - MARGIN_IN_DEGREE)
                             Up();
