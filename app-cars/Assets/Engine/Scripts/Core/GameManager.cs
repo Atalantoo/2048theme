@@ -37,8 +37,11 @@ namespace Project2048.Core
                 Get_Input(input);
             }
             {  // Move phase
-                Move_Items();
-                Create_random_item();
+                if (Can_do_this_move())
+                {
+                    Move_Items();
+                    Create_random_item();
+                }
             }
             { // End
                 Get_available_moves();
@@ -154,6 +157,12 @@ namespace Project2048.Core
                 Point newItem = freeItems[i];
                 Board[newItem.y, newItem.x].Value = NEW;
             }
+        }
+
+        private bool Can_do_this_move()
+        {
+            Movement[] moves = Calc_available_moves(Board);
+            return moves.Contains<Movement>(LastMove);
         }
 
         private void Move_Items()
