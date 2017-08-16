@@ -23,6 +23,36 @@ namespace Project2048.Core
         [TestMethod] public void Fix_01_too_much_moves() => TestReloadThenTurn("Fix_01_too_much_moves");
         [TestMethod] public void Fix_01_move_forbiden() => TestReloadThenTurn("Fix_01_move_forbiden");
         [TestMethod]
+        public void Usecase_08_history_undo1()
+        {
+            TestReloadThenTurn("usecase_08_history_undo1_1o2");
+
+            string[][] exp = GameTest.readFile("../../Resources/usecase_08_history_undo1_2o2-o.txt");
+            string[][] res = FromOutputToArray(
+                game.Undo());
+            DisplayResult(res);
+            GameAssert.AreEqual(exp, res);
+        }
+        [TestMethod]
+        public void Usecase_08_history_undo2()
+        {
+            TestReloadThenTurn("usecase_08_history_undo2_1o3");
+
+            string[][] inp = GameTest.readFile("../../Resources/usecase_08_history_undo2_2o3-i.txt");
+            string[][] exp = GameTest.readFile("../../Resources/usecase_08_history_undo2_2o3-o.txt");
+            string[][] res = FromOutputToArray(
+                game.Turn(
+                    FromArrayToInput2(inp)));
+            DisplayResult(res);
+            GameAssert.AreEqual(exp, res);
+
+            exp = GameTest.readFile("../../Resources/usecase_08_history_undo2_3o3-o.txt");
+            res = FromOutputToArray(
+                game.Undo());
+            DisplayResult(res);
+            GameAssert.AreEqual(exp, res);
+        }
+        [TestMethod]
         public void Usecase_01_init()
         {
             string[][] inp = GameTest.readFile("../../Resources/usecase_01_init-i.txt");

@@ -61,9 +61,13 @@ namespace Project2048
             GameObject go;
             Button btn;
 
-            go = GameObject.Find("Button RESET");
+            go = GameObject.Find("reset_button");
             btn = go.GetComponent<Button>();
             btn.onClick.AddListener(main.ResetAction);
+
+            go = GameObject.Find("undo_button");
+            btn = go.GetComponent<Button>();
+            btn.onClick.AddListener(main.UndoAction);
 
             go = GameObject.Find("botmove1");
             go.AddComponent<BlinkAnimator>();

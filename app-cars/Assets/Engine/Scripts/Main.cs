@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Project2048.Core;
+using UnityEngine.UI;
 
 namespace Project2048
 {
@@ -37,9 +38,10 @@ namespace Project2048
             UpdateScreen();
         }
 
-        public void BackAction()
+        public void UndoAction()
         {
-
+            game = gameManager.Undo();
+            UpdateScreen();
         }
 
         public void MoveLeftAction()
@@ -83,6 +85,7 @@ namespace Project2048
         private void UpdateScreen()
         {
             UpdateSprites();
+            UpdateButtons();
             // TODO score
             // TODO moves
         }
@@ -102,6 +105,16 @@ namespace Project2048
                     spriteRend = itemGO.GetComponent<SpriteRenderer>();
                     spriteRend.sprite = sprite;
                 }
+        }
+
+        private void UpdateButtons()
+        {
+            GameObject go;
+            Button btn;
+            go = GameObject.Find("undo_button");
+            btn = go.GetComponent<Button>();
+
+            btn.interactable = game.CanUndo;
         }
 
         static string[] suite = new string[] { //

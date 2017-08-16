@@ -27,10 +27,12 @@ namespace Project2048.Core
         public int Width;
         public int Height;
         public Item[,] Board;
+
         public int Score;
         public GameState State;
         public Movement[] AvailableMoves;
         public Movement LastMove;
+        public bool CanUndo;
     }
     public class GameStartInput
     {

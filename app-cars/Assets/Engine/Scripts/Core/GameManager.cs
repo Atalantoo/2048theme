@@ -16,12 +16,15 @@ namespace Project2048.Core
     {
         public Game Start(GameStartInput input)
         { // Starting_the_Game_Turn
-            { // Setup_Phase
+            { // Beginning phase
                 Clean();
                 Setup(input);
+            }
+            { // Setup_Phase
                 Fill_with_zeros_items();
                 Create_random_item();
                 Create_random_item();
+                History_Save();
             }
             { // End
                 Get_available_moves();
@@ -41,6 +44,23 @@ namespace Project2048.Core
                 {
                     Move_Items();
                     Create_random_item();
+                    History_Save();
+                }
+            }
+            { // End
+                Get_available_moves();
+                Update_State();
+                Update_score();
+            }
+            return Return();
+        }
+
+        public Game Undo()
+        { // Player Turn
+            {  // Move phase
+                if (Can_undo())
+                {
+                    History_Restore_last();
                 }
             }
             { // End
@@ -56,6 +76,7 @@ namespace Project2048.Core
             { // Setup_Phase
                 Clean();
                 Setup(input);
+                History_Save();
             }
             { // End
                 Get_available_moves();
@@ -75,7 +96,7 @@ namespace Project2048.Core
         private static int[] score_values = Build_score_values();
         private class Point { public int y; public int x; public Point(int y, int x) { this.y = y; this.x = x; } }
 
-        // TODO string[][][] histoStates;
+        private List<Item[,]> history;
 
         private void Clean()
         {
@@ -83,6 +104,7 @@ namespace Project2048.Core
             Height = -1;
             Board = null;
             Score = -1;
+            history = new List<Item[,]>();
         }
 
         private void Setup(GameStartInput input)
@@ -113,7 +135,8 @@ namespace Project2048.Core
                 Board = Board,
                 Score = Score,
                 State = State,
-                AvailableMoves = AvailableMoves
+                AvailableMoves = AvailableMoves,
+                CanUndo = Can_undo()
             };
         }
 
@@ -231,6 +254,24 @@ namespace Project2048.Core
         private void Get_available_moves()
         {
             AvailableMoves = Calc_available_moves(Board);
+        }
+
+        private void History_Restore_last()
+        {
+            Item[,] current = history.Last<Item[,]>();
+            history.Remove(current);
+            Item[,] previous = history.Last<Item[,]>();
+            Board = previous;
+        }
+
+        private void History_Save()
+        {
+            history.Add(Board_Clone(Board));
+        }
+
+        private bool Can_undo()
+        {
+            return history.Count > 1;
         }
 
         // FUNCTION(S ) *******************************************************
