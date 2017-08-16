@@ -177,6 +177,7 @@ namespace Project2048.Core
                 actu = Move_Items(actu, LastMove);
                 canMove = !Board_Equals(prev, actu);
             }
+            Board_ResetMergeState(actu);
             Board = actu;
         }
 

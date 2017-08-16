@@ -51,7 +51,5 @@ namespace Project2048.Core
 
         public bool HasBeenMerged;
         public Item(int value, bool merged) { Value = value; HasBeenMerged = merged; }
-
-        public override string ToString() { return ""+Value +" "+HasBeenMerged; }
     }
 }
