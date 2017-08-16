@@ -48,8 +48,10 @@ namespace Project2048.Core
     {
         public int Value;
         public Item(int value) { Value = value; }
-        public override string ToString() { return "" + Value; }
+
+        public bool HasBeenMerged;
+        public Item(int value, bool merged) { Value = value; HasBeenMerged = merged; }
+
+        public override string ToString() { return ""+Value +" "+HasBeenMerged; }
     }
-
-
 }

@@ -167,21 +167,22 @@ namespace Project2048.Core
 
         private void Move_Items()
         {
-            Item[,] actu = Board;
             Item[,] prev = null;
+            Item[,] actu = Board;
+            Board_ResetMergeState(actu);
             bool canMove = true;
             while (canMove)
             {
-                prev = Clone_Board(actu);
+                prev = Board_Clone(actu);
                 actu = Move_Items(actu, LastMove);
-                canMove = !Equals_Board(prev, actu);
+                canMove = !Board_Equals(prev, actu);
             }
             Board = actu;
         }
 
         private static Item[,] Move_Items(Item[,] board, Movement move)
         {
-            Item[,] array = Clone_Board(board);
+            Item[,] array = Board_Clone(board);
             int Height = board.GetLength(0);
             int Width = board.GetLength(1);
             switch (move)
@@ -210,28 +211,6 @@ namespace Project2048.Core
             return array;
         }
 
-        private static bool Equals_Board(Item[,] a, Item[,] b)
-        {
-            int Height = a.GetLength(0);
-            int Width = a.GetLength(1);
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    if (a[y, x].Value != b[y, x].Value)
-                        return false;
-            return true;
-        }
-
-        private static Item[,] Clone_Board(Item[,] src)
-        {
-            int Height = src.GetLength(0);
-            int Width = src.GetLength(1);
-            Item[,] dest = new Item[Height, Width];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    dest[y, x] = new Item(src[y, x].Value);
-            return dest;
-        }
-
         private static void Move(Item from, Item to)
         {
             if (FREE != from.Value)
@@ -240,10 +219,11 @@ namespace Project2048.Core
                     to.Value = from.Value;
                     from.Value = FREE;
                 }
-                else if (from.Value == to.Value && to.Value < MAX)
+                else if (from.Value == to.Value && !from.HasBeenMerged && !to.HasBeenMerged && to.Value < MAX)
                 {
                     to.Value += from.Value;
                     from.Value = FREE;
+                    to.HasBeenMerged = true;
                 }
         }
 
@@ -275,15 +255,15 @@ namespace Project2048.Core
 
         public static Movement[] Calc_available_moves(Item[,] matrix)
         {
-            Item[,] prev = Clone_Board(matrix);
+            Item[,] prev = Board_Clone(matrix);
             List<Movement> moves = new List<Movement>();
-            if (!Equals_Board(prev, Move_Items(matrix, Movement.Up)))
+            if (!Board_Equals(prev, Move_Items(matrix, Movement.Up)))
                 moves.Add(Movement.Up);
-            if (!Equals_Board(prev, Move_Items(matrix, Movement.Down)))
+            if (!Board_Equals(prev, Move_Items(matrix, Movement.Down)))
                 moves.Add(Movement.Down);
-            if (!Equals_Board(prev, Move_Items(matrix, Movement.Left)))
+            if (!Board_Equals(prev, Move_Items(matrix, Movement.Left)))
                 moves.Add(Movement.Left);
-            if (!Equals_Board(prev, Move_Items(matrix, Movement.Right)))
+            if (!Board_Equals(prev, Move_Items(matrix, Movement.Right)))
                 moves.Add(Movement.Right);
             return moves.ToArray<Movement>();
         }
@@ -296,6 +276,37 @@ namespace Project2048.Core
                     if (value.Equals(matrix[y, x].Value))
                         res.Add(new Point(y, x));
             return res.ToArray();
+        }
+
+        // BOARD *****************************
+
+        private static bool Board_Equals(Item[,] a, Item[,] b)
+        {
+            int Height = a.GetLength(0);
+            int Width = a.GetLength(1);
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                    if (a[y, x].Value != b[y, x].Value)
+                        return false;
+            return true;
+        }
+
+        private static void Board_ResetMergeState(Item[,] Board)
+        {
+            for (int y = 0; y < Board.GetLength(0); y++)
+                for (int x = 0; x < Board.GetLength(1); x++)
+                    Board[y, x].HasBeenMerged = false;
+        }
+
+        private static Item[,] Board_Clone(Item[,] src)
+        {
+            int Height = src.GetLength(0);
+            int Width = src.GetLength(1);
+            Item[,] dest = new Item[Height, Width];
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                    dest[y, x] = new Item(src[y, x].Value, src[y, x].HasBeenMerged);
+            return dest;
         }
     }
 }
