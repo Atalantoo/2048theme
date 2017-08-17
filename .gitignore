@@ -13,11 +13,6 @@ sysinfo.txt/[Ll]ibrary/
 *.apk
 *.unitypackage
 
-# UNITY3D - NoesisGUI
-NoesisGUI
-NoesisGUI.meta
-NoesisDoc
-
 
 
 # VISUAL STUDIO
