@@ -9,9 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class Globals
+namespace Project2048
 {
-    public readonly static int Height = 4;
-    public readonly static int Width = 4;
-    public static readonly float AnimationDuration = 0.05f;
+    class Globals
+    {
+        public readonly static int Height = 4;
+        public readonly static int Width = 4;
+        public static readonly float AnimationDuration = 0.05f;
+    }
 }

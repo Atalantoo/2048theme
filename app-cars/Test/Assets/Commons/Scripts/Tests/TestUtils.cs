@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Commons.Test
+namespace Commons.Tests
 {
     class GameTest
     {

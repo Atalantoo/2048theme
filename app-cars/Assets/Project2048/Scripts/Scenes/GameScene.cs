@@ -11,11 +11,10 @@ using Project2048.Core;
 using UnityEngine.UI;
 using System.Linq;
 
-namespace Project2048
+namespace Project2048.Scenes
 {
-    public class Main : MonoBehaviour
+    class GameScene : MonoBehaviour
     {
-
         public GameManager gameManager;
 
         private string levelName = "model_t";
@@ -24,8 +23,8 @@ namespace Project2048
 
         void Start()
         {
-            MainDependecy.InjectCore(this);
-            MainDependecy.InjectUI(this);
+            GameSceneDependency.InjectCore(this);
+            GameSceneDependency.InjectUI(this);
             sprites = new Dictionary<int, Sprite>();
             ResetAction();
         }

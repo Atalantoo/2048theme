@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Commons.Test
+namespace Commons.Tests
 {
     [TestClass]
     public class CommonsGameTestTest2

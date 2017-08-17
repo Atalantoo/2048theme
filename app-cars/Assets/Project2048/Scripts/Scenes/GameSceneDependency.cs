@@ -8,28 +8,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using UnityEngine.UI;
 using Project2048.Core;
 using Commons.Inputs;
 using Commons.Animations;
-using UnityEngine;
-using UnityEngine.UI;
 
-namespace Project2048
+namespace Project2048.Scenes
 {
-    class MainDependecy
+    class GameSceneDependency
     {
-        public static void InjectCore(Main main)
+        public static void InjectCore(GameScene main)
         {
             main.gameManager = new GameManager();
         }
 
-        public static void InjectUI(Main main)
+        public static void InjectUI(GameScene main)
         {
             BindButtons(main);
             BindInputs(main);
         }
 
-        private static void BindInputs(Main main)
+        private static void BindInputs(GameScene main)
         {
             GameObject gameObject;
             InputDetector input;
@@ -56,7 +56,7 @@ namespace Project2048
             input.Down = main.MoveDownAction;
 #endif
         }
-        private static void BindButtons(Main main)
+        private static void BindButtons(GameScene main)
         {
             GameObject go;
             Button btn;
