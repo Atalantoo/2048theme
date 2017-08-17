@@ -69,8 +69,11 @@ namespace Project2048
             btn = go.GetComponent<Button>();
             btn.onClick.AddListener(main.UndoAction);
 
-            go = GameObject.Find("botmove1");
-            go.AddComponent<BlinkAnimator>();
+            foreach (Movement move in Enum.GetValues(typeof(Movement)))
+            {
+                go = GameObject.Find("move_" + move.ToString() + "_true");
+                go.AddComponent<BlinkAnimator>();
+            }
         }
 
     }

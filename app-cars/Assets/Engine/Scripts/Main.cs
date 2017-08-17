@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Project2048.Core;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace Project2048
 {
@@ -86,8 +87,23 @@ namespace Project2048
         {
             UpdateSprites();
             UpdateButtons();
+            UpdateMoves();
             // TODO score
-            // TODO moves
+        }
+
+        private void UpdateMoves()
+        {
+            foreach (Movement move in Enum.GetValues(typeof(Movement)))
+            {
+                bool state = game.AvailableMoves.Contains(move);
+                Sprite("move_" + move.ToString() + "_true").enabled = state;
+                Sprite("move_" + move.ToString() + "_false").enabled = !state;
+            }
+        }
+
+        private SpriteRenderer Sprite(string str)
+        {
+            return GameObject.Find(str).GetComponent<SpriteRenderer>();
         }
 
         private void UpdateSprites()
