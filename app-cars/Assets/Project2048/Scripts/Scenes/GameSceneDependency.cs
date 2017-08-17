@@ -56,6 +56,7 @@ namespace Project2048.Scenes
             input.Down = main.MoveDownAction;
 #endif
         }
+
         private static void BindButtons(GameScene main)
         {
             GameObject go;
@@ -68,6 +69,10 @@ namespace Project2048.Scenes
             go = GameObject.Find(Globals.ID_UNDO);
             btn = go.GetComponent<Button>();
             btn.onClick.AddListener(main.UndoAction);
+
+            go = GameObject.Find(Globals.ID_QUIT);
+            btn = go.GetComponent<Button>();
+            btn.onClick.AddListener(main.QuitAction);
 
             foreach (Movement move in Enum.GetValues(typeof(Movement)))
             {

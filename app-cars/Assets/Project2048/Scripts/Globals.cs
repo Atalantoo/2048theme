@@ -21,5 +21,7 @@ namespace Project2048
         public const string ID_MOVE = "Move {0} {1}";
         public const string ID_UNDO = "Undo Button";
         public const string ID_RESET = "Reset Button";
+        public const string ID_START = "Start Button";
+        public const string ID_QUIT = "Quit Button";
     }
 }

@@ -6,11 +6,12 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Project2048.Core;
-using UnityEngine.UI;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Project2048;
+using Project2048.Core;
 
 namespace Project2048.Scenes
 {
@@ -64,6 +65,11 @@ namespace Project2048.Scenes
         {
             game = gameManager.Turn(new GameTurnInput() { Move = Movement.Down });
             UpdateScreen();
+        }
+
+        internal void QuitAction()
+        {
+            SceneManager.LoadScene("Main", LoadSceneMode.Single);
         }
 
         // ***************************
