@@ -13,7 +13,7 @@ namespace Commons.Animations
 {
     public class BlinkAnimator : MonoBehaviour
     {
-        static float delayInSeconds = 1f;
+       // static float delayInSeconds = 1f;
         static float[][] transitionsFadeDelay;
 
         public BlinkAnimator()

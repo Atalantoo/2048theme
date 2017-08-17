@@ -61,17 +61,17 @@ namespace Project2048.Scenes
             GameObject go;
             Button btn;
 
-            go = GameObject.Find("reset_button");
+            go = GameObject.Find(Globals.ID_RESET);
             btn = go.GetComponent<Button>();
             btn.onClick.AddListener(main.ResetAction);
 
-            go = GameObject.Find("undo_button");
+            go = GameObject.Find(Globals.ID_UNDO);
             btn = go.GetComponent<Button>();
             btn.onClick.AddListener(main.UndoAction);
 
             foreach (Movement move in Enum.GetValues(typeof(Movement)))
             {
-                go = GameObject.Find("move_" + move.ToString() + "_true");
+                go = GameObject.Find(String.Format(Globals.ID_MOVE, move, true));
                 go.AddComponent<BlinkAnimator>();
             }
         }

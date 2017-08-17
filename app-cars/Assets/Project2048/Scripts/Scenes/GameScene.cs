@@ -10,6 +10,7 @@ using UnityEngine;
 using Project2048.Core;
 using UnityEngine.UI;
 using System.Linq;
+using Project2048;
 
 namespace Project2048.Scenes
 {
@@ -95,8 +96,8 @@ namespace Project2048.Scenes
             foreach (Movement move in Enum.GetValues(typeof(Movement)))
             {
                 bool state = game.AvailableMoves.Contains(move);
-                Sprite("move_" + move.ToString() + "_true").enabled = state;
-                Sprite("move_" + move.ToString() + "_false").enabled = !state;
+                Sprite(String.Format(Globals.ID_MOVE, move, true)).enabled = state;
+                Sprite(String.Format(Globals.ID_MOVE, move, false)).enabled = !state;
             }
         }
 
@@ -116,7 +117,7 @@ namespace Project2048.Scenes
                 {
                     item = game.Board[y, x].Value;
                     sprite = sprites[item];
-                    itemGO = GameObject.Find(y + "x" + x);
+                    itemGO = GameObject.Find(String.Format(Globals.ID_TILE, y, x));
                     spriteRend = itemGO.GetComponent<SpriteRenderer>();
                     spriteRend.sprite = sprite;
                 }
@@ -126,7 +127,7 @@ namespace Project2048.Scenes
         {
             GameObject go;
             Button btn;
-            go = GameObject.Find("undo_button");
+            go = GameObject.Find(Globals.ID_UNDO);
             btn = go.GetComponent<Button>();
 
             btn.interactable = game.CanUndo;
