@@ -31,25 +31,25 @@ namespace Project2048.Scenes
 
         private static void BindInputs(GameScene main)
         {
-            GameObject gameObject;
+            GameObject go;
             InputDetector input;
 
-            gameObject = main.gameObject;
+            go = GameObject.Find(Globals.ID_BOARD);
 
-            input = gameObject.AddComponent<KeysArrowDetector>();
+            input = go.AddComponent<KeysArrowDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
             input.Down = main.MoveDownAction;
 #if UNITY_EDITOR
-            input = gameObject.AddComponent<MouseSwipeDetector>();
+            input = go.AddComponent<MouseSwipeDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;
             input.Down = main.MoveDownAction;
 #endif
 #if UNITY_ANDROID
-            input = gameObject.AddComponent<TouchSwipeDetector>();
+            input = go.AddComponent<TouchSwipeDetector>();
             input.Left = main.MoveLeftAction;
             input.Right = main.MoveRightAction;
             input.Up = main.MoveUpAction;

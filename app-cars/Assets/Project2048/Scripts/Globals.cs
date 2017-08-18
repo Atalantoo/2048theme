@@ -33,5 +33,6 @@ namespace Project2048
         public const string ID_QUIT = "Quit Button";
         public const string ID_LEVEL = "Level Toggle ({0})";
         public const string ID_SCORE = "Score Text";
+        public const string ID_BOARD = "Board";
     }
 }
