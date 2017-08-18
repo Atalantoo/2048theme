@@ -93,7 +93,16 @@ namespace Project2048.Scenes
             UpdateSprites();
             UpdateButtons();
             UpdateMoves();
-            // TODO score
+            UpdateScore();
+        }
+
+        private void UpdateScore()
+        {
+            GameObject go;
+            Text txt;
+            go = GameObject.Find(Globals.ID_SCORE);
+            txt = go.GetComponent<Text>();
+            txt.text = "Score: " + game.Score.ToString();
         }
 
         private void UpdateMoves()
