@@ -19,7 +19,6 @@ namespace Project2048.Scenes
     {
         public GameManager gameManager;
 
-        private string levelName = "model_t";
         private Game game;
         private Dictionary<int, Sprite> sprites;
 
@@ -31,7 +30,7 @@ namespace Project2048.Scenes
             ResetAction();
         }
 
-        // ***************************
+        // ********************************************************************
 
         public void ResetAction()
         {
@@ -69,10 +68,10 @@ namespace Project2048.Scenes
 
         internal void QuitAction()
         {
-            SceneManager.LoadScene("Main", LoadSceneMode.Single);
+            SceneManager.LoadScene(Globals.MAIN_SCENE, LoadSceneMode.Single);
         }
 
-        // ***************************
+        // ********************************************************************
 
         private void LoadResources()
         {
@@ -155,18 +154,19 @@ namespace Project2048.Scenes
 
         private void LoadSprites()
         {
+            string path = Globals.LEVELS[Globals.LEVEL_CURRENT];
             sprites.Clear();
             foreach (string i in suite)
-                sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(levelName + "/" + i));
+                sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path + "/" + i));
         }
 
 #if UNITY_EDITOR
         void OnGUI()
         {
             if (GUILayout.Button("Start at Level 1"))
-                LevelAction("model_t");
+                LevelAction(1);
             if (GUILayout.Button("Start at Level 2"))
-                LevelAction("f40");
+                LevelAction(2);
             if (GUILayout.Button("Win 512"))
                 throw new NotImplementedException();
             if (GUILayout.Button("Win 1024"))
@@ -175,9 +175,9 @@ namespace Project2048.Scenes
                 throw new NotImplementedException();
         }
 
-        private void LevelAction(string newLevelName)
+        private void LevelAction(int newLevelName)
         {
-            levelName = newLevelName;
+            Globals.LEVEL_CURRENT = newLevelName;
             LoadResources();
             game.Board[0, 3].Value = 2048;
             game.Board[0, 2].Value = 1024;
