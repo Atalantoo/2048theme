@@ -17,25 +17,21 @@ namespace Project2048.Scenes
         {
             Globals.LEVEL_CURRENT = 0;
             MainSceneDependency.InjectUI(this);
+            SetToggle();
             UpdateScreen();
         }
 
         // ********************************************************************
 
-        internal void SelectLevel0Action()
+        internal void SelectLevelAction(bool arg)
         {
-            Globals.LEVEL_CURRENT = 0;
-            UpdateScreen();
-        }
-
-        internal void SelectLevel1Action()
-        {
-            Globals.LEVEL_CURRENT = 1;
+            GetToggle();
             UpdateScreen();
         }
 
         internal void StartAction()
         {
+            GetToggle();
             SceneManager.LoadScene(Globals.GAME_SCENE, LoadSceneMode.Single);
         }
 
@@ -43,23 +39,31 @@ namespace Project2048.Scenes
 
         private void UpdateScreen()
         {
-            UpdateButtons();
+            // UpdateButtons();
         }
 
-        private void UpdateButtons()
+        private void SetToggle()
         {
             GameObject go;
-            Button btn;
+            Toggle tog;
             for (int i = 0; i < Globals.LEVELS.Length; i++)
             {
                 go = GameObject.Find(String.Format(Globals.ID_LEVEL, i));
-                btn = go.GetComponent<Button>();
-                if (i > 1) // TODO not reachable
-                    btn.interactable = false;
-                else if (Globals.LEVEL_CURRENT == i)
-                    btn.interactable = false;
-                else
-                    btn.interactable = true;
+                tog = go.GetComponent<Toggle>();
+                tog.isOn = (i == Globals.LEVEL_CURRENT);
+            }
+        }
+
+        private void GetToggle()
+        {
+            GameObject go;
+            Toggle tog;
+            for (int i = 0; i < Globals.LEVELS.Length; i++)
+            {
+                go = GameObject.Find(String.Format(Globals.ID_LEVEL, i));
+                tog = go.GetComponent<Toggle>();
+                if (tog.isOn)
+                    Globals.LEVEL_CURRENT = i;
             }
         }
     }

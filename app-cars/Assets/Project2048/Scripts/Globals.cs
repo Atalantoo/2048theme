@@ -31,6 +31,6 @@ namespace Project2048
         public const string ID_RESET = "Reset Button";
         public const string ID_START = "Start Button";
         public const string ID_QUIT = "Quit Button";
-        public const string ID_LEVEL = "Level {0} Button";
+        public const string ID_LEVEL = "Level {0} Toggle";
     }
 }
