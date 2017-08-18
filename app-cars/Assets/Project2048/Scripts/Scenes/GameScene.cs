@@ -102,7 +102,7 @@ namespace Project2048.Scenes
             Text txt;
             go = GameObject.Find(Globals.ID_SCORE);
             txt = go.GetComponent<Text>();
-            txt.text = "Score: " + game.Score.ToString();
+            txt.text = game.Score.ToString();
         }
 
         private void UpdateMoves()

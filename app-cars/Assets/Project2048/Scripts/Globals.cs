@@ -18,7 +18,7 @@ namespace Project2048
         public static int Height = 4;
         public static int Width = 4;
         public static int LEVEL_CURRENT = 0;
-        public static string[] LEVELS = { "model_t", "f40" };
+        public static string[] LEVELS = { "f40" , "model_t" };
 
         // CONST *********************************
 
