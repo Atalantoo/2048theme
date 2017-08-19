@@ -24,15 +24,15 @@ namespace Project2048.Scenes
 
         void Start()
         {
-            GameSceneDependency.InjectCore(this);
-            GameSceneDependency.InjectUI(this);
+            GameSceneDelegate.InjectCore(this);
+            GameSceneDelegate.InjectUI(this);
             sprites = new Dictionary<int, Sprite>();
             ResetAction();
         }
 
         // ********************************************************************
 
-        public void ResetAction()
+        private void ResetAction()
         {
             LoadResources();
             StartGame();

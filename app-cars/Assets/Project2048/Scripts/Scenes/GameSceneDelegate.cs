@@ -16,7 +16,7 @@ using Commons.Animations;
 
 namespace Project2048.Scenes
 {
-    class GameSceneDependency
+    class GameSceneDelegate
     {
         public static void InjectCore(GameScene main)
         {

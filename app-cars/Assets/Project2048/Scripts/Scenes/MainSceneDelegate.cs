@@ -11,7 +11,7 @@ using UnityEngine.Events;
 
 namespace Project2048.Scenes
 {
-    class MainSceneDependency
+    class MainSceneDelegate
     {
         public static void InjectUI(MainScene main)
         {

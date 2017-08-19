@@ -16,7 +16,7 @@ namespace Project2048.Scenes
         void Start()
         {
             Globals.LEVEL_CURRENT = 0;
-            MainSceneDependency.InjectUI(this);
+            MainSceneDelegate.InjectUI(this);
             SetToggle();
             UpdateScreen();
         }
