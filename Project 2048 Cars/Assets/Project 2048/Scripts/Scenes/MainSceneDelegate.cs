@@ -28,7 +28,7 @@ namespace Project2048.Scenes
             btn.onClick.AddListener(main.StartAction);
 
             Toggle tog;
-            for (int i = 0; i < Globals.LEVELS.Length; i++)
+            for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
             {
                 go = GameObject.Find(String.Format(Globals.ID_LEVEL, i+1));
                 tog = go.GetComponent<Toggle>();

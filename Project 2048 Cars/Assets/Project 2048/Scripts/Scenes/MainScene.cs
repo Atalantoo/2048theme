@@ -31,11 +31,19 @@ namespace Project2048.Scenes
 
         internal void StartAction()
         {
+            FindLevels();
             GetToggle();
             SceneManager.LoadScene(Globals.GAME_SCENE, LoadSceneMode.Single);
         }
 
+
         // ********************************************************************
+
+        private void FindLevels()
+        {
+
+            Globals.LEVELS_LENGTH = 2;
+        }
 
         private void UpdateScreen()
         {
@@ -46,7 +54,7 @@ namespace Project2048.Scenes
         {
             GameObject go;
             Toggle tog;
-            for (int i = 0; i < Globals.LEVELS.Length; i++)
+            for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
             {
                 go = GameObject.Find(String.Format(Globals.ID_LEVEL, i+1));
                 tog = go.GetComponent<Toggle>();
@@ -58,7 +66,7 @@ namespace Project2048.Scenes
         {
             GameObject go;
             Toggle tog;
-            for (int i = 0; i < Globals.LEVELS.Length; i++)
+            for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
             {
                 go = GameObject.Find(String.Format(Globals.ID_LEVEL, i+1));
                 tog = go.GetComponent<Toggle>();

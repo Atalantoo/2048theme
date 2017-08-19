@@ -17,8 +17,10 @@ namespace Project2048
 
         public static int Height = 4;
         public static int Width = 4;
+
+        // TODO public static string PACKAGE_CURRENT = "Cars";
         public static int LEVEL_CURRENT = 0;
-        public static string[] LEVELS = { "f40", "model_t" };
+        public static int LEVELS_LENGTH = 2;
 
         // CONST *********************************
 

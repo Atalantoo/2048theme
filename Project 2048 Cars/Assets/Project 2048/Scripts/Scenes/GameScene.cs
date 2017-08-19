@@ -149,7 +149,7 @@ namespace Project2048.Scenes
 
         private void LoadSprites()
         {
-            string path = Globals.LEVELS[Globals.LEVEL_CURRENT];
+            string path = Globals.LEVEL_CURRENT.ToString();
             sprites.Clear();
             foreach (string i in Globals.SPRITES)
                 sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path + "/" + i));
