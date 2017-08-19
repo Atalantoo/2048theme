@@ -18,7 +18,7 @@ namespace Project2048
         public static int Height = 4;
         public static int Width = 4;
         public static int LEVEL_CURRENT = 0;
-        public static string[] LEVELS = { "f40" , "model_t" };
+        public static string[] LEVELS = { "f40", "model_t" };
 
         // CONST *********************************
 
@@ -33,5 +33,19 @@ namespace Project2048
         public const string ID_LEVEL = "Level Toggle ({0})";
         public const string ID_SCORE = "Score Text";
         public const string ID_BOARD = "Board";
+
+        public static string[] SPRITES = new string[] { //
+            "0000",
+            "0002",
+            "0004",
+            "0008",
+            "0016",
+            "0032",
+            "0064",
+            "0128",
+            "0256",
+            "0512",
+            "1024",
+            "2048" };
     }
 }

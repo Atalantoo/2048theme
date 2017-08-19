@@ -147,25 +147,11 @@ namespace Project2048.Scenes
             btn.interactable = game.CanUndo;
         }
 
-        static string[] suite = new string[] { //
-            "0000",
-            "0002",
-            "0004",
-            "0008",
-            "0016",
-            "0032",
-            "0064",
-            "0128",
-            "0256",
-            "0512",
-            "1024",
-            "2048" };
-
         private void LoadSprites()
         {
             string path = Globals.LEVELS[Globals.LEVEL_CURRENT];
             sprites.Clear();
-            foreach (string i in suite)
+            foreach (string i in Globals.SPRITES)
                 sprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path + "/" + i));
         }
 
