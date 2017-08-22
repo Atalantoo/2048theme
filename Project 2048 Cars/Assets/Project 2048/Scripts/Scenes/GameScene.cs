@@ -159,15 +159,9 @@ namespace Project2048.Scenes
         void OnGUI()
         {
             if (GUILayout.Button("Start at Level 1"))
-                LevelAction(1);
+                LevelAction(0);
             if (GUILayout.Button("Start at Level 2"))
-                LevelAction(2);
-            if (GUILayout.Button("Win 512"))
-                throw new NotImplementedException();
-            if (GUILayout.Button("Win 1024"))
-                throw new NotImplementedException();
-            if (GUILayout.Button("Win 2048"))
-                throw new NotImplementedException();
+                LevelAction(1);
         }
 
         private void LevelAction(int newLevelName)
