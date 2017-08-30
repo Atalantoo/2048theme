@@ -30,6 +30,46 @@ namespace Project2048.Scenes
             ResetAction();
         }
 
+        void Update()
+        {
+            // TODO OnScreenOrientationChange
+            ResizeViewToScreen();
+            ResizeSpriteToScreen(GameObject.Find("Background Sprite"));
+        }
+        void ResizeViewToScreen()
+        {
+            if (Screen.width > Screen.height) // Landscape
+            {
+                Camera.main.orthographicSize = 300;
+            }
+            else // Portrait
+            {
+                Camera.main.orthographicSize = 600;
+            }
+        }
+
+        /*
+         * http://answers.unity3d.com/questions/620699/scaling-my-background-sprite-to-fill-screen-2d-1.html
+         */
+        void ResizeSpriteToScreen(GameObject go)
+        {
+            var sr = go.GetComponent<SpriteRenderer>();
+            if (sr == null) return;
+
+            go.transform.localScale = new Vector3(1, 1, 1);
+
+            var width = sr.sprite.bounds.size.x;
+            var height = sr.sprite.bounds.size.y;
+
+            var worldScreenHeight = Camera.main.orthographicSize * 2.0;
+            var worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+            float x = (float)worldScreenWidth / width;
+            float y = (float)worldScreenHeight / height;
+
+            go.transform.localScale = new Vector3(x, y, 0);
+        }
+
         // ********************************************************************
 
         private void ResetAction()
@@ -68,7 +108,13 @@ namespace Project2048.Scenes
 
         internal void QuitAction()
         {
-            SceneManager.LoadScene(Globals.MAIN_SCENE, LoadSceneMode.Single);
+            GameObject go = GameObject.Find("Dialog");
+            // go.GetComponent<Renderer>().enabled =true;
+            //            go  = Instantiate(Resources.Load("Prefab/Dialog View"), go.transform) as GameObject;
+            //            SpriteRenderer spriteRend = go.AddComponent<SpriteRenderer>();
+            //            spriteRend.sortingOrder = 500;
+            // SceneManager.LoadScene(Globals.DIALOG_SCENE, LoadSceneMode.Additive);
+            // SceneManager.LoadScene(Globals.MAIN_SCENE, LoadSceneMode.Single);
         }
 
         // ********************************************************************
