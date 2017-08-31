@@ -10,86 +10,123 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using Project2048.Core;
+using UnityEngine.Events;
+
+using Commons;
+using Commons.UI;
 using Commons.Inputs;
 using Commons.Animations;
+using Project2048;
 
-namespace Project2048.Scenes
+
+class GameSceneDelegate
 {
-    class GameSceneDelegate
+    public static void InjectCore(GameScene main)
     {
-        public static void InjectCore(GameScene main)
-        {
-            main.gameManager = new GameManager();
-        }
+        main.Core = new GameManager();
+        main.View = new GameSceneView();
+        main.TileSprites = new Dictionary<int, Sprite>();
+    }
 
-        public static void InjectUI(GameScene main)
-        {
-            BindButtons(main);
-            BindInputs(main);
+    public static void InjectViewGame(GameScene main)
+    {
+        ReferenceTiles(main);
+        ReferenceMoves(main);
+        InitAnimations(main);
+    }
 
-            GameObject go;
-            go = GameObjectUtils.FindInactive(GameObject.Find("UI Canvas"),
-                "Quit Modal");
-            GameObjectUtils.
-                FindInactive(go, "Confirm Button").GetComponent<Button>().
-                    onClick.AddListener(main.
-                        QuitConfirmAction);
-            GameObjectUtils.
-                FindInactive(go, "Cancel Button").GetComponent<Button>().
-                    onClick.AddListener(main.
-                        QuitCancelAction);
-            go.SetActive(false);
-            main.dialog = go;
-        }
+    public static void InjectViewUI(GameScene main)
+    {
+        main.View.ScoreText = GameObject.Find(Globals.ScoreText);
+        main.View.BackgroundSprite = GameObject.Find(Globals.BackgroundSprite);
+        main.View.UndoButton = GameObject.Find(Globals.UndoButton);
+        InitDialogs(main);
+        BindActions(main);
+        InitInputs(main);
+    }
 
-        private static void BindInputs(GameScene main)
-        {
-            GameObject go;
-            InputDetector input;
+    // *************************************
 
-            go = GameObject.Find(Globals.ID_BOARD);
+    private static void InitAnimations(GameScene main)
+    {
+        foreach (Movement move in Enum.GetValues(typeof(Movement)))
+            GameObject.Find(String.Format(Globals.GAMEOBJECT_MOVE, move, true))
+                .AddComponent<BlinkAnimator>();
+    }
 
-            input = go.AddComponent<KeysArrowDetector>();
-            input.Left = main.MoveLeftAction;
-            input.Right = main.MoveRightAction;
-            input.Up = main.MoveUpAction;
-            input.Down = main.MoveDownAction;
+    private static void ReferenceTiles(GameScene main)
+    {
+        main.View.TileObjects = new Dictionary<string, GameObject>();
+        for (int y = 0; y < Globals.Height; y++)
+            for (int x = 0; x < Globals.Width; x++)
+            {
+                string name = String.Format(Globals.GAMEOBJECT_TILE, y, x);
+                main.View.TileObjects.Add(name, GameObject.Find(name));
+            }
+    }
+
+    private static void ReferenceMoves(GameScene main)
+    {
+        main.View.GameMoves = new Dictionary<string, SpriteRenderer>();
+        foreach (Movement move in Enum.GetValues(typeof(Movement)))
+            foreach (bool b in new bool[] { true, false })
+            {
+                string name = String.Format(Globals.GAMEOBJECT_MOVE, move, b);
+                var sr = GameObject.Find(name).GetComponent<SpriteRenderer>();
+                main.View.GameMoves.Add(name, sr);
+            }
+    }
+
+    private static void InitDialogs(GameScene main)
+    {
+        main.View.QuitDialog = GameObject
+            .Find(Globals.UICanvas)
+            .FindChild(Globals.QuitDialog, true);
+        main.View.QuitDialog.AddComponent<BringToFront>();
+        main.View.QuitDialog.SetActive(false);
+    }
+
+    private static void InitInputs(GameScene main)
+    {
+        GameObject go;
+        InputDetector input;
+
+        go = GameObject.Find(Globals.GAMEOBJECT_BOARD);
+
+        input = go.AddComponent<KeysArrowDetector>();
+        input.Left = main.MoveLeftAction;
+        input.Right = main.MoveRightAction;
+        input.Up = main.MoveUpAction;
+        input.Down = main.MoveDownAction;
 #if UNITY_EDITOR
-            input = go.AddComponent<MouseSwipeDetector>();
-            input.Left = main.MoveLeftAction;
-            input.Right = main.MoveRightAction;
-            input.Up = main.MoveUpAction;
-            input.Down = main.MoveDownAction;
+        input = go.AddComponent<MouseSwipeDetector>();
+        input.Left = main.MoveLeftAction;
+        input.Right = main.MoveRightAction;
+        input.Up = main.MoveUpAction;
+        input.Down = main.MoveDownAction;
 #endif
 #if UNITY_ANDROID
-            input = go.AddComponent<TouchSwipeDetector>();
-            input.Left = main.MoveLeftAction;
-            input.Right = main.MoveRightAction;
-            input.Up = main.MoveUpAction;
-            input.Down = main.MoveDownAction;
+        input = go.AddComponent<TouchSwipeDetector>();
+        input.Left = main.MoveLeftAction;
+        input.Right = main.MoveRightAction;
+        input.Up = main.MoveUpAction;
+        input.Down = main.MoveDownAction;
 #endif
-        }
+    }
 
-        private static void BindButtons(GameScene main)
-        {
-            GameObject go;
-            Button btn;
+    private static void BindActions(GameScene main)
+    {
+        ButtonOnClick(main.View.UndoButton, main.UndoAction);
+        ButtonOnClick(GameObject.Find(Globals.QuitButton), main.QuitAction);
+        ButtonOnClick(main.View.QuitDialog.FindChild(Globals.ConfirmButton), main.QuitConfirmAction);
+        ButtonOnClick(main.View.QuitDialog.FindChild(Globals.CancelButton), main.QuitCancelAction);
+    }
 
-            go = GameObject.Find(Globals.ID_UNDO);
-            btn = go.GetComponent<Button>();
-            btn.onClick.AddListener(main.UndoAction);
-
-            go = GameObject.Find(Globals.ID_QUIT);
-            btn = go.GetComponent<Button>();
-            btn.onClick.AddListener(main.QuitAction);
-
-            foreach (Movement move in Enum.GetValues(typeof(Movement)))
-            {
-                go = GameObject.Find(String.Format(Globals.ID_MOVE, move, true));
-                go.AddComponent<BlinkAnimator>();
-            }
-        }
-
+    private static void ButtonOnClick(GameObject go, UnityAction action)
+    {
+        Button btn;
+        btn = go.GetComponent<Button>();
+        btn.onClick.AddListener(action);
     }
 }
+

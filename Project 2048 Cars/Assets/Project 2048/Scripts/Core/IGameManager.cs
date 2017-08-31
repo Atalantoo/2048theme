@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Project2048.Core
+namespace Project2048
 {
     // API
 

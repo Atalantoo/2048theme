@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 
-namespace Project2048.Core
+namespace Project2048
 {
     public class GameManager : Game, IGameManager
     {

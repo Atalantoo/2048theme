@@ -9,70 +9,68 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-namespace Project2048.Scenes
+class MainScene : MonoBehaviour
 {
-    class MainScene : MonoBehaviour
+    void Start()
     {
-        void Start()
+        Globals.LEVEL_CURRENT = 0;
+        MainSceneDelegate.InjectUI(this);
+        SetToggle();
+        UpdateScreen();
+    }
+
+    // ********************************************************************
+
+    internal void SelectLevelAction(bool arg)
+    {
+        GetToggle();
+        UpdateScreen();
+    }
+
+    internal void StartAction()
+    {
+        FindLevels();
+        GetToggle();
+        SceneManager.LoadScene(Globals.SCENE_GAME, LoadSceneMode.Single);
+    }
+
+
+    // ********************************************************************
+
+    private void FindLevels()
+    {
+
+        Globals.LEVELS_LENGTH = 2;
+    }
+
+    private void UpdateScreen()
+    {
+        // UpdateButtons();
+    }
+
+    private void SetToggle()
+    {
+        GameObject go;
+        Toggle tog;
+        for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
         {
-            Globals.LEVEL_CURRENT = 0;
-            MainSceneDelegate.InjectUI(this);
-            SetToggle();
-            UpdateScreen();
+            go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
+            tog = go.GetComponent<Toggle>();
+            tog.isOn = (i == Globals.LEVEL_CURRENT);
         }
+    }
 
-        // ********************************************************************
-
-        internal void SelectLevelAction(bool arg)
+    private void GetToggle()
+    {
+        GameObject go;
+        Toggle tog;
+        for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
         {
-            GetToggle();
-            UpdateScreen();
-        }
-
-        internal void StartAction()
-        {
-            FindLevels();
-            GetToggle();
-            SceneManager.LoadScene(Globals.GAME_SCENE, LoadSceneMode.Single);
-        }
-
-
-        // ********************************************************************
-
-        private void FindLevels()
-        {
-
-            Globals.LEVELS_LENGTH = 2;
-        }
-
-        private void UpdateScreen()
-        {
-            // UpdateButtons();
-        }
-
-        private void SetToggle()
-        {
-            GameObject go;
-            Toggle tog;
-            for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
-            {
-                go = GameObject.Find(String.Format(Globals.ID_LEVEL, i+1));
-                tog = go.GetComponent<Toggle>();
-                tog.isOn = (i == Globals.LEVEL_CURRENT);
-            }
-        }
-
-        private void GetToggle()
-        {
-            GameObject go;
-            Toggle tog;
-            for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
-            {
-                go = GameObject.Find(String.Format(Globals.ID_LEVEL, i+1));
-                tog = go.GetComponent<Toggle>();
-                if (tog.isOn)
-                    Globals.LEVEL_CURRENT = i;
-            }
+            go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
+            tog = go.GetComponent<Toggle>();
+            if (tog.isOn)
+                Globals.LEVEL_CURRENT = i;
         }
     }
 }
+
