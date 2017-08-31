@@ -27,6 +27,20 @@ namespace Project2048.Scenes
         {
             BindButtons(main);
             BindInputs(main);
+
+            GameObject go;
+            go = GameObjectUtils.FindInactive(GameObject.Find("UI Canvas"),
+                "Quit Modal");
+            GameObjectUtils.
+                FindInactive(go, "Confirm Button").GetComponent<Button>().
+                    onClick.AddListener(main.
+                        QuitConfirmAction);
+            GameObjectUtils.
+                FindInactive(go, "Cancel Button").GetComponent<Button>().
+                    onClick.AddListener(main.
+                        QuitCancelAction);
+            go.SetActive(false);
+            main.dialog = go;
         }
 
         private static void BindInputs(GameScene main)

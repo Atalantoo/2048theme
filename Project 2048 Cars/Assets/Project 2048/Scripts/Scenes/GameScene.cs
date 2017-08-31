@@ -18,9 +18,11 @@ namespace Project2048.Scenes
     class GameScene : MonoBehaviour
     {
         public GameManager gameManager;
+        private Game state;
 
-        private Game game;
-        private Dictionary<int, Sprite> sprites;
+        // GameSceneReferences
+        public GameObject dialog;
+        public Dictionary<int, Sprite> sprites;
 
         void Start()
         {
@@ -33,41 +35,8 @@ namespace Project2048.Scenes
         void Update()
         {
             // TODO OnScreenOrientationChange
-            ResizeViewToScreen();
-            ResizeSpriteToScreen(GameObject.Find("Background Sprite"));
-        }
-        void ResizeViewToScreen()
-        {
-            if (Screen.width > Screen.height) // Landscape
-            {
-                Camera.main.orthographicSize = 300;
-            }
-            else // Portrait
-            {
-                Camera.main.orthographicSize = 600;
-            }
-        }
-
-        /*
-         * http://answers.unity3d.com/questions/620699/scaling-my-background-sprite-to-fill-screen-2d-1.html
-         */
-        void ResizeSpriteToScreen(GameObject go)
-        {
-            var sr = go.GetComponent<SpriteRenderer>();
-            if (sr == null) return;
-
-            go.transform.localScale = new Vector3(1, 1, 1);
-
-            var width = sr.sprite.bounds.size.x;
-            var height = sr.sprite.bounds.size.y;
-
-            var worldScreenHeight = Camera.main.orthographicSize * 2.0;
-            var worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
-
-            float x = (float)worldScreenWidth / width;
-            float y = (float)worldScreenHeight / height;
-
-            go.transform.localScale = new Vector3(x, y, 0);
+            GameObjectUtils.ResizeViewToScreen(300, 600);
+            GameObjectUtils.ResizeSpriteToScreen(GameObject.Find("Background Sprite"));
         }
 
         // ********************************************************************
@@ -79,42 +48,46 @@ namespace Project2048.Scenes
             UpdateScreen();
         }
 
-        public void UndoAction()
+        internal void UndoAction()
         {
-            game = gameManager.Undo();
+            state = gameManager.Undo();
             UpdateScreen();
         }
 
-        public void MoveLeftAction()
+        internal void MoveLeftAction()
         {
-            game = gameManager.Turn(new GameTurnInput() { Move = Movement.Left });
+            state = gameManager.Turn(new GameTurnInput() { Move = Movement.Left });
             UpdateScreen();
         }
-        public void MoveRightAction()
+        internal void MoveRightAction()
         {
-            game = gameManager.Turn(new GameTurnInput() { Move = Movement.Right });
+            state = gameManager.Turn(new GameTurnInput() { Move = Movement.Right });
             UpdateScreen();
         }
-        public void MoveUpAction()
+        internal void MoveUpAction()
         {
-            game = gameManager.Turn(new GameTurnInput() { Move = Movement.Up });
+            state = gameManager.Turn(new GameTurnInput() { Move = Movement.Up });
             UpdateScreen();
         }
-        public void MoveDownAction()
+        internal void MoveDownAction()
         {
-            game = gameManager.Turn(new GameTurnInput() { Move = Movement.Down });
+            state = gameManager.Turn(new GameTurnInput() { Move = Movement.Down });
             UpdateScreen();
         }
 
         internal void QuitAction()
         {
-            GameObject go = GameObject.Find("Dialog");
-            // go.GetComponent<Renderer>().enabled =true;
-            //            go  = Instantiate(Resources.Load("Prefab/Dialog View"), go.transform) as GameObject;
-            //            SpriteRenderer spriteRend = go.AddComponent<SpriteRenderer>();
-            //            spriteRend.sortingOrder = 500;
-            // SceneManager.LoadScene(Globals.DIALOG_SCENE, LoadSceneMode.Additive);
-            // SceneManager.LoadScene(Globals.MAIN_SCENE, LoadSceneMode.Single);
+            dialog.SetActive(true);
+        }
+
+        internal void QuitConfirmAction()
+        {
+            SceneManager.LoadScene(Globals.MAIN_SCENE, LoadSceneMode.Single);
+        }
+
+        internal void QuitCancelAction()
+        {
+            dialog.SetActive(false);
         }
 
         // ********************************************************************
@@ -131,7 +104,7 @@ namespace Project2048.Scenes
                 Height = Globals.Height,
                 Width = Globals.Width
             };
-            game = gameManager.Start(startInput);
+            state = gameManager.Start(startInput);
         }
 
         private void UpdateScreen()
@@ -148,14 +121,14 @@ namespace Project2048.Scenes
             Text txt;
             go = GameObject.Find(Globals.ID_SCORE);
             txt = go.GetComponent<Text>();
-            txt.text = game.Score.ToString();
+            txt.text = state.Score.ToString();
         }
 
         private void UpdateMoves()
         {
             foreach (Movement move in Enum.GetValues(typeof(Movement)))
             {
-                bool state = game.AvailableMoves.Contains(move);
+                bool state = this.state.AvailableMoves.Contains(move);
                 Sprite(String.Format(Globals.ID_MOVE, move, true)).enabled = state;
                 Sprite(String.Format(Globals.ID_MOVE, move, false)).enabled = !state;
             }
@@ -175,7 +148,7 @@ namespace Project2048.Scenes
             for (int y = 0; y < Globals.Height; y++)
                 for (int x = 0; x < Globals.Width; x++)
                 {
-                    item = game.Board[y, x].Value;
+                    item = state.Board[y, x].Value;
                     sprite = sprites[item];
                     itemGO = GameObject.Find(String.Format(Globals.ID_TILE, y, x));
                     spriteRend = itemGO.GetComponent<SpriteRenderer>();
@@ -190,7 +163,7 @@ namespace Project2048.Scenes
             go = GameObject.Find(Globals.ID_UNDO);
             btn = go.GetComponent<Button>();
 
-            btn.interactable = game.CanUndo;
+            btn.interactable = state.CanUndo;
         }
 
         private void LoadSprites()
@@ -214,17 +187,17 @@ namespace Project2048.Scenes
         {
             Globals.LEVEL_CURRENT = newLevelName;
             LoadResources();
-            game.Board[0, 3].Value = 2048;
-            game.Board[0, 2].Value = 1024;
-            game.Board[0, 1].Value = 512;
-            game.Board[0, 0].Value = 256;
-            game.Board[1, 0].Value = 128;
-            game.Board[1, 1].Value = 64;
-            game.Board[1, 2].Value = 32;
-            game.Board[1, 3].Value = 16;
-            game.Board[2, 3].Value = 8;
-            game.Board[2, 2].Value = 4;
-            game.Board[2, 1].Value = 2;
+            state.Board[0, 3].Value = 2048;
+            state.Board[0, 2].Value = 1024;
+            state.Board[0, 1].Value = 512;
+            state.Board[0, 0].Value = 256;
+            state.Board[1, 0].Value = 128;
+            state.Board[1, 1].Value = 64;
+            state.Board[1, 2].Value = 32;
+            state.Board[1, 3].Value = 16;
+            state.Board[2, 3].Value = 8;
+            state.Board[2, 2].Value = 4;
+            state.Board[2, 1].Value = 2;
             UpdateScreen();
         }
 #endif
