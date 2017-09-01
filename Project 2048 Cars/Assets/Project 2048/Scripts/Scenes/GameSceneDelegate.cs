@@ -15,9 +15,9 @@ using UnityEngine.Events;
 using Commons;
 using Commons.UI;
 using Commons.Inputs;
+using Commons.Lang;
 using Commons.Animations;
 using Project2048;
-
 
 class GameSceneDelegate
 {
@@ -43,6 +43,10 @@ class GameSceneDelegate
         InitDialogs(main);
         BindActions(main);
         InitInputs(main);
+        Contract.Requires<ArgumentNullException>(main.View.ScoreText != null);
+        Contract.Requires<ArgumentNullException>(main.View.BackgroundSprite != null);
+        Contract.Requires<ArgumentNullException>(main.View.UndoButton != null);
+        Contract.Requires<ArgumentNullException>(main.View.QuitDialog != null);
     }
 
     // *************************************
