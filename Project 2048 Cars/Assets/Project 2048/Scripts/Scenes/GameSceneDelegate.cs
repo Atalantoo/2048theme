@@ -56,19 +56,12 @@ class GameSceneDelegate
 
     private static void LoadColor()
     {
-        string filePath = Application.dataPath + "/Project 2048 Cars/Resources/" + Globals.LEVEL_CURRENT.ToString() + "/" + "data.json";
-        try
-        {
-            string dataAsJson = File.ReadAllText(filePath);
-            // TextAsset txt = Resources.Load<TextAsset>(filePath);
-            // string dataAsJson = txt.text;
-            LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
-            Globals.Theme.themes["game"].Background = ColorHelper.HEXToRGB(loadedData.color);
-        }
-        catch (Exception e)
-        {
-            // TODO DO NOTHING
-        }
+        string filePath = Globals.LEVEL_CURRENT.ToString() + "/" + "data";
+        TextAsset txt = Resources.Load<TextAsset>(filePath);
+        string dataAsJson = txt.text;
+        LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
+        Color color = ColorHelper.HEXToRGB(loadedData.color);
+        Globals.Theme.themes["game"].Background = color;
     }
 
     private static void ApplyTheme(GameScene main)
