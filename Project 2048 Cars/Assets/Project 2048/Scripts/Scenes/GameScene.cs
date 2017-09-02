@@ -10,8 +10,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
+using System.IO;
 using Commons;
+using Commons.Lang;
+using Commons.UI;
 using Project2048;
 
 class GameScene : MonoBehaviour
@@ -157,11 +162,15 @@ class GameScene : MonoBehaviour
 
     private void LoadSprites()
     {
-        string path = Globals.LEVEL_CURRENT.ToString();
+        string filePath;
         TileSprites.Clear();
         foreach (string i in Globals.SPRITES)
-            TileSprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path + "/" + i));
+        {
+            filePath = Globals.LEVEL_CURRENT.ToString() + "/" + i;
+            TileSprites.Add(Int16.Parse(i), Resources.Load<Sprite>(filePath));
+        }
     }
+
 
 #if UNITY_EDITOR
     void OnGUI()
@@ -190,5 +199,10 @@ class GameScene : MonoBehaviour
         UpdateScreen();
     }
 #endif
+}
+
+public class LevelData
+{
+    public string color;
 }
 

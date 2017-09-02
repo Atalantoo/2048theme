@@ -18,6 +18,7 @@ using Commons.Inputs;
 using Commons.Lang;
 using Commons.Animations;
 using Project2048;
+using System.IO;
 
 class GameSceneDelegate
 {
@@ -43,30 +44,41 @@ class GameSceneDelegate
         InitDialogs(main);
         BindActions(main);
         InitInputs(main);
+        LoadColor();
+        ApplyTheme(main);
         Contract.Requires<ArgumentNullException>(main.View.ScoreText != null);
         Contract.Requires<ArgumentNullException>(main.View.BackgroundSprite != null);
         Contract.Requires<ArgumentNullException>(main.View.UndoButton != null);
         Contract.Requires<ArgumentNullException>(main.View.QuitDialog != null);
-
-        // TODO Theme
-        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Globals.Theme.Apply(main.View.QuitDialog);
-        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Debug.Log("Theme applied in " + (end - start) +" ms");
-
-        /*
-        themes.Add("dialog", new Theme()
-        {
-            text = ColorHelper.HEXToRGB("000"),
-            warn = new Color(255, 87, 34),
-            primary = new Color(0, 0, 255),
-            accent = new Color(255, 255, 82),
-            background = new Color(244, 244, 244)
-        });
-        */
     }
 
     // *************************************
+
+    private static void LoadColor()
+    {
+        string filePath = Application.dataPath + "/Project 2048 Cars/Resources/" + Globals.LEVEL_CURRENT.ToString() + "/" + "data.json";
+        try
+        {
+            string dataAsJson = File.ReadAllText(filePath);
+            // TextAsset txt = Resources.Load<TextAsset>(filePath);
+            // string dataAsJson = txt.text;
+            LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
+            Globals.Theme.themes["game"].Background = ColorHelper.HEXToRGB(loadedData.color);
+        }
+        catch (Exception e)
+        {
+            // TODO DO NOTHING
+        }
+    }
+
+    private static void ApplyTheme(GameScene main)
+    {
+        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
+        Globals.Theme.Apply(GameObject.Find("UICanvas"));
+        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Debug.Log("Theme applied in " + (end - start) + " ms");
+    }
 
     private static void InitAnimations(GameScene main)
     {

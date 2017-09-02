@@ -6,12 +6,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Commons.UI
 {
     class Theme
     {
-        public string Name;
         public Color Text;
         public Color Warning;
         public Color Primary;
@@ -29,7 +29,6 @@ namespace Commons.UI
 
     class Typography
     {
-        public string name;
         public Font font;
         public Script subhead;
         public Script title;
@@ -42,19 +41,98 @@ namespace Commons.UI
 
     class StyleProvider
     {
-        // TODO LOAD JSON FILE
-        static Theme def1 = new Theme()
+        public Vector4 shadow = new Vector4(180, 180, 180, 180);
+        public Dictionary<string, Typography> typos;
+        public Dictionary<string, Theme> themes;
+
+        public StyleProvider()
         {
-            Name = "default",
+            themes = new Dictionary<string, Theme>();
+            themes.Add("default", defaultTheme);
+            typos = new Dictionary<string, Typography>();
+            typos.Add("default", defaultTypo);
+        }
+
+        public void Config(string name, Theme theme)
+        {
+            if (themes.ContainsKey(name))
+                themes[name] = theme;
+            else
+                themes.Add(name, theme);
+        }
+
+        public void Config(string name, Typography typo)
+        {
+            typos.Add(name, typo);
+        }
+
+        public void Apply(GameObject go, bool includeInactive = false, int depth = 10, string theme = "default", string typo = "default")
+        {
+            if (depth <= 0)
+                return;
+            string name = go.name.ToLower();
+            if (name.Contains("theme="))
+            {
+                string[] res = Regex.Split(name, "theme=");
+                res = res[1].Split(' ');
+                theme = res[0];
+            }
+            if (name.Contains("typo="))
+            {
+                typo = "default";
+            }
+            ApplyTheme(go, theme);
+            ApplyTypo(go, typo);
+            if (go.transform.childCount > 0)
+                for (int i = 0; i < go.transform.childCount; i++)
+                    Apply(
+                        go.transform.GetChild(i).gameObject,
+                        includeInactive, depth - 1,
+                        theme, typo);
+        }
+
+        private void ApplyTypo(GameObject go, string typo = "default")
+        {
+            Typography t = typos[typo];
+            // TODO
+        }
+
+        private void ApplyTheme(GameObject go, string theme = "default")
+        {
+            Theme t = themes[theme];
+            string name = go.name.ToLower();
+            if (go.GetComponent<Text>() != null)
+            {
+                Text cmp = go.GetComponent<Text>();
+                if (name.Contains("intention"))
+                    if (name.Contains("intention=warning"))
+                        cmp.color = t.Warning;
+                    else if (name.Contains("intention=primary"))
+                        cmp.color = t.Primary;
+                    else
+                        cmp.color = t.Text;
+                else
+                    cmp.color = t.Text;
+            }
+            if (go.GetComponent<Button>() != null)
+            {
+                Image cmp = go.GetComponent<Image>();
+                cmp.sprite = null;
+                cmp.color = t.Background;
+            }
+        }
+
+        // TODO LOAD JSON FILE
+        static Theme defaultTheme = new Theme()
+        {
             Text = ColorHelper.HEXToRGB("212121"),
             Warning = ColorHelper.HEXToRGB("d84315"),
             Primary = ColorHelper.HEXToRGB("106cc8"),
             Accent = ColorHelper.HEXToRGB("ff5252"),
             Background = ColorHelper.HEXToRGB("fafafa")
         };
-        static Typography def2 = new Typography()
+        static Typography defaultTypo = new Typography()
         {
-            name = "default",
             //  font = Resources.Load<Font>("Fonts/Roboto-Regular"),
             title = new Script()
             {
@@ -92,67 +170,6 @@ namespace Commons.UI
                 Contrast = 1,
             }
         };
-
-        public Vector4 shadow = new Vector4(180, 180, 180, 180);
-        public Dictionary<string, Typography> typos;
-        public Dictionary<string, Theme> themes;
-
-        public StyleProvider()
-        {
-            themes = new Dictionary<string, Theme>();
-            themes.Add(def1.Name, def1);
-            typos = new Dictionary<string, Typography>();
-            typos.Add(def2.name, def2);
-        }
-
-        public void Config(Theme theme)
-        {
-            themes.Add(theme.Name, theme);
-        }
-
-        public void Config(Typography typo)
-        {
-            typos.Add(typo.name, typo);
-        }
-
-        public void Apply(GameObject go, bool includeInactive = false, int depth = 10, string theme = "default", string typo = "default")
-        {
-            if (depth <= 0)
-                return;
-            ApplyTheme(go, theme);
-            ApplyTypo(go, typo);
-            if (go.transform.childCount > 0)
-                for (int i = 0; i < go.transform.childCount; i++)
-                    Apply(
-                        go.transform.GetChild(i).gameObject,
-                        includeInactive, depth - 1,
-                        theme, typo);
-        }
-
-        private void ApplyTypo(GameObject go, string typo = "default")
-        {
-            Typography t = typos[typo];
-            // TODO
-        }
-
-        private void ApplyTheme(GameObject go, string theme = "default")
-        {
-            Theme t = themes[theme];
-            string name = go.name.ToLower();
-            if (go.GetComponent<Text>() != null)
-            {
-                Text cmp = go.GetComponent<Text>();
-                if (name.Contains("intention"))
-                    if (name.Contains("intention=warning"))
-                        cmp.color = t.Warning;
-                    else if (name.Contains("intention=primary"))
-                        cmp.color = t.Primary;
-                    else
-                        cmp.color = t.Text;
-                else
-                    cmp.color = t.Text;
-            }
-        }
     }
 
     public static class ColorHelper

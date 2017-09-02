@@ -57,7 +57,18 @@ class Globals
     public static StyleProvider Theme = InitThemeProvider();
     public static StyleProvider InitThemeProvider()
     {
-        return new StyleProvider();
+        StyleProvider t = new StyleProvider();
+        t.Config("main", new Theme()
+        {
+            Text = ColorHelper.HEXToRGB("FFFFFF"),
+            Background = ColorHelper.HEXToRGB("08C7C7")
+        });
+        t.Config("game", new Theme()
+        {
+            Text = ColorHelper.HEXToRGB("FFFFFF"),
+            Background = ColorHelper.HEXToRGB("08C7C7")
+        });
+        return t;
     }
 }
 
