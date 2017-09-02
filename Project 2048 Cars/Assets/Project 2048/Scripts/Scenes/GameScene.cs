@@ -38,7 +38,7 @@ class GameScene : MonoBehaviour
     void Update()
     {
         // TODO OnScreenOrientationChange
-        GameObjectUtils.ResizeViewToScreen(300, 600);
+        GameObjectUtils.ResizeViewToScreen(350, 600);
         GameObjectUtils.ResizeSpriteToScreen(View.BackgroundSprite);
     }
 
