@@ -116,7 +116,6 @@ namespace Commons.UI
             if (go.GetComponent<Button>() != null)
             {
                 Image img = go.GetComponent<Image>();
-                img.sprite = null;
                 img.color = ColorHelper.ContrastRatio(t.Background, 1.0f);
                 if (go.GetComponent<Shadow>() == null)
                 {
