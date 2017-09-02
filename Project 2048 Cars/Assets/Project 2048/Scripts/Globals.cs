@@ -24,16 +24,6 @@ class Globals
     public const string SCENE_MAP = "Main";
     public const string SCENE_GAME = "Game";
 
-    public const string UICanvas = "UICanvas";
-    public const string BackgroundSprite = "BackgroundSprite";
-
-    public const string ConfirmButton = "ConfirmButton";
-    public const string CancelButton = "CancelButton";
-    public const string UndoButton = "UndoButton";
-    public const string QuitButton = "QuitButton";
-    public const string QuitDialog = "QuitDialog";
-    public const string ScoreText = "ScoreText";
-
     public const string GAMEOBJECT_START = "Start Button";
     public const string GAMEOBJECT_LEVEL = "Level Toggle ({0})";
     public const string GAMEOBJECT_BOARD = "Board";

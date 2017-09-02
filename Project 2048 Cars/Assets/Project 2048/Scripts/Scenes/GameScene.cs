@@ -121,8 +121,16 @@ class GameScene : MonoBehaviour
     private void UpdateScore()
     {
         Text txt;
-        txt = View.ScoreText.GetComponent<Text>();
+        txt = View.ScoreValue.GetComponent<Text>();
         txt.text = Model.Score.ToString();
+
+        int tileMax = 2;
+        for (int y = 0; y < Globals.Height; y++)
+            for (int x = 0; x < Globals.Width; x++)
+                if (tileMax < Model.Board[y, x].Value)
+                    tileMax = Model.Board[y, x].Value;
+        txt = View.CompletionValue.GetComponent<Text>();
+        txt.text = tileMax.ToString();
     }
 
     private void UpdateMoves()

@@ -38,18 +38,21 @@ class GameSceneDelegate
 
     public static void InjectViewUI(GameScene main)
     {
-        main.View.ScoreText = GameObject.Find(Globals.ScoreText);
-        main.View.BackgroundSprite = GameObject.Find(Globals.BackgroundSprite);
-        main.View.UndoButton = GameObject.Find(Globals.UndoButton);
+        main.View.UICanvas = GameObject.Find("UICanvas");
+        main.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
+        main.View.ScoreValue = GameObject.Find("ScoreText");
+        main.View.Completion = GameObject.Find("Completion");
+        main.View.CompletionValue = main.View.Completion.FindChild("Text");
+        main.View.UndoButton = GameObject.Find("UndoButton");
+        main.View.QuitButton = GameObject.Find("QuitButton");
+        main.View.QuitDialog = main.View.UICanvas.FindChild("QuitDialog", true);
+        main.View.QuitConfirmButton = main.View.QuitDialog.FindChild("ConfirmButton");
+        main.View.QuitCancelButton = main.View.QuitDialog.FindChild("CancelButton");
         InitDialogs(main);
         BindActions(main);
         InitInputs(main);
         LoadColor();
         ApplyTheme(main);
-        Contract.Requires<ArgumentNullException>(main.View.ScoreText != null);
-        Contract.Requires<ArgumentNullException>(main.View.BackgroundSprite != null);
-        Contract.Requires<ArgumentNullException>(main.View.UndoButton != null);
-        Contract.Requires<ArgumentNullException>(main.View.QuitDialog != null);
     }
 
     // *************************************
@@ -67,8 +70,12 @@ class GameSceneDelegate
     private static void ApplyTheme(GameScene main)
     {
         long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Globals.Theme.Apply(main.View.UICanvas);
+
         main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
-        Globals.Theme.Apply(GameObject.Find("UICanvas"));
+        main.View.Completion.GetComponent<Image>().color = Globals.Theme.themes["game"].Text;
+        main.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
+
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Debug.Log("Theme applied in " + (end - start) + " ms");
     }
@@ -105,9 +112,6 @@ class GameSceneDelegate
 
     private static void InitDialogs(GameScene main)
     {
-        main.View.QuitDialog = GameObject
-            .Find(Globals.UICanvas)
-            .FindChild(Globals.QuitDialog, true);
         main.View.QuitDialog.AddComponent<BringToFront>();
         main.View.QuitDialog.SetActive(false);
     }
@@ -143,9 +147,9 @@ class GameSceneDelegate
     private static void BindActions(GameScene main)
     {
         ButtonOnClick(main.View.UndoButton, main.UndoAction);
-        ButtonOnClick(GameObject.Find(Globals.QuitButton), main.QuitAction);
-        ButtonOnClick(main.View.QuitDialog.FindChild(Globals.ConfirmButton), main.QuitConfirmAction);
-        ButtonOnClick(main.View.QuitDialog.FindChild(Globals.CancelButton), main.QuitCancelAction);
+        ButtonOnClick(main.View.QuitButton, main.QuitAction);
+        ButtonOnClick(main.View.QuitConfirmButton, main.QuitConfirmAction);
+        ButtonOnClick(main.View.QuitCancelButton, main.QuitCancelAction);
     }
 
     private static void ButtonOnClick(GameObject go, UnityAction action)
