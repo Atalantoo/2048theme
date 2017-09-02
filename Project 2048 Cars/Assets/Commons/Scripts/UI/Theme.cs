@@ -24,7 +24,7 @@ namespace Commons.UI
         public int FontSize;
         public FontStyle FontStyle;
         public bool Caps;
-        public double Contrast;
+        public double ContrastRatio;
     }
 
     class Typography
@@ -41,7 +41,6 @@ namespace Commons.UI
 
     class StyleProvider
     {
-        public Vector4 shadow = new Vector4(180, 180, 180, 180);
         public Dictionary<string, Typography> typos;
         public Dictionary<string, Theme> themes;
 
@@ -103,22 +102,32 @@ namespace Commons.UI
             string name = go.name.ToLower();
             if (go.GetComponent<Text>() != null)
             {
-                Text cmp = go.GetComponent<Text>();
+                Text txt = go.GetComponent<Text>();
                 if (name.Contains("intention"))
                     if (name.Contains("intention=warning"))
-                        cmp.color = t.Warning;
+                        txt.color = t.Warning;
                     else if (name.Contains("intention=primary"))
-                        cmp.color = t.Primary;
+                        txt.color = t.Primary;
                     else
-                        cmp.color = t.Text;
+                        txt.color = t.Text;
                 else
-                    cmp.color = t.Text;
+                    txt.color = t.Text;
             }
             if (go.GetComponent<Button>() != null)
             {
-                Image cmp = go.GetComponent<Image>();
-                cmp.sprite = null;
-                cmp.color = t.Background;
+                Image img = go.GetComponent<Image>();
+                img.sprite = null;
+                img.color = ColorHelper.ContrastRatio(t.Background, 1.0f);
+                if (go.GetComponent<Shadow>() == null)
+                {
+                    Shadow sha;
+                    sha = go.AddComponent<Shadow>();
+                    sha.effectDistance = new Vector2(2, -2);
+                    sha.effectColor = ColorHelper.TransparencyRatio(t.Text, 0.5f);
+                    sha = go.AddComponent<Shadow>();
+                    sha.effectDistance = new Vector2(-1, 1);
+                    sha.effectColor = ColorHelper.TransparencyRatio(t.Text, 0.5f);
+                }
             }
         }
 
@@ -139,35 +148,35 @@ namespace Commons.UI
                 FontSize = 16,
                 FontStyle = FontStyle.Normal,
                 Caps = false,
-                Contrast = 0.87,
+                ContrastRatio = 0.87,
             },
             subhead = new Script()
             {
                 FontSize = 16,
                 FontStyle = FontStyle.Normal,
                 Caps = false,
-                Contrast = 0.87,
+                ContrastRatio = 0.87,
             },
             body1 = new Script()
             {
                 FontSize = 14,
                 FontStyle = FontStyle.Normal,
                 Caps = false,
-                Contrast = 0.87,
+                ContrastRatio = 0.87,
             },
             body2 = new Script()
             {
                 FontSize = 14,
                 FontStyle = FontStyle.Bold,
                 Caps = false,
-                Contrast = 0.87,
+                ContrastRatio = 0.87,
             },
             button = new Script()
             {
                 FontSize = 14,
                 FontStyle = FontStyle.Bold,
                 Caps = true,
-                Contrast = 1,
+                ContrastRatio = 1,
             }
         };
     }
@@ -182,6 +191,19 @@ namespace Commons.UI
                 int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber) / 255f,
                 int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber) / 255f,
                 int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber) / 255f);
+        }
+
+        public static Color ContrastRatio(Color color, float ContrastRatio)
+        {
+            float r = color.r * ContrastRatio;
+            float g = color.g * ContrastRatio;
+            float b = color.b * ContrastRatio;
+            return new Color(r, g, b);
+        }
+
+        public static Color TransparencyRatio(Color color, float TransparencyRatio)
+        {
+            return new Color(color.r, color.g, color.b, TransparencyRatio);
         }
     }
 }
