@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Commons.UI;
 
 class Globals
 {
@@ -52,5 +53,11 @@ class Globals
             "0512",
             "1024",
             "2048" };
+
+    public static StyleProvider Theme = InitThemeProvider();
+    public static StyleProvider InitThemeProvider()
+    {
+        return new StyleProvider();
+    }
 }
 

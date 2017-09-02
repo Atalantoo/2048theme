@@ -47,6 +47,23 @@ class GameSceneDelegate
         Contract.Requires<ArgumentNullException>(main.View.BackgroundSprite != null);
         Contract.Requires<ArgumentNullException>(main.View.UndoButton != null);
         Contract.Requires<ArgumentNullException>(main.View.QuitDialog != null);
+
+        // TODO Theme
+        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Globals.Theme.Apply(main.View.QuitDialog);
+        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Debug.Log("Theme applied in " + (end - start) +" ms");
+
+        /*
+        themes.Add("dialog", new Theme()
+        {
+            text = ColorHelper.HEXToRGB("000"),
+            warn = new Color(255, 87, 34),
+            primary = new Color(0, 0, 255),
+            accent = new Color(255, 255, 82),
+            background = new Color(244, 244, 244)
+        });
+        */
     }
 
     // *************************************
