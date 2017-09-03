@@ -40,6 +40,7 @@ class GameSceneDelegate
     {
         main.View.UICanvas = GameObject.Find("UICanvas");
         main.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
+        main.View.WallpaperSprite = GameObject.Find("WallpaperSprite");
         main.View.ScoreValue = GameObject.Find("ScoreText");
         main.View.Completion = GameObject.Find("Completion");
         main.View.CompletionValue = main.View.Completion.FindChild("Text");
@@ -52,6 +53,7 @@ class GameSceneDelegate
         BindActions(main);
         InitInputs(main);
         LoadColor();
+        LoadBackground(main);
         ApplyTheme(main);
     }
 
@@ -67,12 +69,19 @@ class GameSceneDelegate
         Globals.Theme.themes["game"].Background = color;
     }
 
+    private static void LoadBackground(GameScene main)
+    {
+        string filePath = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
+        Sprite spr = Resources.Load<Sprite>(filePath);
+        main.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = spr;
+        main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
+    }
+
     private static void ApplyTheme(GameScene main)
     {
         long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Globals.Theme.Apply(main.View.UICanvas);
 
-        main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
         main.View.Completion.GetComponent<Image>().color = Globals.Theme.themes["game"].Text;
         main.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
 

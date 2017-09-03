@@ -42,6 +42,26 @@ namespace Commons
                 Camera.main.orthographicSize = PortraitSize;
             }
         }
+
+        internal static void ResizeSpriteToScreenRight(GameObject go)
+        {
+            var sr = go.GetComponent<SpriteRenderer>();
+            if (sr == null) return;
+
+            var width = sr.sprite.bounds.size.x;
+            var height = sr.sprite.bounds.size.y;
+
+            float ratio = width / height;
+
+            var worldScreenHeight = Camera.main.orthographicSize * 2.0;
+            var worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+            float s = (float)worldScreenHeight / height;
+            go.transform.localScale = new Vector3(s, s, 0);
+
+            float px = (float)(worldScreenWidth / 2.0 - ((worldScreenHeight * ratio) /2));
+            go.transform.localPosition = new Vector3(px, 0, 0);
+        }
     }
 }
 

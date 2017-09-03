@@ -9,6 +9,7 @@ class GameSceneView
 {
     public GameObject UICanvas;
     public GameObject BackgroundSprite;
+    public GameObject WallpaperSprite;
 
     public GameObject ScoreValue;
     public GameObject Completion;
