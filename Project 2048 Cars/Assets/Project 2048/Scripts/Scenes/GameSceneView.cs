@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 class GameSceneView
 {
+    public GameObject Camera;
     public GameObject UICanvas;
     public GameObject BackgroundSprite;
     public GameObject WallpaperSprite;
@@ -20,6 +21,8 @@ class GameSceneView
     public GameObject QuitButton;
     public GameObject QuitConfirmButton;
     public GameObject QuitCancelButton;
+
+    public GameObject MergeAnimation;
 
     public Dictionary<string, GameObject> TileObjects;
     public Dictionary<string, SpriteRenderer> GameMoves;

@@ -117,6 +117,30 @@ class GameScene : MonoBehaviour
         UpdateButtons();
         UpdateMoves();
         UpdateScore();
+
+        Transform parent = View.UICanvas.transform;
+        Item item;
+        GameObject go;
+        GameObject it;
+        string name;
+        Vector3 pos;
+        Camera cam = View.Camera.GetComponent<Camera>();
+        for (int y = 0; y < Globals.Height; y++)
+            for (int x = 0; x < Globals.Width; x++)
+                if (Model.Board[y, x].HasBeenMerged)
+                {
+                    item = Model.Board[y, x];
+                    name = String.Format(Globals.GAMEOBJECT_TILE, y, x);
+                    it = View.TileObjects[name];
+                    Vector3 screenPos = cam.WorldToScreenPoint(it.transform.position);
+
+                    go = Instantiate(View.MergeAnimation, parent);
+                    go.GetComponent<Text>().text = "+" + item.Value.ToString();
+                    go.transform.position = screenPos;
+                    go.SetActive(true);
+
+                    Model.Board[y, x].HasBeenMerged = false;
+                }
     }
 
     private void UpdateScore()

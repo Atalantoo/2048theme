@@ -200,7 +200,6 @@ namespace Project2048
                 actu = Move_Items(actu, LastMove);
                 canMove = !Board_Equals(prev, actu);
             }
-            Board_ResetMergeState(actu);
             Board = actu;
         }
 

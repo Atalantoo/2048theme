@@ -38,6 +38,7 @@ class GameSceneDelegate
 
     public static void InjectViewUI(GameScene main)
     {
+        main.View.Camera = GameObject.Find("Main Camera");
         main.View.UICanvas = GameObject.Find("UICanvas");
         main.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
         main.View.WallpaperSprite = GameObject.Find("WallpaperSprite");
@@ -49,6 +50,7 @@ class GameSceneDelegate
         main.View.QuitDialog = main.View.UICanvas.FindChild("QuitDialog", true);
         main.View.QuitConfirmButton = main.View.QuitDialog.FindChild("ConfirmButton");
         main.View.QuitCancelButton = main.View.QuitDialog.FindChild("CancelButton");
+        main.View.MergeAnimation = main.View.UICanvas.FindChild("MergeAnimation", true);
         InitDialogs(main);
         BindActions(main);
         InitInputs(main);
