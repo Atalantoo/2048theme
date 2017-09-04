@@ -57,14 +57,15 @@ class GameSceneDelegate
         LoadColor();
         LoadBackground(main);
         ApplyTheme(main);
+        ApplyTranslate(main);
     }
 
     // *************************************
 
     private static void LoadColor()
     {
-        string filePath = Globals.LEVEL_CURRENT.ToString() + "/" + "data";
-        TextAsset txt = Resources.Load<TextAsset>(filePath);
+        string path = Globals.LEVEL_CURRENT.ToString() + "/" + "data";
+        TextAsset txt = Resources.Load<TextAsset>(path);
         string dataAsJson = txt.text;
         LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
         Color color = ColorHelper.HEXToRGB(loadedData.color);
@@ -73,9 +74,9 @@ class GameSceneDelegate
 
     private static void LoadBackground(GameScene main)
     {
-        string filePath = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
-        Sprite spr = Resources.Load<Sprite>(filePath);
-        main.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = spr;
+        string path = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
+        Sprite sprite = Resources.Load<Sprite>(path);
+        main.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = sprite;
         main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
     }
 
@@ -88,7 +89,15 @@ class GameSceneDelegate
         main.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
 
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Debug.Log("Theme applied in " + (end - start) + " ms");
+        Debug.Log("ApplyTheme in " + (end - start) + " ms");
+    }
+
+    private static void ApplyTranslate(GameScene main)
+    {
+        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Globals.Lang.Apply(main.View.UICanvas);
+        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Debug.Log("ApplyTranslate in " + (end - start) + " ms");
     }
 
     private static void InitAnimations(GameScene main)

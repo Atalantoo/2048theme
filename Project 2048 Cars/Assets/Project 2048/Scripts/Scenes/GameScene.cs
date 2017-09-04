@@ -123,7 +123,6 @@ class GameScene : MonoBehaviour
         GameObject go;
         GameObject it;
         string name;
-        Vector3 pos;
         Camera cam = View.Camera.GetComponent<Camera>();
         for (int y = 0; y < Globals.Height; y++)
             for (int x = 0; x < Globals.Width; x++)
@@ -195,12 +194,12 @@ class GameScene : MonoBehaviour
 
     private void LoadSprites()
     {
-        string filePath;
+        string path;
         TileSprites.Clear();
         foreach (string i in Globals.SPRITES)
         {
-            filePath = Globals.LEVEL_CURRENT.ToString() + "/" + i;
-            TileSprites.Add(Int16.Parse(i), Resources.Load<Sprite>(filePath));
+            path = Globals.LEVEL_CURRENT.ToString() + "/" + i;
+            TileSprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path));
         }
     }
 

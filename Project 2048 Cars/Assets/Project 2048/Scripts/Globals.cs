@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using Commons.UI;
 
+using UnityEngine;
+
 class Globals
 {
     // VARS *********************************
@@ -60,5 +62,14 @@ class Globals
         });
         return t;
     }
-}
 
+    public static TranslateProvider Lang = InitTranslateProvider();
+    public static TranslateProvider InitTranslateProvider()
+    {
+        TranslateProvider t = new TranslateProvider();
+//        if (Application.systemLanguage.ISO() != null)
+//            t.PreferredLanguage = Application.systemLanguage.ISO();
+        t.Initialize();
+        return t;
+    }
+}

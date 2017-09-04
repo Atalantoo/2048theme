@@ -1,0 +1,16 @@
+{
+	"YES" : "Yes",
+	"NES" : "No",
+	"QUIT" : "Quit",
+	"UNDO" : "Undo",
+	"START" : "Start",
+	"BEGIN" : "Begin",
+	"END" : "End",
+	"SCORE" : "Score",
+	"WARNING" : "Warning",
+
+	"MAP_TODO" : "Soon...",
+
+	"QUITDIALOG_BODY_1" : "Do you want to quit?",
+	"QUITDIALOG_BODY_2" : "The current game will not be saved."
+}
