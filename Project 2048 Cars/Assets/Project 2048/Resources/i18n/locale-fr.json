@@ -1,3 +1,13 @@
 {
-	"QUIT" : "Quitter"
+  "YES" : "Oui",  
+  "NES" : "Non",  
+  "QUIT" : "Quitter",  
+  "UNDO" : "annuler",  
+  "START" : "Début",  
+  "BEGIN" : "Commencer",  
+  "END" : "Fin",  
+  "SCORE" : "Score total",  
+  "WARNING" : "Attention",  
+  "SOON" : "Bientôt",  
+  "QUITDIALOG_BODY" : "Voulez-vous vraiment quitter?\nLe jeu actuel ne sera pas sauvegardé.",  
 }

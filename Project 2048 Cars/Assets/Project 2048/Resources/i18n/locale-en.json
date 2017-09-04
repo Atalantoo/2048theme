@@ -1,5 +1,4 @@
 {
-  "QUITDIALOG_BODY" : "Do you really want to quit? \n The current game will not be saved.",
   "YES" : "Yes",
   "NES" : "No",
   "QUIT" : "Quit",
@@ -10,4 +9,5 @@
   "SCORE" : "Total Score",
   "WARNING" : "Warning",
   "SOON" : "Soon",
+  "QUITDIALOG_BODY" : "Do you really want to quit? \n The current game will not be saved.",
 }

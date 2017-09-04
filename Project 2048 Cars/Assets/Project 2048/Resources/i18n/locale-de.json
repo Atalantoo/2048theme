@@ -1,0 +1,13 @@
+{
+  "YES" : "Ja",  
+  "NES" : "Nein",  
+  "QUIT" : "Verlassen",  
+  "UNDO" : "Rückgängig machen",  
+  "START" : "Anfang",  
+  "BEGIN" : "Start",  
+  "END" : "Ende",  
+  "SCORE" : "Gesamtpunktzahl",  
+  "WARNING" : "Warnung",  
+  "SOON" : "Bald",  
+  "QUITDIALOG_BODY" : "Möchtest du wirklich aufhören?\nDas aktuelle Spiel wird nicht gespeichert.",  
+}
