@@ -67,8 +67,8 @@ class Globals
     public static TranslateUIProvider InitTranslateProvider()
     {
         TranslateUIProvider t = new TranslateUIProvider();
-//        if (Application.systemLanguage.ISO() != null)
-//            t.PreferredLanguage = Application.systemLanguage.ISO();
+        if (Application.systemLanguage.ISO() != null)
+            t.PreferredLanguage = Application.systemLanguage.ISO();
         t.Initialize();
         return t;
     }

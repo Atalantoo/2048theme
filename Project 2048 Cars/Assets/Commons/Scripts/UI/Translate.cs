@@ -11,7 +11,7 @@ namespace Commons.UI
 {
     class TranslateUIProvider
     {
-        public string PreferredLanguage = "fr";
+        public string PreferredLanguage = "en";
         public string FallbackLanguage = "en";
         public string FilesLoaderPrefix = "i18n/locale-";
         TranslateProvider core;
