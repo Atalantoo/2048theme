@@ -3,49 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using UnityEngine;
 using UnityEngine.UI;
-using SimpleJSON;
+using Commons.Lang;
 
 namespace Commons.UI
 {
-    class TranslateProvider
+    class TranslateUIProvider
     {
         public string PreferredLanguage = "fr";
         public string FallbackLanguage = "en";
         public string FilesLoaderPrefix = "i18n/locale-";
-
-        JSONNode preferred;
-        JSONNode fallback;
+        TranslateProvider core;
 
         public void Initialize()
         {
             // TODO load preference
-           // LoadISO();
-            fallback = LoadFile(FallbackLanguage);
-            preferred = LoadFile(PreferredLanguage);
+            // LoadISO();
+            core = new TranslateProvider();
+            core.PreferredLanguage = PreferredLanguage;
+            core.FallbackLanguage = FallbackLanguage;
+            core.Translations(PreferredLanguage, LoadFile(PreferredLanguage));
+            core.Translations(FallbackLanguage, LoadFile(FallbackLanguage));
         }
 
-/*
- *void LoadISO()
+        string LoadFile(string language)
         {
-            SystemLanguage systemLanguage = Application.systemLanguage;
-            if (systemLanguage.ISO() != null)
-                PreferredLanguage = systemLanguage.ISO();
-            else
-                PreferredLanguage = FallbackLanguage;
-        }
-*/
-        JSONNode LoadFile(string language)
-        {
-            JSONNode res;
+            string res;
             string path = FilesLoaderPrefix + language;
             TextAsset txt = Resources.Load<TextAsset>(path);
             if (txt != null)
             {
-                string json = txt.text;
-                res = JSON.Parse(json);
+                res = txt.text;
             }
             else
             {
@@ -82,29 +71,12 @@ namespace Commons.UI
                 return;
             if (go.GetComponent<Text>() != null)
             {
-                value = Translate(key);
+                value = core.Translate(key);
                 if (value == null)
                     return;
                 text = go.GetComponent<Text>();
                 text.text = value;
             }
-        }
-        string Translate(string key)
-        {
-            string value;
-            if (preferred != null)
-            {
-                value = preferred[key].Value;
-                if ("".Equals(value) && fallback != null)
-                    value = fallback[key].Value;
-            }
-            else if (fallback != null)
-                value = fallback[key].Value;
-            else
-                value = null;
-            if("".Equals(value))
-                value = null;
-            return value;
         }
     }
 

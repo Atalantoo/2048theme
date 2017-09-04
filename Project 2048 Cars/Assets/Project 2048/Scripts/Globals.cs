@@ -63,10 +63,10 @@ class Globals
         return t;
     }
 
-    public static TranslateProvider Lang = InitTranslateProvider();
-    public static TranslateProvider InitTranslateProvider()
+    public static TranslateUIProvider Lang = InitTranslateProvider();
+    public static TranslateUIProvider InitTranslateProvider()
     {
-        TranslateProvider t = new TranslateProvider();
+        TranslateUIProvider t = new TranslateUIProvider();
 //        if (Application.systemLanguage.ISO() != null)
 //            t.PreferredLanguage = Application.systemLanguage.ISO();
         t.Initialize();

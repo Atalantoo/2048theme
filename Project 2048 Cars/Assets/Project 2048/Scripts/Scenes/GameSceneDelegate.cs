@@ -57,7 +57,7 @@ class GameSceneDelegate
         LoadColor();
         LoadBackground(main);
         ApplyTheme(main);
-        ApplyTranslate(main);
+        ApplyTranslation(main);
     }
 
     // *************************************
@@ -92,12 +92,12 @@ class GameSceneDelegate
         Debug.Log("ApplyTheme in " + (end - start) + " ms");
     }
 
-    private static void ApplyTranslate(GameScene main)
+    private static void ApplyTranslation(GameScene main)
     {
         long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Globals.Lang.Apply(main.View.UICanvas);
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Debug.Log("ApplyTranslate in " + (end - start) + " ms");
+        Debug.Log("ApplyTranslation in " + (end - start) + " ms");
     }
 
     private static void InitAnimations(GameScene main)
