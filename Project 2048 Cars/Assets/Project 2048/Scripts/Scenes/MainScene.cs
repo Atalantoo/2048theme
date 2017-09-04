@@ -11,6 +11,8 @@ using UnityEngine.SceneManagement;
 
 class MainScene : MonoBehaviour
 {
+    public MainSceneView View;
+
     void Start()
     {
         Globals.LEVEL_CURRENT = 0;

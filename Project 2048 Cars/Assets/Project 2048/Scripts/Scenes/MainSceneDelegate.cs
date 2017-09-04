@@ -11,19 +11,22 @@ using UnityEngine.Events;
 
 class MainSceneDelegate
 {
-    public static void InjectUI(MainScene main)
+    public static void InjectUI(MainScene scene)
     {
-        BindButtons(main);
+        scene.View = new MainSceneView();
+        scene.View.UICanvas = GameObject.Find("UICanvas");
+        BindButtons(scene);
+        ApplyTranslation(scene);
     }
 
-    private static void BindButtons(MainScene main)
+    private static void BindButtons(MainScene scene)
     {
         GameObject go;
         Button btn;
         go = GameObject.Find(Globals.GAMEOBJECT_START);
         btn = go.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(main.StartAction);
+        btn.onClick.AddListener(scene.StartAction);
 
         Toggle tog;
         for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
@@ -31,8 +34,16 @@ class MainSceneDelegate
             go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
             tog = go.GetComponent<Toggle>();
             tog.isOn = false;
-            tog.onValueChanged.AddListener(main.SelectLevelAction);
+            tog.onValueChanged.AddListener(scene.SelectLevelAction);
         }
+    }
+
+    private static void ApplyTranslation(MainScene scene)
+    {
+        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Globals.Lang.Apply(scene.View.UICanvas);
+        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        Debug.Log("ApplyTranslation in " + (end - start) + " ms");
     }
 }
 

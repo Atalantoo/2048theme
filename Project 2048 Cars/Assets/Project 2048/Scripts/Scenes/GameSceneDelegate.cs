@@ -22,42 +22,43 @@ using System.IO;
 
 class GameSceneDelegate
 {
-    public static void InjectCore(GameScene main)
+    public static void InjectCore(GameScene scene)
     {
-        main.Core = new GameManager();
-        main.View = new GameSceneView();
-        main.TileSprites = new Dictionary<int, Sprite>();
+        scene.Core = new GameManager();
+        scene.View = new GameSceneView();
+        scene.TileSprites = new Dictionary<int, Sprite>();
     }
 
-    public static void InjectViewGame(GameScene main)
+    public static void InjectViewGame(GameScene scene)
     {
-        ReferenceTiles(main);
-        ReferenceMoves(main);
-        InitAnimations(main);
+        ReferenceTiles(scene);
+        ReferenceMoves(scene);
+        InitAnimations(scene);
     }
 
-    public static void InjectViewUI(GameScene main)
+    public static void InjectViewUI(GameScene scene)
     {
-        main.View.Camera = GameObject.Find("Main Camera");
-        main.View.UICanvas = GameObject.Find("UICanvas");
-        main.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
-        main.View.WallpaperSprite = GameObject.Find("WallpaperSprite");
-        main.View.ScoreValue = GameObject.Find("ScoreText");
-        main.View.Completion = GameObject.Find("Completion");
-        main.View.CompletionValue = main.View.Completion.FindChild("Text");
-        main.View.UndoButton = GameObject.Find("UndoButton");
-        main.View.QuitButton = GameObject.Find("QuitButton");
-        main.View.QuitDialog = main.View.UICanvas.FindChild("QuitDialog", true);
-        main.View.QuitConfirmButton = main.View.QuitDialog.FindChild("ConfirmButton");
-        main.View.QuitCancelButton = main.View.QuitDialog.FindChild("CancelButton");
-        main.View.MergeAnimation = main.View.UICanvas.FindChild("MergeAnimation", true);
-        InitDialogs(main);
-        BindActions(main);
-        InitInputs(main);
+        scene.View = new GameSceneView();
+        scene.View.Camera = GameObject.Find("Main Camera");
+        scene.View.UICanvas = GameObject.Find("UICanvas");
+        scene.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
+        scene.View.WallpaperSprite = GameObject.Find("WallpaperSprite");
+        scene.View.ScoreValue = GameObject.Find("ScoreText");
+        scene.View.Completion = GameObject.Find("Completion");
+        scene.View.CompletionValue = scene.View.Completion.FindChild("Text");
+        scene.View.UndoButton = GameObject.Find("UndoButton");
+        scene.View.QuitButton = GameObject.Find("QuitButton");
+        scene.View.QuitDialog = scene.View.UICanvas.FindChild("QuitDialog", true);
+        scene.View.QuitConfirmButton = scene.View.QuitDialog.FindChild("ConfirmButton");
+        scene.View.QuitCancelButton = scene.View.QuitDialog.FindChild("CancelButton");
+        scene.View.MergeAnimation = scene.View.UICanvas.FindChild("MergeAnimation", true);
+        InitDialogs(scene);
+        BindActions(scene);
+        InitInputs(scene);
         LoadColor();
-        LoadBackground(main);
-        ApplyTheme(main);
-        ApplyTranslation(main);
+        LoadBackground(scene);
+        ApplyTheme(scene);
+        ApplyTranslation(scene);
     }
 
     // *************************************
@@ -72,71 +73,71 @@ class GameSceneDelegate
         Globals.Theme.themes["game"].Background = color;
     }
 
-    private static void LoadBackground(GameScene main)
+    private static void LoadBackground(GameScene scene)
     {
         string path = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
         Sprite sprite = Resources.Load<Sprite>(path);
-        main.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = sprite;
-        main.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
+        scene.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = sprite;
+        scene.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
     }
 
-    private static void ApplyTheme(GameScene main)
+    private static void ApplyTheme(GameScene scene)
     {
         long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Globals.Theme.Apply(main.View.UICanvas);
+        Globals.Theme.Apply(scene.View.UICanvas);
 
-        main.View.Completion.GetComponent<Image>().color = Globals.Theme.themes["game"].Text;
-        main.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
+        scene.View.Completion.GetComponent<Image>().color = Globals.Theme.themes["game"].Text;
+        scene.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
 
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Debug.Log("ApplyTheme in " + (end - start) + " ms");
     }
 
-    private static void ApplyTranslation(GameScene main)
+    private static void ApplyTranslation(GameScene scene)
     {
         long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Globals.Lang.Apply(main.View.UICanvas);
+        Globals.Lang.Apply(scene.View.UICanvas);
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Debug.Log("ApplyTranslation in " + (end - start) + " ms");
     }
 
-    private static void InitAnimations(GameScene main)
+    private static void InitAnimations(GameScene scene)
     {
         foreach (Movement move in Enum.GetValues(typeof(Movement)))
             GameObject.Find(String.Format(Globals.GAMEOBJECT_MOVE, move, true))
                 .AddComponent<BlinkAnimator>();
     }
 
-    private static void ReferenceTiles(GameScene main)
+    private static void ReferenceTiles(GameScene scene)
     {
-        main.View.TileObjects = new Dictionary<string, GameObject>();
+        scene.View.TileObjects = new Dictionary<string, GameObject>();
         for (int y = 0; y < Globals.Height; y++)
             for (int x = 0; x < Globals.Width; x++)
             {
                 string name = String.Format(Globals.GAMEOBJECT_TILE, y, x);
-                main.View.TileObjects.Add(name, GameObject.Find(name));
+                scene.View.TileObjects.Add(name, GameObject.Find(name));
             }
     }
 
-    private static void ReferenceMoves(GameScene main)
+    private static void ReferenceMoves(GameScene scene)
     {
-        main.View.GameMoves = new Dictionary<string, SpriteRenderer>();
+        scene.View.GameMoves = new Dictionary<string, SpriteRenderer>();
         foreach (Movement move in Enum.GetValues(typeof(Movement)))
             foreach (bool b in new bool[] { true, false })
             {
                 string name = String.Format(Globals.GAMEOBJECT_MOVE, move, b);
                 var sr = GameObject.Find(name).GetComponent<SpriteRenderer>();
-                main.View.GameMoves.Add(name, sr);
+                scene.View.GameMoves.Add(name, sr);
             }
     }
 
-    private static void InitDialogs(GameScene main)
+    private static void InitDialogs(GameScene scene)
     {
-        main.View.QuitDialog.AddComponent<BringToFront>();
-        main.View.QuitDialog.SetActive(false);
+        scene.View.QuitDialog.AddComponent<BringToFront>();
+        scene.View.QuitDialog.SetActive(false);
     }
 
-    private static void InitInputs(GameScene main)
+    private static void InitInputs(GameScene scene)
     {
         GameObject go;
         InputDetector input;
@@ -144,32 +145,32 @@ class GameSceneDelegate
         go = GameObject.Find(Globals.GAMEOBJECT_BOARD);
 
         input = go.AddComponent<KeysArrowDetector>();
-        input.Left = main.MoveLeftAction;
-        input.Right = main.MoveRightAction;
-        input.Up = main.MoveUpAction;
-        input.Down = main.MoveDownAction;
+        input.Left = scene.MoveLeftAction;
+        input.Right = scene.MoveRightAction;
+        input.Up = scene.MoveUpAction;
+        input.Down = scene.MoveDownAction;
 #if UNITY_EDITOR
         input = go.AddComponent<MouseSwipeDetector>();
-        input.Left = main.MoveLeftAction;
-        input.Right = main.MoveRightAction;
-        input.Up = main.MoveUpAction;
-        input.Down = main.MoveDownAction;
+        input.Left = scene.MoveLeftAction;
+        input.Right = scene.MoveRightAction;
+        input.Up = scene.MoveUpAction;
+        input.Down = scene.MoveDownAction;
 #endif
 #if UNITY_ANDROID
         input = go.AddComponent<TouchSwipeDetector>();
-        input.Left = main.MoveLeftAction;
-        input.Right = main.MoveRightAction;
-        input.Up = main.MoveUpAction;
-        input.Down = main.MoveDownAction;
+        input.Left = scene.MoveLeftAction;
+        input.Right = scene.MoveRightAction;
+        input.Up = scene.MoveUpAction;
+        input.Down = scene.MoveDownAction;
 #endif
     }
 
-    private static void BindActions(GameScene main)
+    private static void BindActions(GameScene scene)
     {
-        ButtonOnClick(main.View.UndoButton, main.UndoAction);
-        ButtonOnClick(main.View.QuitButton, main.QuitAction);
-        ButtonOnClick(main.View.QuitConfirmButton, main.QuitConfirmAction);
-        ButtonOnClick(main.View.QuitCancelButton, main.QuitCancelAction);
+        ButtonOnClick(scene.View.UndoButton, scene.UndoAction);
+        ButtonOnClick(scene.View.QuitButton, scene.QuitAction);
+        ButtonOnClick(scene.View.QuitConfirmButton, scene.QuitConfirmAction);
+        ButtonOnClick(scene.View.QuitCancelButton, scene.QuitCancelAction);
     }
 
     private static void ButtonOnClick(GameObject go, UnityAction action)
