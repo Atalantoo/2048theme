@@ -17,6 +17,7 @@ class MapSceneDelegate
     {
         GameObject UICanvas = GameObject.Find("UICanvas");
         GameObject LevelTogglePrefab = UICanvas.FindChild("LevelTogglePrefab", true);
+        GameObject SettingsDialog = UICanvas.FindChild("SettingsDialog", true);
         scene.View = new MaSceneView()
         {
             UICanvas = UICanvas,
@@ -27,11 +28,15 @@ class MapSceneDelegate
             LevelDescription = GameObject.Find("LevelDescription"),
             LevelDescriptionIndexText = GameObject.Find("LevelDescriptionIndexText"),
             LevelDescriptionImage = GameObject.Find("LevelDescriptionImage"),
+            SettingsButton = GameObject.Find("SettingsButton"),
+            SettingsDialog = SettingsDialog,
+            SettingsCloseButton = SettingsDialog.FindChild("CloseButton")
         };
     }
 
     public static void InitializeUI(MapScene scene)
     {
+        InitDialogs(scene);
         BindButtons(scene);
         ApplyTheme(scene);
         ApplyTranslation(scene);
@@ -40,10 +45,17 @@ class MapSceneDelegate
 
     // **************************************************************
 
+    private static void InitDialogs(MapScene scene)
+    {
+        scene.View.SettingsDialog.AddComponent<BringToFront>();
+        scene.View.SettingsDialog.SetActive(false);
+    }
+
     private static void BindButtons(MapScene scene)
     {
         scene.View.StartButton.OnClick(scene.StartAction);
-
+        scene.View.SettingsButton.OnClick(scene.SettingsOpenAction);
+        scene.View.SettingsCloseButton.OnClick(scene.SettingsCloseAction);
     }
 
     private static void ApplyTheme(MapScene scene)

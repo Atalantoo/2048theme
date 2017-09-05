@@ -14,4 +14,8 @@ class MaSceneView
     public GameObject LevelDescription;
     public GameObject LevelDescriptionImage;
     public GameObject LevelDescriptionIndexText;
+
+    public GameObject SettingsButton;
+    public GameObject SettingsDialog;
+    public GameObject SettingsCloseButton;
 }

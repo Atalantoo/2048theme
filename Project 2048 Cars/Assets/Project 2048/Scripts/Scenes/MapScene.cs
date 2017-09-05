@@ -38,6 +38,15 @@ class MapScene : MonoBehaviour
         SceneManager.LoadScene(Globals.SCENE_GAME, LoadSceneMode.Single);
     }
 
+    internal void SettingsCloseAction()
+    {
+        View.SettingsDialog.SetActive(false);
+    }
+
+    internal void SettingsOpenAction()
+    {
+        View.SettingsDialog.SetActive(true);
+    }
 
     // ********************************************************************
 
