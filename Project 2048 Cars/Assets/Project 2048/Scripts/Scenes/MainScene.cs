@@ -8,6 +8,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Commons;
 
 class MainScene : MonoBehaviour
 {
@@ -15,9 +16,11 @@ class MainScene : MonoBehaviour
 
     void Start()
     {
+        MainSceneDelegate.InjectDependencies(this);
+        // TODO MainSceneDelegate.InitializeCore(this);
         Globals.LEVEL_CURRENT = 0;
-        MainSceneDelegate.InjectUI(this);
-        SetToggle();
+        BuildMap();
+        MainSceneDelegate.InitializeUI(this);
         UpdateScreen();
     }
 
@@ -50,15 +53,67 @@ class MainScene : MonoBehaviour
         // UpdateButtons();
     }
 
-    private void SetToggle()
+    private void BuildMap()
     {
-        GameObject go;
-        Toggle tog;
-        for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
+        // TODO save
+        string maxTile = "2048";
+        int levels = 9;
+
+        View.LevelTogglePrefab.SetActive(false);
+        GameObject original = View.LevelTogglePrefab;
+        Transform parent = original.transform.parent;
+
+
+        View.LevelToggles = new GameObject[levels];
+
+        for (int i = 0; i < levels; i++)
         {
-            go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
-            tog = go.GetComponent<Toggle>();
-            tog.isOn = (i == Globals.LEVEL_CURRENT);
+            GameObject toggle = Instantiate(original, parent);
+
+            toggle.name = toggle.name + " " + i;
+            GameObject Label = toggle.FindChild("Label");
+            Label.GetComponent<Text>().text = (i + 1).ToString();
+
+            GameObject States = toggle.FindChild("States");
+            GameObject Unlocked = States.FindChild("Unlocked", true);
+            Unlocked.SetActive(false);
+            GameObject Locked = States.FindChild("Locked", true);
+            Locked.SetActive(false);
+            GameObject Building = States.FindChild("Building", true);
+            Building.SetActive(false);
+
+            if (i == 0 || i == 1)
+            {
+                Unlocked.SetActive(true);
+
+                string path = i + "/" + maxTile;
+                Sprite sprite = Resources.Load<Sprite>(path);
+                GameObject image = Unlocked.FindChild("Image");
+                image.GetComponent<Image>().sprite = sprite;
+            }
+            if (i == 0)
+            {
+                GameObject achiv1 = Unlocked.FindChild("Achiv1ImageFalse");
+                achiv1.SetActive(false);
+            }
+            if (i == 2)
+            {
+                Locked.SetActive(true);
+                toggle.GetComponent<Toggle>().interactable = false;
+            }
+            if (i >= 3)
+            {
+                Building.SetActive(true);
+                toggle.GetComponent<Toggle>().interactable = false;
+
+            }
+
+            toggle.SetActive(true);
+
+            bool selected = (Globals.LEVEL_CURRENT == i);
+            toggle.GetComponent<Toggle>().isOn = selected;
+
+            View.LevelToggles[i] = toggle;
         }
     }
 
@@ -66,9 +121,9 @@ class MainScene : MonoBehaviour
     {
         GameObject go;
         Toggle tog;
-        for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
+        for (int i = 0; i < View.LevelToggles.Length; i++)
         {
-            go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
+            go = View.LevelToggles[i];
             tog = go.GetComponent<Toggle>();
             if (tog.isOn)
                 Globals.LEVEL_CURRENT = i;

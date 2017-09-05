@@ -7,40 +7,37 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
 
+using Commons;
 using Commons.UI;
 
 class MainSceneDelegate
 {
-    public static void InjectUI(MainScene scene)
+    public static void InjectDependencies(MainScene scene)
     {
-        scene.View = new MainSceneView();
-        scene.View.UICanvas = GameObject.Find("UICanvas");
+        GameObject UICanvas = GameObject.Find("UICanvas");
+        GameObject LevelTogglePrefab = UICanvas.FindChild("LevelTogglePrefab", true);
+        scene.View = new MainSceneView()
+        {
+            UICanvas = UICanvas,
+            LevelTogglePrefab = LevelTogglePrefab,
+            StartButton = GameObject.Find("StartButton")
+        };
+    }
+
+    public static void InitializeUI(MainScene scene)
+    {
         BindButtons(scene);
         ApplyTranslation(scene);
         InitAnimations(scene);
     }
 
+    //
+
     private static void BindButtons(MainScene scene)
     {
-        GameObject go;
-        Button btn;
-        go = GameObject.Find(Globals.GAMEOBJECT_START);
-        btn = go.GetComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(scene.StartAction);
+        scene.View.StartButton.OnClick(scene.StartAction);
 
-        /*
-        Toggle tog;
-        for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
-        {
-            go = GameObject.Find(String.Format(Globals.GAMEOBJECT_LEVEL, i + 1));
-            tog = go.GetComponent<Toggle>();
-            tog.isOn = false;
-            tog.onValueChanged.AddListener(scene.SelectLevelAction);
-        }
-        */
     }
 
     private static void ApplyTranslation(MainScene scene)

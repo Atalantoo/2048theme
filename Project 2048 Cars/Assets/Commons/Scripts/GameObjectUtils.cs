@@ -14,6 +14,7 @@ namespace Commons
          */
         public static void ResizeSpriteToScreen(GameObject go)
         {
+            if (go == null) return;
             var sr = go.GetComponent<SpriteRenderer>();
             if (sr == null) return;
 
@@ -45,6 +46,7 @@ namespace Commons
 
         internal static void ResizeSpriteToScreenRight(GameObject go)
         {
+            if (go == null) return;
             var sr = go.GetComponent<SpriteRenderer>();
             if (sr == null) return;
 
@@ -63,5 +65,6 @@ namespace Commons
             go.transform.localPosition = new Vector3(px, 0, 0);
         }
     }
+
 }
 

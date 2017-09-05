@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Commons
 {
@@ -24,5 +25,13 @@ namespace Commons
             }
             return null;
         }
+
+        public static void OnClick(this GameObject go, UnityAction action)
+        {
+            Button btn;
+            btn = go.GetComponent<Button>();
+            btn.onClick.AddListener(action);
+        }
     }
+
 }
