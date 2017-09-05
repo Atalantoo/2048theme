@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+using Commons.UI;
+
 class MainSceneDelegate
 {
     public static void InjectUI(MainScene scene)
@@ -17,6 +19,7 @@ class MainSceneDelegate
         scene.View.UICanvas = GameObject.Find("UICanvas");
         BindButtons(scene);
         ApplyTranslation(scene);
+        InitAnimations(scene);
     }
 
     private static void BindButtons(MainScene scene)
@@ -28,6 +31,7 @@ class MainSceneDelegate
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(scene.StartAction);
 
+        /*
         Toggle tog;
         for (int i = 0; i < Globals.LEVELS_LENGTH; i++)
         {
@@ -36,6 +40,7 @@ class MainSceneDelegate
             tog.isOn = false;
             tog.onValueChanged.AddListener(scene.SelectLevelAction);
         }
+        */
     }
 
     private static void ApplyTranslation(MainScene scene)
@@ -44,6 +49,11 @@ class MainSceneDelegate
         Globals.Lang.Apply(scene.View.UICanvas);
         long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Debug.Log("ApplyTranslation in " + (end - start) + " ms");
+    }
+
+    private static void InitAnimations(MainScene scene)
+    {
+        GameObject.Find("StartButton").AddComponent<FocusAnimator>();
     }
 }
 
