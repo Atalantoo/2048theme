@@ -32,7 +32,7 @@ class MainSceneDelegate
         InitAnimations(scene);
     }
 
-    //
+    // **************************************************************
 
     private static void BindButtons(MainScene scene)
     {

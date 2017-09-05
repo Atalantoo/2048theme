@@ -29,9 +29,10 @@ class GameScene : MonoBehaviour
 
     void Start()
     {
-        GameSceneDelegate.InjectCore(this);
-        GameSceneDelegate.InjectViewUI(this);
-        GameSceneDelegate.InjectViewGame(this);
+        GameSceneDelegate.InjectDependencies(this);
+        GameSceneDelegate.InitializeCore(this);
+        GameSceneDelegate.InitializeUI(this);
+        GameSceneDelegate.InitializeGame(this);
         ResetAction();
     }
 
@@ -207,9 +208,9 @@ class GameScene : MonoBehaviour
 #if UNITY_EDITOR
     void OnGUI()
     {
-        if (GUILayout.Button("Start at Level 1"))
+        if (GUILayout.Button("Level 1 Completed"))
             LevelAction(0);
-        if (GUILayout.Button("Start at Level 2"))
+        if (GUILayout.Button("Level 2 Completed"))
             LevelAction(1);
     }
 

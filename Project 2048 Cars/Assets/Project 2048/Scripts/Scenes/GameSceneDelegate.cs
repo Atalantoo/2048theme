@@ -22,36 +22,37 @@ using System.IO;
 
 class GameSceneDelegate
 {
-    public static void InjectCore(GameScene scene)
+    public static void InjectDependencies(GameScene scene)
     {
         scene.Core = new GameManager();
-        scene.View = new GameSceneView();
         scene.TileSprites = new Dictionary<int, Sprite>();
+        GameObject UICanvas = GameObject.Find("UICanvas");
+        GameObject QuitDialog = UICanvas.FindChild("QuitDialog", true);
+        scene.View = new GameSceneView()
+        {
+            UICanvas = UICanvas,
+            Camera = GameObject.Find("Main Camera"),
+            BackgroundSprite = GameObject.Find("BackgroundSprite"),
+            WallpaperSprite = GameObject.Find("WallpaperSprite"),
+            ScoreValue = GameObject.Find("ScoreText"),
+            Completion = GameObject.Find("Completion"),
+            CompletionValue = GameObject.Find("CompletionText"),
+            UndoButton = GameObject.Find("UndoButton"),
+            QuitButton = GameObject.Find("QuitButton"),
+            QuitDialog = QuitDialog,
+            QuitConfirmButton = QuitDialog.FindChild("ConfirmButton"),
+            QuitCancelButton = QuitDialog.FindChild("CancelButton"),
+            MergeAnimation = UICanvas.FindChild("MergeAnimation", true)
+        };
     }
 
-    public static void InjectViewGame(GameScene scene)
+    public static void InitializeCore(GameScene scene)
     {
-        ReferenceTiles(scene);
-        ReferenceMoves(scene);
-        InitAnimations(scene);
+        // TODO
     }
 
-    public static void InjectViewUI(GameScene scene)
+    public static void InitializeUI(GameScene scene)
     {
-        scene.View = new GameSceneView();
-        scene.View.Camera = GameObject.Find("Main Camera");
-        scene.View.UICanvas = GameObject.Find("UICanvas");
-        scene.View.BackgroundSprite = GameObject.Find("BackgroundSprite");
-        scene.View.WallpaperSprite = GameObject.Find("WallpaperSprite");
-        scene.View.ScoreValue = GameObject.Find("ScoreText");
-        scene.View.Completion = GameObject.Find("Completion");
-        scene.View.CompletionValue = scene.View.Completion.FindChild("Text");
-        scene.View.UndoButton = GameObject.Find("UndoButton");
-        scene.View.QuitButton = GameObject.Find("QuitButton");
-        scene.View.QuitDialog = scene.View.UICanvas.FindChild("QuitDialog", true);
-        scene.View.QuitConfirmButton = scene.View.QuitDialog.FindChild("ConfirmButton");
-        scene.View.QuitCancelButton = scene.View.QuitDialog.FindChild("CancelButton");
-        scene.View.MergeAnimation = scene.View.UICanvas.FindChild("MergeAnimation", true);
         InitDialogs(scene);
         BindActions(scene);
         InitInputs(scene);
@@ -59,6 +60,13 @@ class GameSceneDelegate
         LoadBackground(scene);
         ApplyTheme(scene);
         ApplyTranslation(scene);
+    }
+
+    public static void InitializeGame(GameScene scene)
+    {
+        ReferenceTiles(scene);
+        ReferenceMoves(scene);
+        InitAnimations(scene);
     }
 
     // *************************************
@@ -167,17 +175,11 @@ class GameSceneDelegate
 
     private static void BindActions(GameScene scene)
     {
-        ButtonOnClick(scene.View.UndoButton, scene.UndoAction);
-        ButtonOnClick(scene.View.QuitButton, scene.QuitAction);
-        ButtonOnClick(scene.View.QuitConfirmButton, scene.QuitConfirmAction);
-        ButtonOnClick(scene.View.QuitCancelButton, scene.QuitCancelAction);
+        scene.View.UndoButton.OnClick(scene.UndoAction);
+        scene.View.QuitButton.OnClick(scene.QuitAction);
+        scene.View.QuitConfirmButton.OnClick(scene.QuitConfirmAction);
+        scene.View.QuitCancelButton.OnClick(scene.QuitCancelAction);
     }
 
-    private static void ButtonOnClick(GameObject go, UnityAction action)
-    {
-        Button btn;
-        btn = go.GetComponent<Button>();
-        btn.onClick.AddListener(action);
-    }
 }
 
