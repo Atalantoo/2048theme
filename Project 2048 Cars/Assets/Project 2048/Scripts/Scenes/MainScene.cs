@@ -26,7 +26,7 @@ class MainScene : MonoBehaviour
 
     // ********************************************************************
 
-    internal void SelectLevelAction(bool arg)
+    internal void SelectAction(bool arg)
     {
         GetToggle();
         UpdateScreen();
@@ -50,7 +50,21 @@ class MainScene : MonoBehaviour
 
     private void UpdateScreen()
     {
-        // UpdateButtons();
+        UpdateLevelDescription();
+    }
+
+    private void UpdateLevelDescription()
+    {
+        // TODO save
+        string maxTile = "2048";
+        int i = Globals.LEVEL_CURRENT;
+
+        string currentLevel = (i + 1).ToString();
+        View.LevelDescriptionIndexText.GetComponent<Text>().text = currentLevel;
+
+        string path = i + "/" + maxTile;
+        Sprite sprite = Resources.Load<Sprite>(path);
+        View.LevelDescriptionImage.GetComponent<Image>().sprite = sprite;
     }
 
     private void BuildMap()
@@ -63,18 +77,17 @@ class MainScene : MonoBehaviour
         GameObject original = View.LevelTogglePrefab;
         Transform parent = original.transform.parent;
 
-
         View.LevelToggles = new GameObject[levels];
 
         for (int i = 0; i < levels; i++)
         {
-            GameObject toggle = Instantiate(original, parent);
+            GameObject go = Instantiate(original, parent);
 
-            toggle.name = toggle.name + " " + i;
-            GameObject Label = toggle.FindChild("Label");
+            go.name = go.name + " " + i;
+            GameObject Label = go.FindChild("Label");
             Label.GetComponent<Text>().text = (i + 1).ToString();
 
-            GameObject States = toggle.FindChild("States");
+            GameObject States = go.FindChild("States");
             GameObject Unlocked = States.FindChild("Unlocked", true);
             Unlocked.SetActive(false);
             GameObject Locked = States.FindChild("Locked", true);
@@ -82,6 +95,7 @@ class MainScene : MonoBehaviour
             GameObject Building = States.FindChild("Building", true);
             Building.SetActive(false);
 
+            Toggle toggle = go.GetComponent<Toggle>();
             if (i == 0 || i == 1)
             {
                 Unlocked.SetActive(true);
@@ -99,21 +113,22 @@ class MainScene : MonoBehaviour
             if (i == 2)
             {
                 Locked.SetActive(true);
-                toggle.GetComponent<Toggle>().interactable = false;
+                toggle.interactable = false;
             }
             if (i >= 3)
             {
                 Building.SetActive(true);
-                toggle.GetComponent<Toggle>().interactable = false;
+                toggle.interactable = false;
 
             }
 
-            toggle.SetActive(true);
+            go.SetActive(true);
 
             bool selected = (Globals.LEVEL_CURRENT == i);
-            toggle.GetComponent<Toggle>().isOn = selected;
+            toggle.isOn = selected;
+            toggle.onValueChanged.AddListener(SelectAction);
 
-            View.LevelToggles[i] = toggle;
+            View.LevelToggles[i] = go;
         }
     }
 

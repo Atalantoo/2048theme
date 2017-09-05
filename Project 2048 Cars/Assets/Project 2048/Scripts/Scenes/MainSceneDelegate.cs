@@ -21,7 +21,10 @@ class MainSceneDelegate
         {
             UICanvas = UICanvas,
             LevelTogglePrefab = LevelTogglePrefab,
-            StartButton = GameObject.Find("StartButton")
+            StartButton = GameObject.Find("StartButton"),
+            LevelDescription = GameObject.Find("LevelDescription"),
+            LevelDescriptionIndexText = GameObject.Find("LevelDescriptionIndexText"),
+            LevelDescriptionImage = GameObject.Find("LevelDescriptionImage"),
         };
     }
 

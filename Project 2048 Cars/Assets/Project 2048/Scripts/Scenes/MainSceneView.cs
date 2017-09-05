@@ -7,4 +7,7 @@ class MainSceneView
     public GameObject StartButton;
     public GameObject LevelTogglePrefab;
     public GameObject[] LevelToggles;
+    public GameObject LevelDescription;
+    public GameObject LevelDescriptionImage;
+    public GameObject LevelDescriptionIndexText;
 }
