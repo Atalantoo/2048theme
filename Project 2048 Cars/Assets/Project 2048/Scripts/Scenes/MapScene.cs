@@ -10,17 +10,17 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Commons;
 
-class MainScene : MonoBehaviour
+class MapScene : MonoBehaviour
 {
-    public MainSceneView View;
+    public MaSceneView View;
 
     void Start()
     {
-        MainSceneDelegate.InjectDependencies(this);
+        MapSceneDelegate.InjectDependencies(this);
         // TODO MainSceneDelegate.InitializeCore(this);
         Globals.LEVEL_CURRENT = 0;
         BuildMap();
-        MainSceneDelegate.InitializeUI(this);
+        MapSceneDelegate.InitializeUI(this);
         UpdateScreen();
     }
 
@@ -28,58 +28,53 @@ class MainScene : MonoBehaviour
 
     internal void SelectAction(bool arg)
     {
-        GetToggle();
+        GetLevelSelection();
         UpdateScreen();
     }
 
     internal void StartAction()
     {
-        FindLevels();
-        GetToggle();
+        GetLevelSelection();
         SceneManager.LoadScene(Globals.SCENE_GAME, LoadSceneMode.Single);
     }
 
 
     // ********************************************************************
 
-    private void FindLevels()
-    {
-
-        Globals.LEVELS_LENGTH = 2;
-    }
-
     private void UpdateScreen()
     {
         UpdateLevelDescription();
+        int c = Int32.Parse(Globals.save["achivement_count"]);
+        View.AchiementCountText.GetComponent<Text>().text = c.ToString();
     }
 
     private void UpdateLevelDescription()
     {
-        // TODO save
-        string maxTile = "2048";
         int i = Globals.LEVEL_CURRENT;
 
         string currentLevel = (i + 1).ToString();
         View.LevelDescriptionIndexText.GetComponent<Text>().text = currentLevel;
 
+        string maxTile = Globals.save["level_" + i + "_tile_max"];
         string path = i + "/" + maxTile;
         Sprite sprite = Resources.Load<Sprite>(path);
         View.LevelDescriptionImage.GetComponent<Image>().sprite = sprite;
+
+        BuildLevelAchivs(View.LevelDescription, i);
     }
 
     private void BuildMap()
     {
-        // TODO save
-        string maxTile = "2048";
-        int levels = 9;
+        int level_max = Globals.LEVEL_MAX;
+        int level_count = GetSaveInt("level_count");
 
         View.LevelTogglePrefab.SetActive(false);
         GameObject original = View.LevelTogglePrefab;
         Transform parent = original.transform.parent;
 
-        View.LevelToggles = new GameObject[levels];
+        View.LevelToggles = new GameObject[level_max];
 
-        for (int i = 0; i < levels; i++)
+        for (int i = 0; i < level_max; i++)
         {
             GameObject go = Instantiate(original, parent);
 
@@ -96,30 +91,32 @@ class MainScene : MonoBehaviour
             Building.SetActive(false);
 
             Toggle toggle = go.GetComponent<Toggle>();
-            if (i == 0 || i == 1)
+            bool open = GetSaveBool("level_" + i + "_unlocked");
+            if (open)
             {
                 Unlocked.SetActive(true);
+
+                string maxTile = Globals.save["level_" + i + "_tile_max"];
 
                 string path = i + "/" + maxTile;
                 Sprite sprite = Resources.Load<Sprite>(path);
                 GameObject image = Unlocked.FindChild("Image");
                 image.GetComponent<Image>().sprite = sprite;
+
+                BuildLevelAchivs(Unlocked, i);
             }
-            if (i == 0)
-            {
-                GameObject achiv1 = Unlocked.FindChild("Achiv1ImageFalse");
-                achiv1.SetActive(false);
-            }
-            if (i == 2)
-            {
-                Locked.SetActive(true);
-                toggle.interactable = false;
-            }
-            if (i >= 3)
+            else if (i >= level_count)
             {
                 Building.SetActive(true);
                 toggle.interactable = false;
-
+            }
+            else
+            {
+                int needed = GetSaveInt("level_" + i + "_require");
+                if (needed == -1) needed = 99;
+                Locked.FindChild("LockedValueText").GetComponent<Text>().text = needed.ToString();
+                Locked.SetActive(true);
+                toggle.interactable = false;
             }
 
             go.SetActive(true);
@@ -132,7 +129,39 @@ class MainScene : MonoBehaviour
         }
     }
 
-    private void GetToggle()
+    private void BuildLevelAchivs(GameObject go, int i)
+    {
+        bool achiv0512 = GetSaveBool("level_" + i + "_achiv_0512");
+        bool achiv1024 = GetSaveBool("level_" + i + "_achiv_1024");
+        bool achiv2048 = GetSaveBool("level_" + i + "_achiv_2048");
+        BuildLevelAchivs(go, "0512", achiv0512);
+        BuildLevelAchivs(go, "1024", achiv1024);
+        BuildLevelAchivs(go, "2048", achiv2048);
+    }
+
+    private void BuildLevelAchivs(GameObject go, string id, bool cond)
+    {
+        GameObject achiv = go.FindChild("Achiv" + id + "ImageFalse", true);
+        achiv.SetActive(!cond);
+    }
+
+    private bool GetSaveBool(string key)
+    {
+        if (Globals.save.ContainsKey(key))
+            return Boolean.Parse(Globals.save[key]);
+        else
+            return false;
+    }
+
+    private int GetSaveInt(string key)
+    {
+        if (Globals.save.ContainsKey(key))
+            return Int32.Parse(Globals.save[key]);
+        else
+            return -1;
+    }
+
+    private void GetLevelSelection()
     {
         GameObject go;
         Toggle tog;

@@ -19,7 +19,7 @@ class Globals
     public static int Height = 4;
     public static int Width = 4;
     public static int LEVEL_CURRENT = 0;
-    public static int LEVELS_LENGTH = 2;
+    public static int LEVEL_MAX = 9;
 
     // CONST *********************************
 
@@ -69,5 +69,32 @@ class Globals
             t.PreferredLanguage = Application.systemLanguage.ISO();
         t.Initialize();
         return t;
+    }
+
+    public static Dictionary<string, string> save = InitSave();
+    public static Dictionary<string, string> InitSave()
+    {
+        Dictionary<string, string> save = new Dictionary<string, string>();
+        
+        // STATIC
+        save.Add("level_count", "4");
+        save.Add("level_0_require", "0");
+        save.Add("level_1_require", "1");
+        save.Add("level_2_require", "3");
+
+        // STORED
+        save.Add("level_0_unlocked", "true");
+        save.Add("level_0_tile_max", "0512");
+        save.Add("level_0_achiv_0512", "true");
+        save.Add("level_0_achiv_1024", "false");
+        save.Add("level_0_achiv_2048", "false");
+
+        save.Add("level_1_unlocked", "true");
+        save.Add("level_1_tile_max", "0256");
+        save.Add("level_1_achiv_0512", "false");
+
+        // CALC
+        save.Add("achivement_count", "1");
+        return save;
     }
 }

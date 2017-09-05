@@ -69,7 +69,7 @@ class GameSceneDelegate
         InitAnimations(scene);
     }
 
-    // *************************************
+    // **************************************************************
 
     private static void LoadColor()
     {
