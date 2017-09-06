@@ -98,42 +98,60 @@ namespace Commons.UI
 
         private void ApplyTheme(GameObject go, string theme = "default")
         {
-            Theme t = themes[theme];
+            Theme them = themes[theme];
             string name = go.name.ToLower();
             if (go.GetComponent<Text>() != null)
             {
                 Text txt = go.GetComponent<Text>();
-                if (name.Contains("intention"))
-                    if (name.Contains("intention=warning"))
-                        txt.color = t.Warning;
-                    else if (name.Contains("intention=primary"))
-                        txt.color = t.Primary;
-                    else
-                        txt.color = t.Text;
-                else
-                    txt.color = t.Text;
+                txt.color = GetColor(name, theme);
+
             }
             if (go.GetComponent<Button>() != null)
             {
                 Image img = go.GetComponent<Image>();
-                img.color = ColorHelper.ContrastRatio(t.Background, 1.0f);
+                img.color = ColorHelper.ContrastRatio(them.Background, 1.0f);
                 if (go.GetComponent<Shadow>() == null)
                 {
                     Shadow sha;
                     sha = go.AddComponent<Shadow>();
                     sha.effectDistance = new Vector2(2, -2);
-                    sha.effectColor = ColorHelper.TransparencyRatio(t.Text, 0.5f);
+                    sha.effectColor = ColorHelper.TransparencyRatio(them.Text, 0.5f);
                     sha = go.AddComponent<Shadow>();
                     sha.effectDistance = new Vector2(-1, 1);
-                    sha.effectColor = ColorHelper.TransparencyRatio(t.Text, 0.5f);
+                    sha.effectColor = ColorHelper.TransparencyRatio(them.Text, 0.5f);
                 }
             }
+            if (name.Contains("type="))
+            {
+                if (name.Contains("type=icon"))
+                    if (go.GetComponent<Image>() != null)
+                    {
+                        Image img = go.GetComponent<Image>();
+                        img.color = GetColor(name, theme);
+                    }
+            }
+        }
+
+        private Color GetColor(string name, string theme)
+        {
+            Theme t = themes[theme];
+            Color color;
+            if (name.Contains("intention"))
+                if (name.Contains("intention=warning"))
+                    color = t.Warning;
+                else if (name.Contains("intention=primary"))
+                    color = t.Primary;
+                else
+                    color = t.Text;
+            else
+                color = t.Text;
+            return color;
         }
 
         // TODO LOAD JSON FILE
         static Theme defaultTheme = new Theme()
         {
-            Text = ColorHelper.HEXToRGB("212121"),
+            Text = ColorHelper.HEXToRGB("5A5A5A"),
             Warning = ColorHelper.HEXToRGB("d84315"),
             Primary = ColorHelper.HEXToRGB("106cc8"),
             Accent = ColorHelper.HEXToRGB("ff5252"),
