@@ -16,8 +16,7 @@ import org.apache.http.util.EntityUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -25,7 +24,6 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -76,9 +74,9 @@ public class TranslateProcessor implements ItemProcessor<LocaleJSONLine, LocaleJ
 		System.setProperty("jsse.enableSNIExtension", "false");
 		DesiredCapabilities cap = new DesiredCapabilities();
 		WebDriver webDriver;
-		// webDriver = new HtmlUnitDriver(cap);
-		webDriver= new PhantomJSDriver(new DesiredCapabilities(ImmutableMap.of( //
-				PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "phantomjs.exe")));
+		 webDriver = new HtmlUnitDriver(cap);
+		// webDriver= new PhantomJSDriver(new DesiredCapabilities(ImmutableMap.of( //
+		//		PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "phantomjs.exe")));
 
 		webDriver.get(url);
 		WebDriverWait wait = new WebDriverWait(webDriver, 5);

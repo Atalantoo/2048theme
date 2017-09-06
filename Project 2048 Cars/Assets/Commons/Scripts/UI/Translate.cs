@@ -25,6 +25,7 @@ namespace Commons.UI
             core = new TranslateProvider();
             core.PreferredLanguage = PreferredLanguage;
             core.FallbackLanguage = FallbackLanguage;
+            core.Translations("en", LoadFile("en"));
             core.Translations(PreferredLanguage, LoadFile(PreferredLanguage));
             core.Translations(FallbackLanguage, LoadFile(FallbackLanguage));
 

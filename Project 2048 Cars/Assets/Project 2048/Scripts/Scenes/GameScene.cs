@@ -10,8 +10,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 using System.IO;
 using Commons;
