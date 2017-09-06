@@ -21,7 +21,7 @@ import org.springframework.boot.test.rule.OutputCapture;
 import com.google.common.collect.Collections2;
 
 @RunWith(Parameterized.class)
-public class BatchApplicationTest {
+public class All {
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
