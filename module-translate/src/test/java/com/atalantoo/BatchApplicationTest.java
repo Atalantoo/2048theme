@@ -3,8 +3,11 @@ package com.atalantoo;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,6 +17,8 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.rule.OutputCapture;
+
+import com.google.common.collect.Collections2;
 
 @RunWith(Parameterized.class)
 public class BatchApplicationTest {
@@ -32,7 +37,7 @@ public class BatchApplicationTest {
 	@Parameter(4)
 	public String dest_lang;
 
-	@Parameters( name = "project-2048 {0} {index}: {4}")
+	@Parameters(name = "project-2048 {0} {index}: {4}")
 	public static Collection<Object[]> data() {
 		String path = System.getProperty("user.dir");
 		String source = "en";
@@ -46,29 +51,30 @@ public class BatchApplicationTest {
 				"es", //
 				"it", //
 				"ru" //
-		};		
-		String[][] parameters = new String[targets.length*2][5];
-
-		String file = path + "\\..\\Project 2048 Cars\\AppStore\\locale-%s.json";
-		for (int i = 0; i < targets.length; i++) {
-			String target = targets[i];
-			parameters[i][0] = "store";
-			parameters[i][1] = format(file, source);
-			parameters[i][2] = format(file, target);
-			parameters[i][3] = source;
-			parameters[i][4] = target;
-		}
+		};
+		String file;
+		List<String[]> data = new ArrayList<>();
 		file = path + "\\..\\Project 2048 Cars\\Assets\\Project 2048\\Resources\\i18n\\locale-%s.json";
 		for (int i = 0; i < targets.length; i++) {
 			String target = targets[i];
-			parameters[i+targets.length-1][0] = "app";
-			parameters[i+targets.length-1][1] = format(file, source);
-			parameters[i+targets.length-1][2] = format(file, target);
-			parameters[i+targets.length-1][3] = source;
-			parameters[i+targets.length-1][4] = target;
+			data.add(new String[] { //
+					"app", //
+					format(file, source), //
+					format(file, target), //
+					source, //
+					target });
 		}
-		
-		return Arrays.asList(parameters);
+		file= path + "\\..\\Project 2048 Cars\\AppStore\\locale-%s.json";
+		for (int i = 0; i < targets.length; i++) {
+			String target = targets[i];
+			data.add(new String[] { //
+					"store", //
+					format(file, source), //
+					format(file, target), //
+					source, //
+					target });
+		}
+		return new ArrayList<Object[]>(data);
 	}
 
 	@Test

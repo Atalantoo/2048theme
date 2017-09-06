@@ -24,7 +24,6 @@ import org.springframework.core.io.FileSystemResource;
 public class BatchConfig {
 
 	// ARGS *********************************************************
-
 	@Value("${run.id}")
 	String id;
 	@Value("${src}")
@@ -57,12 +56,7 @@ public class BatchConfig {
 				.reader(reader(src)) //
 				.processor(processor(src_lang, dest_lang)) //
 				.writer(writer(dest)) //
-				// .exceptionHandler(exceptionHandler()) //
 				.build();
-	}
-
-	private ExceptionHandler exceptionHandler() {
-		return new TranslateExceptionHandler();
 	}
 
 	// CUSTOM *********************************************************

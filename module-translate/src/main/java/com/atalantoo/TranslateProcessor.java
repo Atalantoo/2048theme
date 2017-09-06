@@ -1,13 +1,23 @@
 package com.atalantoo;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -15,6 +25,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -29,8 +40,8 @@ public class TranslateProcessor implements ItemProcessor<LocaleJSONLine, LocaleJ
 	@NonNull
 	public String dest_lang;
 
-	private static final String API_PATTERN = "https://translate.google.fr/#%s/%s/%s";
-	private static final String API_TARGET = "#result_box span";
+	String google_token = "67442.485316";
+
 	private static final String LINE_BREAK = "\\n";
 	private static final String LINE_BREAK_REGEX = "\\\\n";
 	private static Joiner joiner = Joiner.on(LINE_BREAK).skipNulls();
@@ -55,26 +66,59 @@ public class TranslateProcessor implements ItemProcessor<LocaleJSONLine, LocaleJ
 		return new LocaleJSONLine(item.key, newValue);
 	}
 
+	private static final String UI_PATTERN = "https://translate.google.fr/#%s/%s/%s";
+	private static final String UI_TARGET = "#result_box span";
+
 	private String translate(String value) throws UnsupportedEncodingException {
 		String urlValue = URLEncoder.encode(value, "UTF-8");
-		String url = String.format(API_PATTERN, src_lang, dest_lang, urlValue);
+		String url = String.format(UI_PATTERN, src_lang, dest_lang, urlValue);
 
 		System.setProperty("jsse.enableSNIExtension", "false");
 		DesiredCapabilities cap = new DesiredCapabilities();
-		WebDriver webDriver = new HtmlUnitDriver(cap);
-		webDriver.get(url);
+		WebDriver webDriver;
+		// webDriver = new HtmlUnitDriver(cap);
+		webDriver= new PhantomJSDriver(new DesiredCapabilities(ImmutableMap.of( //
+				PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "phantomjs.exe")));
 
+		webDriver.get(url);
 		WebDriverWait wait = new WebDriverWait(webDriver, 5);
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(API_TARGET)));
-		WebElement target = webDriver.findElement(By.cssSelector(API_TARGET));
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(UI_TARGET)));
+		WebElement target = webDriver.findElement(By.cssSelector(UI_TARGET));
 		String newValue = target.getText();
 
 		webDriver.close();
 		return newValue;
 	}
 
-	private String translate2(String value) throws UnsupportedEncodingException {
+	private static final String API_PATTERN = "https://translate.google.fr/translate_a/single?client=t&sl=%s&tl=%s&hl=fr&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&kc=0&tk=%s&q=%s";
 
-		return null;
+	private String translate2(String value) throws ClientProtocolException, IOException {
+		String urlValue = URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20");
+		String url = String.format(API_PATTERN, src_lang, dest_lang, google_token, urlValue);
+
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+			@Override
+			public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					if (entity == null)
+						return null;
+					return EntityUtils.toString(entity).split("\"")[1];
+				} else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
+				}
+			}
+
+		};
+
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpget = new HttpGet(url);
+		System.out.println("Executing request " + httpget.getRequestLine());
+		String responseBody = httpclient.execute(httpget, responseHandler);
+		System.out.println(responseBody);
+
+		return responseBody;
 	}
 }
