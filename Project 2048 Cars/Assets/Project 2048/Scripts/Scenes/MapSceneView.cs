@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 class MaSceneView
 {
@@ -18,4 +19,11 @@ class MaSceneView
     public GameObject SettingsButton;
     public GameObject SettingsDialog;
     public GameObject SettingsCloseButton;
+
+    public GameObject LanguageButton;
+    public GameObject LanguageDialog;
+    public GameObject LanguageCloseButton;
+    public GameObject LanguageValueText;
+    public GameObject LanguageTogglePrefab;
+    public GameObject[] LanguageToggles;
 }

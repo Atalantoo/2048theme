@@ -28,24 +28,45 @@ class MapScene : MonoBehaviour
 
     internal void SelectAction(bool arg)
     {
-        GetLevelSelection();
+        Globals.LEVEL_CURRENT = Int32.Parse(GetTogglesSelection(View.LevelToggles).name);
         UpdateScreen();
     }
 
     internal void StartAction()
     {
-        GetLevelSelection();
+        Globals.LEVEL_CURRENT = Int32.Parse(GetTogglesSelection(View.LevelToggles).name);
         SceneManager.LoadScene(Globals.SCENE_GAME, LoadSceneMode.Single);
-    }
-
-    internal void SettingsCloseAction()
-    {
-        View.SettingsDialog.SetActive(false);
     }
 
     internal void SettingsOpenAction()
     {
         View.SettingsDialog.SetActive(true);
+    }
+    internal void SettingsCloseAction()
+    {
+        View.SettingsDialog.SetActive(false);
+    }
+
+    internal void LanguageOpenAction()
+    {
+        View.SettingsDialog.SetActive(false);
+        View.LanguageDialog.SetActive(true);
+    }
+    internal void LanguageCloseAction()
+    {
+        View.LanguageDialog.SetActive(false);
+        View.SettingsDialog.SetActive(true);
+    }
+    internal void LanguageSelectedAction(bool arg)
+    {
+        string current = GetTogglesSelection(View.LanguageToggles).name;
+
+        Globals.Lang.PreferredLanguage = current;
+        string label = Globals.Lang.Language(current).label;
+        View.LanguageValueText.GetComponent<Text>().text = label;
+
+        Globals.Lang.Initialize();
+        MapSceneDelegate.ApplyTranslation(this);
     }
 
     // ********************************************************************
@@ -86,8 +107,8 @@ class MapScene : MonoBehaviour
         for (int i = 0; i < level_max; i++)
         {
             GameObject go = Instantiate(original, parent);
+            go.name = i.ToString();
 
-            go.name = go.name + " " + i;
             GameObject Label = go.FindChild("Label");
             Label.GetComponent<Text>().text = (i + 1).ToString();
 
@@ -170,17 +191,18 @@ class MapScene : MonoBehaviour
             return -1;
     }
 
-    private void GetLevelSelection()
+
+
+    private GameObject GetTogglesSelection(GameObject[] gos)
     {
-        GameObject go;
-        Toggle tog;
-        for (int i = 0; i < View.LevelToggles.Length; i++)
+        foreach (GameObject go in gos)
         {
-            go = View.LevelToggles[i];
-            tog = go.GetComponent<Toggle>();
-            if (tog.isOn)
-                Globals.LEVEL_CURRENT = i;
+            Toggle tog = go.GetComponent<Toggle>();
+            if (tog != null && tog.isOn)
+                return go;
         }
+        return null;
     }
+
 }
 
