@@ -37,12 +37,13 @@ class GameSceneDelegate
             ScoreValue = GameObject.Find("ScoreText"),
             Completion = GameObject.Find("Completion"),
             CompletionValue = GameObject.Find("CompletionText"),
+            LevelCurrentText = GameObject.Find("LevelCurrentText"),
             UndoButton = GameObject.Find("UndoButton"),
             QuitButton = GameObject.Find("QuitButton"),
             QuitDialog = QuitDialog,
             QuitConfirmButton = QuitDialog.FindChild("ConfirmButton"),
             QuitCancelButton = QuitDialog.FindChild("CancelButton"),
-            MergeAnimation = UICanvas.FindChild("MergeAnimation", true)
+            MergeAnimation = UICanvas.FindChild("MergeAnimation", true),
         };
     }
 
@@ -60,6 +61,7 @@ class GameSceneDelegate
         LoadBackground(scene);
         ApplyTheme(scene);
         ApplyTranslation(scene);
+        scene.View.LevelCurrentText.GetComponent<Text>().text = (Globals.LEVEL_CURRENT+1).ToString();
     }
 
     public static void InitializeGame(GameScene scene)

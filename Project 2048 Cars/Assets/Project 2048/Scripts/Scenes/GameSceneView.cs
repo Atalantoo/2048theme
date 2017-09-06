@@ -12,6 +12,7 @@ class GameSceneView
     public GameObject ScoreValue;
     public GameObject Completion;
     public GameObject CompletionValue;
+    public GameObject LevelCurrentText;
 
     public GameObject UndoButton;
     public GameObject QuitDialog;
@@ -23,5 +24,6 @@ class GameSceneView
 
     public Dictionary<string, GameObject> TileObjects;
     public Dictionary<string, SpriteRenderer> GameMoves;
+
 
 }
