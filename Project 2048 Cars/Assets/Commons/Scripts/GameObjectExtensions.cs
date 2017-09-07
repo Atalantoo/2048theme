@@ -45,7 +45,6 @@ namespace Commons
                 zone_coord.y + zone_area.y / 2);
             bool xLimit = (start.x < positionInPixel.x) && (positionInPixel.x < end.x);
             bool yLimit = (start.y < positionInPixel.y) && (positionInPixel.y < end.y);
-
             return xLimit && yLimit;
         }
 
