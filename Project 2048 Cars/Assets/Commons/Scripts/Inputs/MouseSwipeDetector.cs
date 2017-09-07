@@ -32,7 +32,8 @@ namespace Commons.Inputs
 
             if (state == State.SwipeNotStarted)
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) 
+                    && gameObject.IsInSameArea(Input.mousePosition))
                 {
                     timeSwipeStarted = DateTime.Now;
                     state = State.SwipeStarted;
