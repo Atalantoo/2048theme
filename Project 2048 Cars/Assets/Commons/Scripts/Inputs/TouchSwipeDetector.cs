@@ -35,7 +35,6 @@ namespace Commons.Inputs
                 {
                     if (!gameObject.IsInSameArea(Input.GetTouch(0).position))
                         return;
-                    Debug.Log("swipping!");
                     swiping = true;
                     lastPosition = Input.GetTouch(0).position;
                     return;
