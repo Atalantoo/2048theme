@@ -97,13 +97,13 @@ class MapScene : MonoBehaviour
     {
         int level_max = Globals.LEVEL_MAX;
         int level_count = GetSaveInt("level_count");
+        Globals.LEVEL_CURRENT = 0;
 
         View.LevelTogglePrefab.SetActive(false);
         GameObject original = View.LevelTogglePrefab;
         Transform parent = original.transform.parent;
 
         View.LevelToggles = new GameObject[level_max];
-
         for (int i = 0; i < level_max; i++)
         {
             GameObject go = Instantiate(original, parent);
@@ -134,6 +134,8 @@ class MapScene : MonoBehaviour
                 image.GetComponent<Image>().sprite = sprite;
 
                 BuildLevelAchivs(Unlocked, i);
+
+                Globals.LEVEL_CURRENT = i;
             }
             else if (i >= level_count)
             {
@@ -150,13 +152,15 @@ class MapScene : MonoBehaviour
             }
 
             go.SetActive(true);
-
-            bool selected = (Globals.LEVEL_CURRENT == i);
-            toggle.isOn = selected;
             toggle.onValueChanged.AddListener(SelectAction);
+            toggle.isOn = false;
 
             View.LevelToggles[i] = go;
         }
+
+        View.LevelToggles[Globals.LEVEL_CURRENT]
+            .GetComponent<Toggle>()
+                .isOn = true;
     }
 
     private void BuildLevelAchivs(GameObject go, int i)
