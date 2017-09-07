@@ -25,5 +25,6 @@ class GameSceneView
     public Dictionary<string, GameObject> TileObjects;
     public Dictionary<string, SpriteRenderer> GameMoves;
 
-
+    public GameObject SettingsButton;
+    public GameObject Settings;
 }

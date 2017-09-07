@@ -1,10 +1,4 @@
-﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary
- * Written by Damien Fremont
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -43,6 +37,11 @@ class GameScene : MonoBehaviour
     }
 
     // ********************************************************************
+
+    internal void SettingsOpenAction()
+    {
+        View.Settings.GetComponent<Settings>().OpenAction();
+    }
 
     internal void ResetAction()
     {

@@ -1,10 +1,4 @@
-﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary
- * Written by Damien Fremont
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,16 +28,22 @@ class GameSceneDelegate
             Camera = GameObject.Find("Main Camera"),
             BackgroundSprite = GameObject.Find("BackgroundSprite"),
             WallpaperSprite = GameObject.Find("WallpaperSprite"),
+            MergeAnimation = UICanvas.FindChild("MergeAnimation", true),
+
             ScoreValue = GameObject.Find("ScoreText"),
             Completion = GameObject.Find("Completion"),
             CompletionValue = GameObject.Find("CompletionText"),
             LevelCurrentText = GameObject.Find("LevelCurrentText"),
+
             UndoButton = GameObject.Find("UndoButton"),
+
             QuitButton = GameObject.Find("QuitButton"),
             QuitDialog = QuitDialog,
             QuitConfirmButton = QuitDialog.FindChild("ConfirmButton"),
             QuitCancelButton = QuitDialog.FindChild("CancelButton"),
-            MergeAnimation = UICanvas.FindChild("MergeAnimation", true),
+
+            SettingsButton = GameObject.Find("SettingsButton"),
+            Settings = GameObject.Find("Settings"),
         };
     }
 
@@ -54,14 +54,24 @@ class GameSceneDelegate
 
     public static void InitializeUI(GameScene scene)
     {
+        scene.View.SettingsButton.OnClick(scene.SettingsOpenAction);
+        scene.View.Settings.AddComponent<Settings>();
+        scene.View.Settings.GetComponent<Settings>().TranslateTarget = scene.View.UICanvas;
+        if (SaveProdiver.GetSaveInt("achivement_count") < 2)
+            scene.View.Settings.GetComponent<Settings>().DisplayHelpAtStartup = true;
+
         InitDialogs(scene);
         BindActions(scene);
         InitInputs(scene);
         LoadColor();
         LoadBackground(scene);
-        ApplyTheme(scene);
-        ApplyTranslation(scene);
-        scene.View.LevelCurrentText.GetComponent<Text>().text = (Globals.LEVEL_CURRENT+1).ToString();
+
+        Main.Lang.Apply(scene.View.UICanvas);
+        Main.Theme.Apply(scene.View.UICanvas);
+        scene.View.Completion.GetComponent<Image>().color = Main.Theme.themes["game"].Text;
+        scene.View.CompletionValue.GetComponent<Text>().color = Main.Theme.themes["game"].Background;
+
+        scene.View.LevelCurrentText.GetComponent<Text>().text = (Globals.LEVEL_CURRENT + 1).ToString();
     }
 
     public static void InitializeGame(GameScene scene)
@@ -80,7 +90,7 @@ class GameSceneDelegate
         string dataAsJson = txt.text;
         LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
         Color color = ColorHelper.HEXToRGB(loadedData.color);
-        Globals.Theme.themes["game"].Background = color;
+        Main.Theme.themes["game"].Background = color;
     }
 
     private static void LoadBackground(GameScene scene)
@@ -88,28 +98,9 @@ class GameSceneDelegate
         string path = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
         Sprite sprite = Resources.Load<Sprite>(path);
         scene.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = sprite;
-        scene.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Globals.Theme.themes["game"].Background;
+        scene.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Main.Theme.themes["game"].Background;
     }
 
-    private static void ApplyTheme(GameScene scene)
-    {
-        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Globals.Theme.Apply(scene.View.UICanvas);
-
-        scene.View.Completion.GetComponent<Image>().color = Globals.Theme.themes["game"].Text;
-        scene.View.CompletionValue.GetComponent<Text>().color = Globals.Theme.themes["game"].Background;
-
-        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Debug.Log("ApplyTheme in " + (end - start) + " ms");
-    }
-
-    private static void ApplyTranslation(GameScene scene)
-    {
-        long start = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Globals.Lang.Apply(scene.View.UICanvas);
-        long end = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        Debug.Log("ApplyTranslation in " + (end - start) + " ms");
-    }
 
     private static void InitAnimations(GameScene scene)
     {

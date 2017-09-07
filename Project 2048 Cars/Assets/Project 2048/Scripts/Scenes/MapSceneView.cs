@@ -17,13 +17,5 @@ class MaSceneView
     public GameObject LevelDescriptionIndexText;
 
     public GameObject SettingsButton;
-    public GameObject SettingsDialog;
-    public GameObject SettingsCloseButton;
-
-    public GameObject LanguageButton;
-    public GameObject LanguageDialog;
-    public GameObject LanguageCloseButton;
-    public GameObject LanguageValueText;
-    public GameObject LanguageTogglePrefab;
-    public GameObject[] LanguageToggles;
+    public GameObject Settings;
 }

@@ -1,14 +1,9 @@
-﻿/* Copyright (C) 2017 Damien Fremont - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary
- * Written by Damien Fremont
- */
-
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Commons;
+using Commons.UI;
 
 class MapScene : MonoBehaviour
 {
@@ -28,45 +23,19 @@ class MapScene : MonoBehaviour
 
     internal void SelectAction(bool arg)
     {
-        Globals.LEVEL_CURRENT = Int32.Parse(GetTogglesSelection(View.LevelToggles).name);
+        Globals.LEVEL_CURRENT = Int32.Parse(ToggleHelper.GetSelection(View.LevelToggles).name);
         UpdateScreen();
     }
 
     internal void StartAction()
     {
-        Globals.LEVEL_CURRENT = Int32.Parse(GetTogglesSelection(View.LevelToggles).name);
+        Globals.LEVEL_CURRENT = Int32.Parse(ToggleHelper.GetSelection(View.LevelToggles).name);
         SceneManager.LoadScene(Globals.SCENE_GAME, LoadSceneMode.Single);
     }
 
     internal void SettingsOpenAction()
     {
-        View.SettingsDialog.SetActive(true);
-    }
-    internal void SettingsCloseAction()
-    {
-        View.SettingsDialog.SetActive(false);
-    }
-
-    internal void LanguageOpenAction()
-    {
-        View.SettingsDialog.SetActive(false);
-        View.LanguageDialog.SetActive(true);
-    }
-    internal void LanguageCloseAction()
-    {
-        View.LanguageDialog.SetActive(false);
-        View.SettingsDialog.SetActive(true);
-    }
-    internal void LanguageSelectedAction(bool arg)
-    {
-        string current = GetTogglesSelection(View.LanguageToggles).name;
-
-        Globals.Lang.PreferredLanguage = current;
-        string label = Globals.Lang.Language(current).label;
-        View.LanguageValueText.GetComponent<Text>().text = label;
-
-        Globals.Lang.Initialize();
-        MapSceneDelegate.ApplyTranslation(this);
+        View.Settings.GetComponent<Settings>().OpenAction();
     }
 
     // ********************************************************************
@@ -74,7 +43,7 @@ class MapScene : MonoBehaviour
     private void UpdateScreen()
     {
         UpdateLevelDescription();
-        int c = Int32.Parse(Globals.save["achivement_count"]);
+        int c = Int32.Parse(Main.save["achivement_count"]);
         View.AchiementCountText.GetComponent<Text>().text = c.ToString();
     }
 
@@ -85,7 +54,7 @@ class MapScene : MonoBehaviour
         string currentLevel = (i + 1).ToString();
         View.LevelDescriptionIndexText.GetComponent<Text>().text = currentLevel;
 
-        string maxTile = Globals.save["level_" + i + "_tile_max"];
+        string maxTile = Main.save["level_" + i + "_tile_max"];
         string path = i + "/" + maxTile;
         Sprite sprite = Resources.Load<Sprite>(path);
         View.LevelDescriptionImage.GetComponent<Image>().sprite = sprite;
@@ -96,7 +65,7 @@ class MapScene : MonoBehaviour
     private void BuildMap()
     {
         int level_max = Globals.LEVEL_MAX;
-        int level_count = GetSaveInt("level_count");
+        int level_count = SaveProdiver.GetSaveInt("level_count");
         Globals.LEVEL_CURRENT = 0;
 
         View.LevelTogglePrefab.SetActive(false);
@@ -121,12 +90,12 @@ class MapScene : MonoBehaviour
             WorkInProgress.SetActive(false);
 
             Toggle toggle = go.GetComponent<Toggle>();
-            bool open = GetSaveBool("level_" + i + "_unlocked");
+            bool open = SaveProdiver.GetSaveBool("level_" + i + "_unlocked");
             if (open)
             {
                 Unlocked.SetActive(true);
 
-                string maxTile = Globals.save["level_" + i + "_tile_max"];
+                string maxTile = Main.save["level_" + i + "_tile_max"];
 
                 string path = i + "/" + maxTile;
                 Sprite sprite = Resources.Load<Sprite>(path);
@@ -144,7 +113,7 @@ class MapScene : MonoBehaviour
             }
             else
             {
-                int needed = GetSaveInt("level_" + i + "_require");
+                int needed = SaveProdiver.GetSaveInt("level_" + i + "_require");
                 if (needed == -1) needed = 99;
                 Locked.FindChild("LockedValueText").GetComponent<Text>().text = needed.ToString();
                 Locked.SetActive(true);
@@ -165,9 +134,9 @@ class MapScene : MonoBehaviour
 
     private void BuildLevelAchivs(GameObject go, int i)
     {
-        bool achiv0512 = GetSaveBool("level_" + i + "_achiv_0512");
-        bool achiv1024 = GetSaveBool("level_" + i + "_achiv_1024");
-        bool achiv2048 = GetSaveBool("level_" + i + "_achiv_2048");
+        bool achiv0512 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_0512");
+        bool achiv1024 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_1024");
+        bool achiv2048 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_2048");
         BuildLevelAchivs(go, "0512", achiv0512);
         BuildLevelAchivs(go, "1024", achiv1024);
         BuildLevelAchivs(go, "2048", achiv2048);
@@ -178,35 +147,6 @@ class MapScene : MonoBehaviour
         GameObject achiv = go.FindChild("Achiv" + id + "ImageFalse", true);
         achiv.SetActive(!cond);
     }
-
-    private bool GetSaveBool(string key)
-    {
-        if (Globals.save.ContainsKey(key))
-            return Boolean.Parse(Globals.save[key]);
-        else
-            return false;
-    }
-
-    private int GetSaveInt(string key)
-    {
-        if (Globals.save.ContainsKey(key))
-            return Int32.Parse(Globals.save[key]);
-        else
-            return -1;
-    }
-
-
-
-    private GameObject GetTogglesSelection(GameObject[] gos)
-    {
-        foreach (GameObject go in gos)
-        {
-            Toggle tog = go.GetComponent<Toggle>();
-            if (tog != null && tog.isOn)
-                return go;
-        }
-        return null;
-    }
-
+    
 }
 
