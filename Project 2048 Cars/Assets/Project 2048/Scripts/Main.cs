@@ -24,6 +24,11 @@ class Main
             Text = ColorHelper.HEXToRGB("FFFFFF"),
             Background = ColorHelper.HEXToRGB("08C7C7")
         });
+        t.Config("yellow", new Theme()
+        {
+            Text = ColorHelper.HEXToRGB("FFD300"),
+            Background = ColorHelper.HEXToRGB("08C7C7")
+        });
         return t;
     }
 
@@ -47,20 +52,22 @@ class Main
         save.Add("level_0_require", "0");
         save.Add("level_1_require", "1");
         save.Add("level_2_require", "3");
+        save.Add("level_3_require", "5");
 
         // STORED
         save.Add("level_0_unlocked", "true");
-        save.Add("level_0_tile_max", "0512");
+        save.Add("level_0_tile_max", "0256");
+        save.Add("level_0_achiv_0256", "true");
         save.Add("level_0_achiv_0512", "true");
         save.Add("level_0_achiv_1024", "false");
         save.Add("level_0_achiv_2048", "false");
 
         save.Add("level_1_unlocked", "true");
-        save.Add("level_1_tile_max", "0256");
+        save.Add("level_1_tile_max", "0128");
         save.Add("level_1_achiv_0512", "false");
 
         // CALC
-        save.Add("achivement_count", "1");
+        save.Add("achivement_count", "2");
         return save;
     }
 }

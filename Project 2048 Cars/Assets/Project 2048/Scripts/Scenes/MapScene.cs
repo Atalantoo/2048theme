@@ -134,19 +134,18 @@ class MapScene : MonoBehaviour
 
     private void BuildLevelAchivs(GameObject go, int i)
     {
-        bool achiv0512 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_0512");
-        bool achiv1024 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_1024");
-        bool achiv2048 = SaveProdiver.GetSaveBool("level_" + i + "_achiv_2048");
-        BuildLevelAchivs(go, "0512", achiv0512);
-        BuildLevelAchivs(go, "1024", achiv1024);
-        BuildLevelAchivs(go, "2048", achiv2048);
+        BuildLevelAchivs(go, i, "0256");
+        BuildLevelAchivs(go, i, "0512");
+        BuildLevelAchivs(go, i, "1024");
+        BuildLevelAchivs(go, i, "2048");
     }
 
-    private void BuildLevelAchivs(GameObject go, string id, bool cond)
+    private void BuildLevelAchivs(GameObject go, int i, string id)
     {
+        bool cond = SaveProdiver.GetSaveBool("level_" + i + "_achiv_" + id);
         GameObject achiv = go.FindChild("Achiv" + id + "ImageFalse", true);
         achiv.SetActive(!cond);
     }
-    
+
 }
 

@@ -98,7 +98,7 @@ namespace Commons.UI
 
         private void ApplyTheme(GameObject go, string theme = "default")
         {
-            Theme them = themes[theme];
+            Theme them = themes.ContainsKey(theme) ? themes[theme] : themes["default"];
             string name = go.name.ToLower();
             if (go.GetComponent<Text>() != null)
             {
@@ -134,7 +134,7 @@ namespace Commons.UI
 
         private Color GetColor(string name, string theme)
         {
-            Theme t = themes[theme];
+            Theme t = themes.ContainsKey(theme) ? themes[theme] : themes["default"];
             Color color;
             if (name.Contains("intention"))
                 if (name.Contains("intention=warning"))
