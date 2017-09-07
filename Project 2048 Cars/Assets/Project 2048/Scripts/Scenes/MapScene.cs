@@ -117,8 +117,8 @@ class MapScene : MonoBehaviour
             Unlocked.SetActive(false);
             GameObject Locked = States.FindChild("Locked", true);
             Locked.SetActive(false);
-            GameObject Building = States.FindChild("Building", true);
-            Building.SetActive(false);
+            GameObject WorkInProgress = States.FindChild("WorkInProgress", true);
+            WorkInProgress.SetActive(false);
 
             Toggle toggle = go.GetComponent<Toggle>();
             bool open = GetSaveBool("level_" + i + "_unlocked");
@@ -139,7 +139,7 @@ class MapScene : MonoBehaviour
             }
             else if (i >= level_count)
             {
-                Building.SetActive(true);
+                WorkInProgress.SetActive(true);
                 toggle.interactable = false;
             }
             else
