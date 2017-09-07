@@ -63,7 +63,7 @@ class Main
         save.Add("level_0_achiv_2048", "false");
 
         save.Add("level_1_unlocked", "true");
-        save.Add("level_1_tile_max", "0128");
+        save.Add("level_1_tile_max", "0016");
         save.Add("level_1_achiv_0512", "false");
 
         // CALC

@@ -20,7 +20,6 @@ class Globals
     public const string SCENE_MAP = "Map";
     public const string SCENE_GAME = "Game";
 
-    public const string GAMEOBJECT_BOARD = "Board";
     public const string GAMEOBJECT_TILE = "{0}x{1}";
     public const string GAMEOBJECT_MOVE = "Move {0} {1}";
 

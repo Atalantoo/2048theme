@@ -143,7 +143,7 @@ class GameSceneDelegate
         GameObject go;
         InputDetector input;
 
-        go = GameObject.Find(Globals.GAMEOBJECT_BOARD);
+        go = GameObject.Find("Game Layer").FindChild("Board");
 
         input = go.AddComponent<KeysArrowDetector>();
         input.Left = scene.MoveLeftAction;

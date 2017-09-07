@@ -44,8 +44,6 @@ class Settings : MonoBehaviour
 
         if (DisplayHelpAtStartup)
             HelpDialog.SetActive(true);
-
-        Debug.Log("settings started");
     }
 
     internal void OpenAction()
