@@ -1,5 +1,6 @@
 package com.atalantoo;
 
+import org.openqa.selenium.WebDriverException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -12,7 +13,6 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.transform.LineAggregator;
-import org.springframework.batch.repeat.exception.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -56,6 +56,7 @@ public class BatchConfig {
 				.reader(reader(src)) //
 				.processor(processor(src_lang, dest_lang)) //
 				.writer(writer(dest)) //
+				.faultTolerant().retry(WebDriverException.class).retryLimit(5) //
 				.build();
 	}
 

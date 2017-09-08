@@ -2,7 +2,9 @@ package com.atalantoo;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.util.logging.Level;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -22,6 +24,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemProcessor;
 
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 
@@ -67,16 +71,24 @@ public class TranslateProcessor implements ItemProcessor<LocaleJSONLine, LocaleJ
 	private static final String UI_PATTERN = "https://translate.google.fr/#%s/%s/%s";
 	private static final String UI_TARGET = "#result_box span";
 
-	private String translate(String value) throws UnsupportedEncodingException {
+	private String translate(String value) throws UnsupportedEncodingException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
 		String urlValue = URLEncoder.encode(value, "UTF-8");
 		String url = String.format(UI_PATTERN, src_lang, dest_lang, urlValue);
+		WebDriver webDriver;
+
+		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 
 		System.setProperty("jsse.enableSNIExtension", "false");
 		DesiredCapabilities cap = new DesiredCapabilities();
-		WebDriver webDriver;
-		 webDriver = new HtmlUnitDriver(cap);
-		// webDriver= new PhantomJSDriver(new DesiredCapabilities(ImmutableMap.of( //
-		//		PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "phantomjs.exe")));
+		webDriver = new HtmlUnitDriver(cap);
+
+		Field field = HtmlUnitDriver.class.getDeclaredField("webClient");
+		field.setAccessible(true);
+		WebClient webClient = (WebClient) field.get(webDriver);
+		webClient.setCssErrorHandler(new SilentCssErrorHandler());
+		webClient.getOptions().setCssEnabled(false);
 
 		webDriver.get(url);
 		WebDriverWait wait = new WebDriverWait(webDriver, 5);
@@ -84,7 +96,7 @@ public class TranslateProcessor implements ItemProcessor<LocaleJSONLine, LocaleJ
 		WebElement target = webDriver.findElement(By.cssSelector(UI_TARGET));
 		String newValue = target.getText();
 
-		webDriver.close();
+		webDriver.quit();
 		return newValue;
 	}
 

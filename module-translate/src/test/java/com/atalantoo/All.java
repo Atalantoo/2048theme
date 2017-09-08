@@ -64,6 +64,7 @@ public class All {
 					source, //
 					target });
 		}
+		/*
 		file= path + "\\..\\Project 2048 Cars\\AppStore\\locale-%s.json";
 		for (int i = 0; i < targets.length; i++) {
 			String target = targets[i];
@@ -74,6 +75,7 @@ public class All {
 					source, //
 					target });
 		}
+		*/
 		return new ArrayList<Object[]>(data);
 	}
 
