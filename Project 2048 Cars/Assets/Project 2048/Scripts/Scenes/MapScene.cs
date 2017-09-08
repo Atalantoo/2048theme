@@ -7,13 +7,12 @@ using Commons.UI;
 
 class MapScene : MonoBehaviour
 {
-    public MaSceneView View;
+    public MapSceneView View;
 
     void Start()
     {
         MapSceneDelegate.InjectDependencies(this);
-        // TODO MainSceneDelegate.InitializeCore(this);
-        Globals.LEVEL_CURRENT = 0;
+        MapSceneDelegate.InitializeCore(this);
         BuildMap();
         MapSceneDelegate.InitializeUI(this);
         UpdateScreen();
@@ -55,7 +54,7 @@ class MapScene : MonoBehaviour
         View.LevelDescriptionIndexText.GetComponent<Text>().text = currentLevel;
 
         string maxTile = Main.save["level_" + i + "_tile_max"];
-        string path = i + "/" + maxTile;
+        string path = Globals.GetLevelPath(i) + "/" + maxTile;
         Sprite sprite = Resources.Load<Sprite>(path);
         View.LevelDescriptionImage.GetComponent<Image>().sprite = sprite;
 
@@ -97,7 +96,7 @@ class MapScene : MonoBehaviour
 
                 string maxTile = Main.save["level_" + i + "_tile_max"];
 
-                string path = i + "/" + maxTile;
+                string path = Globals.GetLevelPath(i) + "/" + maxTile;
                 Sprite sprite = Resources.Load<Sprite>(path);
                 GameObject image = Unlocked.FindChild("Image");
                 image.GetComponent<Image>().sprite = sprite;

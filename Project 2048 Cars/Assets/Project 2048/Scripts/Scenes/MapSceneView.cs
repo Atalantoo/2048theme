@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-class MaSceneView
+class MapSceneView
 {
     public GameObject UICanvas;
     public GameObject BackgroundImage;

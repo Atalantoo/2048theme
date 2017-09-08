@@ -12,8 +12,14 @@ class Globals
 
     public static int Height = 4;
     public static int Width = 4;
+    public static string EXT_CURRENT = "";
     public static int LEVEL_CURRENT = 0;
     public static int LEVEL_MAX = 9;
+
+    public static string GetLevelPath(int i)
+    {
+        return EXT_CURRENT + "/"+ i;
+    }
 
     // CONST *********************************
 

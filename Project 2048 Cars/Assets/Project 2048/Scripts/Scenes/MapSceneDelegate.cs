@@ -13,7 +13,7 @@ class MapSceneDelegate
     public static void InjectDependencies(MapScene scene)
     {
         GameObject UICanvas = GameObject.Find("UICanvas");
-        scene.View = new MaSceneView()
+        scene.View = new MapSceneView()
         {
             UICanvas = UICanvas,
             BackgroundImage = GameObject.Find("BackgroundImage"),
@@ -31,8 +31,15 @@ class MapSceneDelegate
         };
     }
 
+    internal static void InitializeCore(MapScene mapScene)
+    {
+        Main.LoadData();
+    }
+
     public static void InitializeUI(MapScene scene)
     {
+        GameObject.Find("NavBar").AddComponent<NavBar>().Name = Globals.EXT_CURRENT;
+
         scene.View.SettingsButton.OnClick(scene.SettingsOpenAction);
         scene.View.Settings.AddComponent<Settings>();
         scene.View.Settings.GetComponent<Settings>().TranslateTarget = scene.View.UICanvas;

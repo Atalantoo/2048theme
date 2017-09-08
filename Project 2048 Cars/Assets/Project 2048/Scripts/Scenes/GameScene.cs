@@ -203,7 +203,7 @@ class GameScene : MonoBehaviour
         TileSprites.Clear();
         foreach (string i in Globals.SPRITES)
         {
-            path = Globals.LEVEL_CURRENT.ToString() + "/" + i;
+            path = Globals.GetLevelPath(Globals.LEVEL_CURRENT) + "/" + i;
             TileSprites.Add(Int16.Parse(i), Resources.Load<Sprite>(path));
         }
     }
@@ -218,9 +218,9 @@ class GameScene : MonoBehaviour
             LevelAction(1);
     }
 
-    private void LevelAction(int newLevelName)
+    private void LevelAction(int i)
     {
-        Globals.LEVEL_CURRENT = newLevelName;
+        Globals.LEVEL_CURRENT = i;
         LoadResources();
         Model.Board[0, 3].Value = 2048;
         Model.Board[0, 2].Value = 1024;

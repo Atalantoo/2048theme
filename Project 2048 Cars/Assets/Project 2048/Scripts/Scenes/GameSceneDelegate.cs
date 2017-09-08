@@ -14,6 +14,7 @@ using Commons.Animations;
 using Project2048;
 using System.IO;
 
+
 class GameSceneDelegate
 {
     public static void InjectDependencies(GameScene scene)
@@ -49,11 +50,13 @@ class GameSceneDelegate
 
     public static void InitializeCore(GameScene scene)
     {
-        // TODO
+        Main.LoadData();
     }
 
     public static void InitializeUI(GameScene scene)
     {
+        GameObject.Find("NavBar").AddComponent<NavBar>().Name = Globals.EXT_CURRENT;
+
         scene.View.SettingsButton.OnClick(scene.SettingsOpenAction);
         scene.View.Settings.AddComponent<Settings>();
         scene.View.Settings.GetComponent<Settings>().TranslateTarget = scene.View.UICanvas;
@@ -85,7 +88,7 @@ class GameSceneDelegate
 
     private static void LoadColor()
     {
-        string path = Globals.LEVEL_CURRENT.ToString() + "/" + "data";
+        string path = Globals.GetLevelPath(Globals.LEVEL_CURRENT) + "/" + "data";
         TextAsset txt = Resources.Load<TextAsset>(path);
         string dataAsJson = txt.text;
         LevelData loadedData = JsonUtility.FromJson<LevelData>(dataAsJson);
@@ -95,7 +98,7 @@ class GameSceneDelegate
 
     private static void LoadBackground(GameScene scene)
     {
-        string path = Globals.LEVEL_CURRENT.ToString() + "/" + "wallpaper";
+        string path = Globals.GetLevelPath(Globals.LEVEL_CURRENT) + "/" + "wallpaper";
         Sprite sprite = Resources.Load<Sprite>(path);
         scene.View.WallpaperSprite.GetComponent<SpriteRenderer>().sprite = sprite;
         scene.View.BackgroundSprite.GetComponent<SpriteRenderer>().color = Main.Theme.themes["game"].Background;

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Commons;
 using Commons.UI;
-
+using SimpleJSON;
 
 class Main
 {
@@ -55,6 +55,9 @@ class Main
         save.Add("level_3_require", "5");
 
         // STORED
+        save.Add("settings_lang", "en");
+        save.Add("settings_sound", "true");
+        save.Add("settings_music", "true");
         save.Add("level_0_unlocked", "true");
         save.Add("level_0_tile_max", "0256");
         save.Add("level_0_achiv_0256", "true");
@@ -70,5 +73,15 @@ class Main
         save.Add("achivement_count", "2");
         return save;
     }
+
+    public static void LoadData()
+    {
+        string path = "data";
+        TextAsset txt = Resources.Load<TextAsset>(path);
+        string json = txt.text;
+        JSONNode data = JSON.Parse(json);
+        Globals.EXT_CURRENT = data["subname"];
+    }
+
 }
 
