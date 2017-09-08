@@ -18,6 +18,7 @@ class GameScene : MonoBehaviour
     public GameSceneView View;
 
     public Dictionary<int, Sprite> TileSprites;
+    bool lastScreenOrientation;
 
     void Start()
     {
@@ -26,14 +27,20 @@ class GameScene : MonoBehaviour
         GameSceneDelegate.InitializeUI(this);
         GameSceneDelegate.InitializeGame(this);
         ResetAction();
+        lastScreenOrientation = GameObjectUtils.IsScreenLandscape();
     }
+
 
     void Update()
     {
-        // TODO OnScreenOrientationChange event
-        GameObjectUtils.ResizeViewToScreen(350, 600);
-        GameObjectUtils.ResizeSpriteToScreen(View.BackgroundSprite);
-        GameObjectUtils.ResizeSpriteToScreenRight(View.WallpaperSprite);
+        bool actual = GameObjectUtils.IsScreenLandscape();
+        if (actual != lastScreenOrientation)
+        {
+            lastScreenOrientation = actual;
+            GameObjectUtils.ResizeViewToScreen(350, 600);
+            GameObjectUtils.ResizeSpriteToScreen(View.BackgroundSprite);
+            GameObjectUtils.ResizeSpriteToScreenRight(View.WallpaperSprite);
+        }
     }
 
     // ********************************************************************

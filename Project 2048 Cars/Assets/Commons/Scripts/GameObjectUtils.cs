@@ -34,14 +34,12 @@ namespace Commons
 
         public static void ResizeViewToScreen(int LandscapeSize, int PortraitSize)
         {
-            if (Screen.width > Screen.height)
-            {
-                Camera.main.orthographicSize = LandscapeSize;
-            }
-            else
-            {
-                Camera.main.orthographicSize = PortraitSize;
-            }
+            Camera.main.orthographicSize = IsScreenLandscape() ? LandscapeSize : PortraitSize;
+        }
+
+        public static bool IsScreenLandscape()
+        {
+            return Screen.width > Screen.height;
         }
 
         internal static void ResizeSpriteToScreenRight(GameObject go)
@@ -61,7 +59,7 @@ namespace Commons
             float s = (float)worldScreenHeight / height;
             go.transform.localScale = new Vector3(s, s, 0);
 
-            float px = (float)(worldScreenWidth / 2.0 - ((worldScreenHeight * ratio) /2));
+            float px = (float)(worldScreenWidth / 2.0 - ((worldScreenHeight * ratio) / 2));
             go.transform.localPosition = new Vector3(px, 0, 0);
         }
     }
