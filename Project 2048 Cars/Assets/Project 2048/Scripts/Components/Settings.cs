@@ -37,6 +37,8 @@ class Settings : MonoBehaviour
         SettingsDialog script = SettingsDialog.GetComponent<SettingsDialog>();
         script.LanguageDialog = LanguageDialog;
         script.HelpDialog = HelpDialog;
+        script.SoundOn = true; // TODO saved
+        script.MusicOn = true; // TODO saved
 
         LanguageDialog script2 = LanguageDialog.GetComponent<LanguageDialog>();
         script2.Translate = Main.Lang;
